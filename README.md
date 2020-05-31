@@ -1,4 +1,4 @@
-# rocminstaller V1.1 Utility to install ROCm releases directly from ROCm repo  
+# rocminstaller V1.6 Utility to install ROCm releases directly from ROCm repo  
 
 # $ sudo ./rocminstall.py -h
 ```
@@ -90,4 +90,70 @@ rocsparse3.3.0-1.8.9.764_rocm_rel_3.3_19_593d877-1.x86_64.rpm
 rocthrust3.3.0-2.9.0.453_rocm_rel_3.3_19_3de52fa-1.x86_64.rpm
 roctracer-dev3.3.0-1.0.0-1.x86_64.rpm
 ```
+# Example Output on Ubuntu 18.04 system
+## To List ROCm 3.3 packages available for installation (will skip rock-dkms if one already installed)
+**$ ./rocminstall.py --list --rev 3.3**
+```
+./rocminstall.py --list --rev 3.3
+Desired=Unknown/Install/Remove/Purge/Hold
+| Status=Not/Inst/Conf-files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
+|/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+||/ Name           Version      Architecture Description
++++-==============-============-============-=================================
+ii  rock-dkms      3.3-19       all          rock-dkms driver in DKMS format.
 
+ Skipping rock-dkms: a version is already installed.
+ To install rock-dkms package, please remove installed rock-dkms first. Reboot may be required. 
+List of packages selected:
+
+
+
+pool/main/M/MIGraphX3.3.0/MIGraphX3.3.0_0.6.0.3793-rocm-rel-3.3-19-d1e945d_amd64.deb
+pool/main/M/MIOpen-HIP3.3.0/MIOpen-HIP3.3.0_2.3.0.7730-rocm-rel-3.3-19-ef17912_amd64.deb
+pool/main/a/aomp-amdgpu-tests3.3.0/aomp-amdgpu-tests3.3.0_0.7-6_amd64.deb
+pool/main/a/aomp-amdgpu3.3.0/aomp-amdgpu3.3.0_0.7-6_amd64.deb
+pool/main/a/atmi3.3.0/atmi3.3.0_0.7.11_amd64.deb
+pool/main/c/comgr3.3.0/comgr3.3.0_1.6.0.124-rocm-rel-3.3-19-7ac2e34_amd64.deb
+pool/main/h/half3.3.0/half3.3.0_1.12.0_amd64.deb
+pool/main/h/hcc3.3.0/hcc3.3.0_3.1.20114_amd64.deb
+pool/main/h/hip-base3.3.0/hip-base3.3.0_3.3.20126.4629-rocm-rel-3.3-19-2dbba46b_amd64.deb
+pool/main/h/hip-doc3.3.0/hip-doc3.3.0_3.3.20126.4629-rocm-rel-3.3-19-2dbba46b_amd64.deb
+pool/main/h/hip-hcc3.3.0/hip-hcc3.3.0_3.3.20126.4629-rocm-rel-3.3-19-2dbba46b_amd64.deb
+pool/main/h/hip-samples3.3.0/hip-samples3.3.0_3.3.20126.4629-rocm-rel-3.3-19-2dbba46b_amd64.deb
+pool/main/h/hipblas3.3.0/hipblas3.3.0_0.24.0.330-rocm-rel-3.3-19-ef9f60d_amd64.deb
+pool/main/h/hipcub3.3.0/hipcub3.3.0_2.10.0.108-rocm-rel-3.3-19-61fca3e_amd64.deb
+pool/main/h/hipsparse3.3.0/hipsparse3.3.0_1.5.4.237-rocm-rel-3.3-19-961de7b_amd64.deb
+pool/main/h/hsa-amd-aqlprofile3.3.0/hsa-amd-aqlprofile3.3.0_1.0.0_amd64.deb
+pool/main/h/hsa-ext-rocr-dev3.3.0/hsa-ext-rocr-dev3.3.0_1.1.30300.0-rocm-rel-3.3-19-23fc088b_amd64.deb
+pool/main/h/hsa-rocr-dev3.3.0/hsa-rocr-dev3.3.0_1.1.30300.0-rocm-rel-3.3-19-23fc088b_amd64.deb
+pool/main/h/hsakmt-roct-dev3.3.0/hsakmt-roct-dev3.3.0_1.0.9-330-gd84bc09_amd64.deb
+pool/main/h/hsakmt-roct3.3.0/hsakmt-roct3.3.0_1.0.9-330-gd84bc09_amd64.deb
+pool/main/l/llvm-amdgpu3.3.0/llvm-amdgpu3.3.0_11.0.dev_amd64.deb
+pool/main/m/miopengemm3.3.0/miopengemm3.3.0_1.1.6.647-rocm-rel-3.3-19-b51a125_amd64.deb
+pool/main/m/mivisionx3.3.0/mivisionx3.3.0_1.6.0_amd64.deb
+pool/main/r/rccl3.3.0/rccl3.3.0_2.10.0-311-g1d2aa4e-rocm-rel-3.3-19_amd64.deb
+pool/main/r/rocalution3.3.0/rocalution3.3.0_1.8.1.481-rocm-rel-3.3-19-3e9ad81_amd64.deb
+pool/main/r/rocblas3.3.0/rocblas3.3.0_2.18.0.2030-rocm-rel-3.3-19-50d99ed_amd64.deb
+pool/main/r/rocfft3.3.0/rocfft3.3.0_1.0.1.804-rocm-rel-3.3-19-e732369_amd64.deb
+pool/main/r/rocm-bandwidth-test3.3.0/rocm-bandwidth-test3.3.0_1.4.0.13-rocm-rel-3.3-19-gf671f73_amd64.deb
+pool/main/r/rocm-clang-ocl3.3.0/rocm-clang-ocl3.3.0_0.5.0.48-rocm-rel-3.3-19-fa039e7_amd64.deb
+pool/main/r/rocm-cmake3.3.0/rocm-cmake3.3.0_0.3.0.141-rocm-rel-3.3-19-1b9e698_amd64.deb
+pool/main/r/rocm-debug-agent3.3.0/rocm-debug-agent3.3.0_1.0.0_amd64.deb
+pool/main/r/rocm-dev3.3.0/rocm-dev3.3.0_3.3.0-19_amd64.deb
+pool/main/r/rocm-device-libs3.3.0/rocm-device-libs3.3.0_1.0.0.565-rocm-rel-3.3-19-58abd89_amd64.deb
+pool/main/r/rocm-libs3.3.0/rocm-libs3.3.0_3.3.0-19_amd64.deb
+pool/main/r/rocm-opencl-dev3.3.0/rocm-opencl-dev3.3.0_2.0.0-rocm-rel-3.3-19-363509c8d_amd64.deb
+pool/main/r/rocm-opencl3.3.0/rocm-opencl3.3.0_2.0.0-rocm-rel-3.3-19-363509c8d_amd64.deb
+pool/main/r/rocm-smi-lib643.3.0/rocm-smi-lib643.3.0_2.2.0.3.rocm-rel-3.3-19-a482394_amd64.deb
+pool/main/r/rocm-smi3.3.0/rocm-smi3.3.0_1.0.0-199-rocm-rel-3.3-19-ga9d6426_amd64.deb
+pool/main/r/rocm-utils3.3.0/rocm-utils3.3.0_3.3.0-19_amd64.deb
+pool/main/r/rocm-validation-suite3.3.0/rocm-validation-suite3.3.0_3.2.30300_amd64.deb
+pool/main/r/rocminfo3.3.0/rocminfo3.3.0_1.30300.0_amd64.deb
+pool/main/r/rocprim3.3.0/rocprim3.3.0_2.10.0.974-rocm-rel-3.3-19-6042e8a_amd64.deb
+pool/main/r/rocprofiler-dev3.3.0/rocprofiler-dev3.3.0_1.0.0_amd64.deb
+pool/main/r/rocrand3.3.0/rocrand3.3.0_2.10.0.663-rocm-rel-3.3-19-6f0dadf_amd64.deb
+pool/main/r/rocsolver3.3.0/rocsolver3.3.0_2.7.0.77-rocm-rel-3.3-19-4989200_amd64.deb
+pool/main/r/rocsparse3.3.0/rocsparse3.3.0_1.8.9.764-rocm-rel-3.3-19-593d877_amd64.deb
+pool/main/r/rocthrust3.3.0/rocthrust3.3.0_2.9.0.453-rocm-rel-3.3-19-3de52fa_amd64.deb
+pool/main/r/roctracer-dev3.3.0/roctracer-dev3.3.0_1.0.0_amd64.deb
+```
