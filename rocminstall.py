@@ -5,6 +5,10 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.6: Add --nokernel to skip rock-dkms kernel in docker installtion
+#       Remove rocm-dkms along with rock-dkms*
+#       Fix repourl option: set fetchurl
+# V1.5: Launch install command in interactive/unbuffered mode
 # V1.4: Added support for debian/ubuntu
 #       SLES broken, zypper non-interactive defaults a pain
 # V1.3: Use yum on SLES
@@ -29,9 +33,6 @@ import os
 rocmyum_base = "http://repo.radeon.com/rocm/yum/"
 rocmapt_base = "http://repo.radeon.com/rocm/apt/"
 rocmzyp_base = "http://repo.radeon.com/rocm/zyp/"
-# Internal builds
-internal_rocmyum_base = "http://compute-artifactory.amd.com/artifactory/list/rocm-osdb-rpm/compute-rocm-dkms-no-npi-hipclang-2275/"
-internal_rocmdeb_base = "http://compute-artifactory.amd.com/artifactory/list/rocm-osdb-deb/compute-rocm-dkms-no-npi-hipclang-2275/"
 
 # Commands
 RM_F_CMD = "/bin/rm -f "
@@ -126,6 +127,7 @@ def get_deb_pkglist311(rocmurl, revstring, pkgtype):
             print((" To install rock-dkms package, please remove installed rock-dkms"
                    " first. Reboot may be required. "))
             pkglist = [ x for x in pkgset if "rock-dkms" not in x ]
+            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
             rocklist = []
         else:
             pkglist = list(pkgset)
@@ -167,6 +169,7 @@ def get_pkglist311(rocmurl, revstring, pkgtype):
             print((" To install rock-dkms package, please remove installed rock-dkms"
                    " first. Reboot may be required. "))
             pkglist = [ x for x in pkgset if "rock-dkms" not in x ]
+            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
             rocklist = []
         else:
             pkglist = list(pkgset)
@@ -214,6 +217,7 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
             print((" To install rock-dkms package, please remove installed rock-dkms"
                    " first. Reboot may be required. "))
             pkglist = [ x for x in pkgset if "rock-dkms" not in x ]
+            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
             rocklist = []
         else:
             pkglist = list(pkgset)
@@ -257,6 +261,7 @@ def get_pkglist(rocmurl, revstring, pkgtype):
             print((" To install rock-dkms package, please remove installed rock-dkms"
                    " first. Reboot may be required. "))
             pkglist = [ x for x in pkgset if "rock-dkms" not in x ]
+            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
             rocklist = []
         else:
             pkglist = list(pkgset)
@@ -270,34 +275,29 @@ def download_and_install_deb(args, rocmbaseurl, pkgname):
     global pkglist
     global rocklist
     # Download and Install rock-dkms-firmware first (assumes only one)
+    if args.repourl:
+        fetchurl = args.repourl[0] + "/"
+    else:
+        fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
     rmcmd = RM_F_CMD
     dpkgicmd = DPKG_CMD + " -i "
     aptinstcmd = APTGET_CMD + " -y -f install "
-    urlretrieve(rocmbaseurl + "/" + args.revstring[0] + "/" + pkgname,
-        args.destdir[0] + "/" + os.path.basename(pkgname)) # download destdir
+    # download destdir
+    urlretrieve(fetchurl + pkgname, args.destdir[0] + "/" + os.path.basename(pkgname))
     execcmd = dpkgicmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
     rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
     try:
-        ps1 = subprocess.run(execcmd.split(), stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, check=True)
-        for line in str.splitlines(ps1.stdout.decode('utf-8')):
-            print(line)
+        ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
     try:
-        ps1 = subprocess.run(aptinstcmd.split(), stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, check=True)
-        for line in str.splitlines(ps1.stdout.decode('utf-8')):
-            print(line)
+        ps1 = subprocess.Popen(aptinstcmd.split(), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
     try:
-        ps2 = subprocess.run(rmcmd.split(),
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False);
-        for line in str.splitlines(ps2.stdout.decode('utf-8')):
-            print(line)
+        ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
@@ -317,50 +317,50 @@ def download_install_rocm_deb(args, rocmbaseurl):
     rmcmd = RM_F_CMD
     dpkgicmd = DPKG_CMD + " -i "
     aptinstcmd = APTGET_CMD + " -y -f install "
-    pkgn = [ x for x in rocklist if "rock-dkms-firmware" in x ]
-    if pkgn:
-        # remove rock-dkms-firmware from list
-        rocklist = [ x for x in rocklist if "rock-dkms-firmware" not in x ]
-        # Download and Install rock-dkms-firmware first (assumes only one)
-        download_and_install_deb(args, rocmbaseurl, pkgn[0])
-    pkgn = [ x for x in rocklist if "rock-dkms" in x ]
-    if pkgn:
-        # Download and Install rock-dkms
-        download_and_install_deb(args, rocmbaseurl, pkgn[0])
+    # skip rock package is --nokernel is True
+    if args.nokernel is True:
+        pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+    else:
+        pkgn = [ x for x in rocklist if "rock-dkms-firmware" in x ]
+        if pkgn:
+            # remove rock-dkms-firmware from list
+            rocklist = [ x for x in rocklist if "rock-dkms-firmware" not in x ]
+            # Download and Install rock-dkms-firmware first (assumes only one)
+            download_and_install_deb(args, rocmbaseurl, pkgn[0])
+        pkgn = [ x for x in rocklist if "rock-dkms" in x ]
+        if pkgn:
+            # Download and Install rock-dkms
+            download_and_install_deb(args, rocmbaseurl, pkgn[0])
 
     # Install the rest of the deb packages
+    if args.repourl:
+        fetchurl = args.repourl[0] + "/"
+    else:
+        fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
     rmcmd = RM_F_CMD
     dpkgicmd = DPKG_CMD + " -i "
     execcmd = dpkgicmd
     for n in sorted(pkglist):
-        urlretrieve(rocmbaseurl + "/" + args.revstring[0] + "/" + n,
-            args.destdir[0] + "/" + os.path.basename(n)) # download destdir
+        # download destdir
+        urlretrieve(fetchurl + n, args.destdir[0] + "/" + os.path.basename(n))
         execcmd = execcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
         rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
         print('.', end='', flush=True)
+
     try:
-        ps1 = subprocess.run(execcmd.split(), stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, check=True)
-        for line in str.splitlines(ps1.stdout.decode('utf-8')):
-            print(line)
+        ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
 
     try:
-        ps1 = subprocess.run(aptinstcmd.split(), stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, check=True)
-        for line in str.splitlines(ps1.stdout.decode('utf-8')):
-            print(line)
+        ps1 = subprocess.Popen(aptinstcmd.split(), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
 
     try:
-        ps2 = subprocess.run(rmcmd.split(),
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False);
-        for line in str.splitlines(ps2.stdout.decode('utf-8')):
-            print(line)
+        ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
@@ -371,7 +371,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.6]rocminstall.py: utility to '
         ' download and install ROCm RPMs for specified version'
         ' (requires sudo privilege) '),
         prefix_chars='-')
@@ -395,7 +395,11 @@ if __name__ == "__main__":
               )
     parser.add_argument('--repourl', nargs=1, dest='repourl', default=None,
         help=('specify ROCm repo URL to use from where to download packages'
-              ' Example: --repourl http://repo.radeon.com/rocm/yum/3.3 ')
+              ' Example: --repourl http://compute-artifactory/build/xyz')
+              )
+    parser.add_argument('--nokernel', dest='nokernel', action='store_true',
+        help=('do not install rock kernel packages, for example, '
+              ' used to install ROCm in docker')
               )
     args = parser.parse_args();
 
@@ -464,7 +468,7 @@ if __name__ == "__main__":
     cmd = {
        CENTOS_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
        UBUNTU_TYPE : APTGET_CMD + " --no-download --ignore-missing -y install ",
-       SLES_TYPE : ZYPPER_CMD + " --non-interactive install --no-recommends "
+       SLES_TYPE : ZYPPER_CMD + " install --allow-unsigned-rpm --no-recommends "
     }[ostype]
 
     #
@@ -478,9 +482,12 @@ if __name__ == "__main__":
     # If --list specified, print the package list and exit
     #
     if args.listonly is True:
-        print("List of packages selected:\n" +
-            '\n'.join(sorted(rocklist)) + '\n' +
-            '\n'.join(sorted(pkglist)))
+        print("List of packages selected:\n")
+        if args.nokernel is True:
+            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+        else:
+            print('\n'.join(sorted(rocklist)) + '\n')
+        print('\n'.join(sorted(pkglist)))
         sys.exit(0)
 
     #
@@ -498,35 +505,37 @@ if __name__ == "__main__":
     # for CentOS and SLES use the following
     execcmd = cmd
     rmcmd = RM_F_CMD
-    for n in sorted(rocklist):
-        urlretrieve(rocmbaseurl + "/" + args.revstring[0] + "/" + n,
-            args.destdir[0] + "/" + os.path.basename(n)) # download destdir
-        execcmd = execcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
-        rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
-        print('.', end='', flush=True)
+    if args.repourl:
+        fetchurl = args.repourl[0] + "/"
+    else:
+        fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+    # skip if --nokernel option is True
+    if args.nokernel is True:
+        pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+    else:
+        for n in sorted(rocklist):
+            # download to destdir
+            urlretrieve(fetchurl + n, args.destdir[0] + "/" + os.path.basename(n))
+            execcmd = execcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
+            rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
+            print('.', end='', flush=True)
 
     for n in sorted(pkglist):
-        urlretrieve(rocmbaseurl + "/" + args.revstring[0] + "/" + n,
-            args.destdir[0] + "/" + os.path.basename(n)) # download destdir
+        # download to destdir
+        urlretrieve(fetchurl + n, args.destdir[0] + "/" + os.path.basename(n))
         execcmd = execcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
         rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
         print('.', end='', flush=True)
 
     try:
-        ps1 = subprocess.run(execcmd.split(), stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, check=True)
-        for line in str.splitlines(ps1.stdout.decode('utf-8')):
-            print(line)
+        ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
         print(" Unexpected error encountered! Did you forget sudo?")
 
     try:
-        ps2 = subprocess.run(rmcmd.split(),
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False);
-        for line in str.splitlines(ps2.stdout.decode('utf-8')):
-            print(line)
+        ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
