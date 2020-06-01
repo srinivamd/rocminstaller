@@ -1,5 +1,4 @@
 # rocminstaller V1.6 Utility to install ROCm releases directly from ROCm repo
-# rocm_techsupport.sh V1.1 Shell Utility for Ubuntu/CentOS/SLES log collection
 
 # $ sudo ./rocminstall.py -h
 ```
@@ -29,6 +28,7 @@ optional arguments:
   --nokernel         do not install rock kernel packages, for example, used to
                      install ROCm in docker
 ```
+# rocm_techsupport.sh V1.1 Shell Utility for Ubuntu/CentOS/SLES log collection
 # $ sudo sh <path_to>/rocm_techsupport.sh 2>&1 | tee <path_to>/rocm_techsupport.logs
 ```
 Example: Run rocm_techsupport.sh in current directory ('.') and save standard output and errors in /tmp/rocm_techsupport.log
