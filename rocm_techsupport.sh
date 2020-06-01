@@ -7,11 +7,13 @@
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
 # Revision: V1.1
+# V1.2: Add ECC and rask_mask
+#       Show ras info, xgmierr
 # V1.1: Detect OS type
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.1 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.2 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -35,10 +37,10 @@ echo "===== Section: Kernel Boot Parameters  ==============="
 echo "===== Section: dmesg GPU/DRM/ATOM/BIOS ==============="
 if [ -f /bin/journalctl ]
 then
-    /bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|gpu|drm|atom|bios|iommu|smpboot.*CPU|pcieport.*AER'
+    /bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|gpu|drm|atom|bios|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
 elif [ -f /usr/bin/journalctl ]
 then
-    /usr/bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|gpu|drm|atom|bios|iommu|smpboot.*CPU|pcieport.*AER'
+    /usr/bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|gpu|drm|atom|bios|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
 else
     echo "ROCmTechSupportNotFound: journalctl/dmesg utility not found!"
 fi
@@ -121,18 +123,32 @@ ROCM_VERSION=`/bin/ls -d /opt/rocm-* | /usr/bin/sort | /usr/bin/tail -1`
 echo "==== Using $ROCM_VERSION to collect ROCm information.==== "
 
 
-# ROCm SMI - FW version clocks etc.
+# ROCm SMI 
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
 then
     echo "===== Section: ROCm SMI                ==============="
     $ROCM_VERSION/bin/rocm-smi
 fi
 
-# ROCm SMI - FW version clocks etc.
+# ROCm SMI - FW version
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
 then
     echo "===== Section: ROCm SMI showhw         ==============="
     $ROCM_VERSION/bin/rocm-smi --showhw
+fi
+
+# ROCm SMI - RAS info
+if [ -f $ROCM_VERSION/bin/rocm-smi ]
+then
+    echo "===== Section: ROCm SMI showrasinfo all==============="
+    $ROCM_VERSION/bin/rocm-smi --showrasinfo all
+fi
+
+# ROCm SMI - xgmierr
+if [ -f $ROCM_VERSION/bin/rocm-smi ]
+then
+    echo "===== Section: ROCm SMI showxgmierr    ==============="
+    $ROCM_VERSION/bin/rocm-smi --showxgmierr
 fi
 
 # ROCm SMI - FW version clocks etc.
