@@ -1,4 +1,5 @@
-# rocminstaller V1.6 Utility to install ROCm releases directly from ROCm repo  
+# rocminstaller V1.6 Utility to install ROCm releases directly from ROCm repo
+# rocm_techsupport.sh V1.1 Shell Utility for Ubuntu/CentOS/SLES log collection
 
 # $ sudo ./rocminstall.py -h
 ```
@@ -28,8 +29,15 @@ optional arguments:
   --nokernel         do not install rock kernel packages, for example, used to
                      install ROCm in docker
 ```
+# $ sudo sh <path_to>/rocm_techsupport.sh 2>&1 | tee <path_to>/rocm_techsupport.logs
+```
+Example: Run rocm_techsupport.sh in current directory ('.') and save standard output and errors in /tmp/rocm_techsupport.log
+# sudo sh ./rocm_techsupport.sh 2>&1 | tee /tmp/rocm_techsupport.log
 
-# Example Output on CentOS system
+Compress/Zip the output file and include with reported issue.
+```
+
+# rocminstall.py Example Output on CentOS system
 ## To List ROCm 3.3 packages available for installation (will skip rock-dkms if one already installed)
 **$ ./rocminstall.py --list --rev 3.3**
 ```
@@ -90,7 +98,7 @@ rocsparse3.3.0-1.8.9.764_rocm_rel_3.3_19_593d877-1.x86_64.rpm
 rocthrust3.3.0-2.9.0.453_rocm_rel_3.3_19_3de52fa-1.x86_64.rpm
 roctracer-dev3.3.0-1.0.0-1.x86_64.rpm
 ```
-# Example Output on Ubuntu 18.04 system
+# rocminstall.py Example Output on Ubuntu 18.04 system
 ## To List ROCm 3.3 packages available for installation (will skip rock-dkms if one already installed)
 **$ ./rocminstall.py --list --rev 3.3**
 ```
