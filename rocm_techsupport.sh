@@ -6,14 +6,15 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.1
+# Revision: V1.3
+# V1.3: Add rocm-bandwidth-test -t to get topology
 # V1.2: Add ECC and rask_mask
 #       Show ras info, xgmierr
 # V1.1: Detect OS type
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.2 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.3 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
