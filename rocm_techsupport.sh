@@ -122,6 +122,16 @@ fi
 ROCM_VERSION=`/bin/ls -d /opt/rocm-* | /usr/bin/sort | /usr/bin/tail -1`
 echo "==== Using $ROCM_VERSION to collect ROCm information.==== "
 
+# RBT Topology
+echo "===== Section: rocm-bandwidth-test Topology       ==============="
+if [ -f $ROCM_VERSION/bin/rocm-bandwidth-test ]
+then
+    $ROCM_VERSION/bin/rocm-bandwidth-test -t
+else
+    echo "$ROCM_VERSION/bin/rocm-bandwidth-test command not found. Skipping topology information."
+    echo "Note: Install rocb=m-bandwidth-test ROCm package to get topology information"
+    echo "    Ex: sudo apt install rocm-bandwidth-test "
+fi
 
 # ROCm SMI 
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
