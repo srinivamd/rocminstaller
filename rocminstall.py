@@ -5,6 +5,8 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.7: Add workaround for ROCm 3.5 packaging bug in CentOS
+#       exclude hipify-clang package install on CentOS
 # V1.6: Add --nokernel to skip rock-dkms kernel in docker installtion
 #       Remove rocm-dkms along with rock-dkms*
 #       Fix repourl option: set fetchurl
@@ -461,6 +463,14 @@ if __name__ == "__main__":
         else:
             get_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0],
                 pkgtype)
+
+    # V1.7: XXX Workaround for ROCm 3.5 on CentOS
+    if ostype is CENTOS_TYPE and "3.5" in args.revstring[0]:
+        # exclude hipify-clang
+        pkglist = [ x for x in pkglist if "hipify-clang" not in x ]
+        print("NOTE: Not installing hipify-clang RPM due to packaging issue.")
+        print("NOTE: Please install hipify-clang RPM manually using: ")
+        print("NOTE:  sudo rpm -ivh --force hipify-clang3.5.0-11.0.0.x86_64.rpm ")
 
     #
     # Based on os type, set the package install command and options
