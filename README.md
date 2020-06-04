@@ -1,4 +1,4 @@
-# rocminstaller V1.7 Utility to install ROCm releases directly from ROCm repo
+# [Unofficial] rocminstaller V1.7 Utility to install ROCm releases directly from ROCm repo
 
 # $ sudo ./rocminstall.py -h
 ```
