@@ -28,7 +28,7 @@ optional arguments:
   --nokernel         do not install rock kernel packages, for example, used to
                      install ROCm in docker
 ```
-# [Unofficial] rocm_techsupport.sh V1.3 Shell Utility for Ubuntu/CentOS/SLES log collection
+# [Unofficial] rocm_techsupport.sh V1.4 Shell Utility for Ubuntu/CentOS/SLES log collection from last 4 boots
 # $ sudo sh <path_to>/rocm_techsupport.sh 2>&1 | tee <path_to>/rocm_techsupport.logs
 ```
 Example: Run rocm_techsupport.sh in current directory ('.') and save standard output and errors in /tmp/rocm_techsupport.log
