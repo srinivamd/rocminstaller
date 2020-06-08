@@ -1,3 +1,18 @@
+# [Unofficial] rocm_techsupport.sh V1.6 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
+***cd  downloads***
+
+***wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh***
+
+***$ Usage: sudo sh <path_to>/rocm_techsupport.sh 2>&1 | tee <path_to>/rocm_techsupport.logs***
+```
+Example: Run rocm_techsupport.sh in current directory ('.') and save standard output and 
+errors in /tmp/rocm_techsupport.log
+
+# sudo sh ./rocm_techsupport.sh 2>&1 | tee /tmp/rocm_techsupport.log
+
+Compress/Zip the output file and include with reported issue.
+```
+
 # [Unofficial] rocminstaller V1.7 Utility to install ROCm releases directly from ROCm repo
 #### WARNING: Does not support CentOS8/RHEL8
 
@@ -29,14 +44,7 @@ optional arguments:
   --nokernel         do not install rock kernel packages, for example, used to
                      install ROCm in docker
 ```
-# [Unofficial] rocm_techsupport.sh V1.4 Shell Utility for Ubuntu/CentOS/SLES log collection from last 4 boots
-# $ sudo sh <path_to>/rocm_techsupport.sh 2>&1 | tee <path_to>/rocm_techsupport.logs
-```
-Example: Run rocm_techsupport.sh in current directory ('.') and save standard output and errors in /tmp/rocm_techsupport.log
-# sudo sh ./rocm_techsupport.sh 2>&1 | tee /tmp/rocm_techsupport.log
 
-Compress/Zip the output file and include with reported issue.
-```
 # rocminstall.py Install ROCm 3.5 on Ubuntu 18.04 with ROCm 3.3 already installed.
 ***(Uninstalled rock-dkms from ROCm 3.3 using dpkg -r --force-all before installing 3.5)***
 
