@@ -6,6 +6,8 @@
 #
 # Download and install a specific ROCm version
 # V1.8: Fix for Ubuntu/Debian install to setup repo, use apt install
+#       Add check for rhel OS type
+#       No support for CentOS/RHEL 8
 # V1.7: Add workaround for ROCm 3.5 packaging bug in CentOS
 #       exclude hipify-clang package install on CentOS
 # V1.6: Add --nokernel to skip rock-dkms kernel in docker installtion
@@ -60,6 +62,7 @@ CENTOS_TYPE = "centos"
 UBUNTU_TYPE = "ubuntu"
 DEBIAN_TYPE = "debian"
 SLES_TYPE = "sles"
+RHEL_TYPE = "rhel"
 
 # OS release info
 ETC_OS_RELEASE = "/etc/os-release"
@@ -492,6 +495,10 @@ if __name__ == "__main__":
                 break
             if SLES_TYPE.lower() in line.lower():
                 ostype = SLES_TYPE
+                break
+            if RHEL_TYPE.lower() in line.lower():
+                ostype = CENTOS_TYPE
+                break
     if ostype is None:
         print("Exiting: Unknown installed OS type")
         parser.print_help()
@@ -537,7 +544,7 @@ if __name__ == "__main__":
                 pkgtype)
 
     # V1.7: XXX Workaround for ROCm 3.5 on CentOS
-    if ostype is CENTOS_TYPE and "3.5" in args.revstring[0]:
+    if (ostype is CENTOS_TYPE  or ostype is RHEL_TYPE) and "3.5" in args.revstring[0]:
         # exclude hipify-clang
         pkglist = [ x for x in pkglist if "hipify-clang" not in x ]
         print("NOTE: Not installing hipify-clang RPM due to packaging issue.")
