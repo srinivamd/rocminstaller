@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.8: Fix for Ubuntu/Debian install to setup repo, use apt install
 # V1.7: Add workaround for ROCm 3.5 packaging bug in CentOS
 #       exclude hipify-clang package install on CentOS
 # V1.6: Add --nokernel to skip rock-dkms kernel in docker installtion
@@ -29,6 +30,7 @@ import subprocess
 import sys
 import argparse
 import os
+import shlex
 
 # Set ROCm Release Package Distribution repo baseURL below
 # External ROCM release baseurl for rpm/yum: http://repo.radeon.com/rocm/yum
@@ -42,7 +44,12 @@ RPM_CMD = "/usr/bin/rpm"
 YUM_CMD = "/usr/bin/yum"
 DPKG_CMD = "/usr/bin/dpkg"
 APTGET_CMD = "/usr/bin/apt-get"
+APT_CMD = "/usr/bin/apt"
+APTKEY_CMD = "/usr/bin/apt-key"
+WGET_CMD = "/usr/bin/wget"
 ZYPPER_CMD = "/usr/bin/zypper"
+ECHO_CMD = "/bin/echo"
+TEE_CMD = "/usr/bin/tee"
 
 # Package type suffixes
 PKGTYPE_RPM = "rpm"
@@ -282,11 +289,11 @@ def download_and_install_deb(args, rocmbaseurl, pkgname):
     else:
         fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
     rmcmd = RM_F_CMD
-    dpkgicmd = DPKG_CMD + " -i "
-    aptinstcmd = APTGET_CMD + " -y -f install "
+    aptinstcmd = APT_CMD + " install -y "
+    aptgetcmd = APTGET_CMD + " -y -f install "
     # download destdir
     urlretrieve(fetchurl + pkgname, args.destdir[0] + "/" + os.path.basename(pkgname))
-    execcmd = dpkgicmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
+    execcmd = aptinstcmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
     rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
     try:
         ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
@@ -294,7 +301,7 @@ def download_and_install_deb(args, rocmbaseurl, pkgname):
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
     try:
-        ps1 = subprocess.Popen(aptinstcmd.split(), bufsize=0).communicate()[0]
+        ps1 = subprocess.Popen(aptgetcmd.split(), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
@@ -307,22 +314,81 @@ def download_and_install_deb(args, rocmbaseurl, pkgname):
 
 
 # On Ubuntu, use the steps below to install downloaded deb
-# 1. Install rock-dkms-firmware dpkg -i rock-dkms-firmware
-# 2. Install rock-dkms: dpkg -i rock-dkms
+# 1. Install rock-dkms-firmware apt install -y rock-dkms-firmware
+# 2. Install rock-dkms: apt install -y rock-dkms
 # 3. Fix rock-dkms install dependencies: apt-get -y -f install
 # 4. Remove rock-dkms-firmware, rock-dkms
-# 5. Install the remaining downloaded deb: dpkg -i *.deb
+# 5. Install the remaining downloaded deb: apt install -y *.deb
 # 6. Remove remaining deb packages
 def download_install_rocm_deb(args, rocmbaseurl):
     global pkglist
     global rocklist
+
+    if args.repourl:
+        pass
+        # use rev specific rocm repo
+#        debrepo = "deb [arch=amd64] http://repo.radeon.com/rocm/apt/" + args.revstring[0] + " xenial main "
+#        echocmd = ECHO_CMD + " '" + debrepo + "' "
+#        teecmd = TEE_CMD + " /etc/apt/sources.list.d/rocm" + args.revstring[0] + ".list "
+#        try:
+#            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+#            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+#            ps1.stdout.close()
+#            out = ps2.communicate()[0]
+#            print(out.decode('utf-8'))
+#        except subprocess.CalledProcessError as err:
+#            for line in str.splitlines(err.output.decode('utf-8')):
+#                print(line)
+#        # apt update repo
+#        aptupdate = APT_CMD + " update"
+#        try:
+#            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
+#        except subprocess.CalledProcessError as err:
+#            for line in str.splitlines(err.output.decode('utf-8')):
+#                print(line)
+    else:
+        # Set up rocm repo for chosen rev to install
+        wgetkey = WGET_CMD + " -q -O - http://repo.radeon.com/rocm/apt/debian/rocm.gpg.key "
+        aptkeycmd = APTKEY_CMD + " add -"
+        try:
+            ps1 = subprocess.Popen(wgetkey.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(aptkeycmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+        # use rev specific rocm repo
+        debrepo = "deb [arch=amd64] http://repo.radeon.com/rocm/apt/" + args.revstring[0] + " xenial main "
+        echocmd = ECHO_CMD + " '" + debrepo + "' "
+        teecmd = TEE_CMD + " /etc/apt/sources.list.d/rocm" + args.revstring[0] + ".list "
+        try:
+            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+        # apt update repo
+        aptupdate = APT_CMD + " update"
+        try:
+            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+    # Download and install from custom repo URL
     rmcmd = RM_F_CMD
-    dpkgicmd = DPKG_CMD + " -i "
-    aptinstcmd = APTGET_CMD + " -y -f install "
-    # skip rock package is --nokernel is True
+    aptinstcmd = APT_CMD + " install -y "
+    aptgetcmd = APTGET_CMD + " -y -f install "
+    # skip rocm-dkms package is --nokernel is True
     if args.nokernel is True:
         pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
     else:
+        # install rock-dkms-firmware first
         pkgn = [ x for x in rocklist if "rock-dkms-firmware" in x ]
         if pkgn:
             # remove rock-dkms-firmware from list
@@ -340,9 +406,15 @@ def download_install_rocm_deb(args, rocmbaseurl):
     else:
         fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
     rmcmd = RM_F_CMD
-    dpkgicmd = DPKG_CMD + " -i "
-    execcmd = dpkgicmd
-    for n in sorted(pkglist):
+    aptinstcmd = APT_CMD + " install -y "
+    execcmd = aptinstcmd
+    # rearrange pkglist to put rocm-dkms rocm-dev first
+    rocmdkms = [ x for x in pkglist if "rocm-dkms" in x ]
+    pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+    rocmdev = [ x for x in pkglist if "rocm-dev" in x ]
+    pkglist = [ x for x in pkglist if "rocm-dev" not in x ]
+    pkglist = rocmdkms + rocmdev + pkglist
+    for n in pkglist:
         # download destdir
         urlretrieve(fetchurl + n, args.destdir[0] + "/" + os.path.basename(n))
         execcmd = execcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
