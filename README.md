@@ -13,7 +13,7 @@ errors in /tmp/rocm_techsupport.log
 Compress/Zip the output file and include with reported issue.
 ```
 
-# [Unofficial] rocminstaller V1.7 Utility to install ROCm releases directly from ROCm repo
+# [Unofficial] rocminstaller V1.8 Utility to install ROCm releases directly from ROCm repo
 #### WARNING: Does not support CentOS8/RHEL8
 
 # $ sudo ./rocminstall.py -h
