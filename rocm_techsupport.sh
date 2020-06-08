@@ -7,6 +7,7 @@
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
 # Revision: V1.5
+# V1.6: In docker, use dmesg
 # V1.5: Add error and fault to system log filter
 # V1.4: Collect logs from the last 3 boots
 #       Add power to grep
@@ -17,7 +18,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.5 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.6 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -39,7 +40,13 @@ echo "===== Section: Kernel Boot Parameters  ==============="
 
 # System log related to GPU
 echo "===== Section: dmesg GPU/DRM/ATOM/BIOS ==============="
-if [ -f /bin/journalctl ]
+dockerchk=`/bin/grep cpuset /proc/1/cgroup | /usr/bin/awk 'BEGIN {FS=":"} {print $3}'`
+if [ "$dockerchk" != "/" ]
+then
+    echo "Section: Current boot logs"
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|fault|atom|bios|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+
+elif [ -f /bin/journalctl ]
 then
     echo "Section: Current boot logs"
     /bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|fault|atom|bios|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
