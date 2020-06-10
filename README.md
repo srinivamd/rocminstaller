@@ -1,5 +1,8 @@
 # [Unofficial] rocm_techsupport.sh V1.6 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
-# NOTE: To preserve boot logs from multiple boots, please run:  sudo mkdir -p /var/log/journal
+# NOTE: To preserve boot logs from multiple boots, please run:  
+***sudo mkdir -p /var/log/journal***
+# and restart journald service to enable persistent logs using:
+***sudo systemctl restart systemd-journald.service***
 
 ***cd  downloads***
 
