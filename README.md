@@ -1,4 +1,6 @@
 # [Unofficial] rocm_techsupport.sh V1.6 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
+# NOTE: To preserve boot logs from multiple boots, please run:  sudo mkdir -p /var/log/journal
+
 ***cd  downloads***
 
 ***wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh***
