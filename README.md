@@ -1,13 +1,16 @@
 # [Unofficial] rocm_techsupport.sh V1.6 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
 # NOTE: To enable persistent boot logs across reboots, please run:  
 ***sudo mkdir -p /var/log/journal***
+
 ***sudo systemctl restart systemd-journald.service***
-#
+
+***Example Usage:***
+
 ***cd  downloads***
 
 ***wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh***
 
-***$ Usage: sudo sh <path_to>/rocm_techsupport.sh 2>&1 | tee <path_to>/rocm_techsupport.logs***
+***$ sudo sh <path_to>/rocm_techsupport.sh 2>&1 | tee <path_to>/rocm_techsupport.logs***
 ```
 Example: Run rocm_techsupport.sh in current directory ('.') and save standard output and 
 errors in /tmp/rocm_techsupport.log
