@@ -1,4 +1,4 @@
-# [Unofficial] rocm_techsupport.sh V1.7 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
+# [Unofficial] rocm_techsupport.sh V1.8 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
 # NOTE: To enable persistent boot logs across reboots, please run:  
 ***sudo mkdir -p /var/log/journal***
 
@@ -20,7 +20,7 @@ errors in /tmp/rocm_techsupport.log
 Compress/Zip the output file and include with reported issue.
 ```
 
-# [Unofficial] rocminstaller V1.8 Utility to install ROCm releases directly from ROCm repo
+# [Unofficial] rocminstaller V1.9 Utility to install ROCm releases directly from ROCm repo
 #### WARNING: Does not support CentOS8/RHEL8
 
 # $ sudo ./rocminstall.py -h
