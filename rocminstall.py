@@ -5,6 +5,9 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.9: nokernel install fixes: Always install rocm-dkms to info/version
+#       Workaround for packaging bug, dependency on rocm-dkms
+#       Ubuntu: dpkg-deb extract rocm-dkms in nokernel XXX HACK XXX
 # V1.8: Fix for Ubuntu/Debian install to setup repo, use apt install
 #       Add check for rhel OS type
 #       No support for CentOS/RHEL 8
@@ -45,6 +48,7 @@ RM_F_CMD = "/bin/rm -f "
 RPM_CMD = "/usr/bin/rpm"
 YUM_CMD = "/usr/bin/yum"
 DPKG_CMD = "/usr/bin/dpkg"
+DPKGDEB_CMD = "/usr/bin/dpkg-deb"
 APTGET_CMD = "/usr/bin/apt-get"
 APT_CMD = "/usr/bin/apt"
 APTKEY_CMD = "/usr/bin/apt-key"
@@ -139,7 +143,7 @@ def get_deb_pkglist311(rocmurl, revstring, pkgtype):
             print((" To install rock-dkms package, please remove installed rock-dkms"
                    " first. Reboot may be required. "))
             pkglist = [ x for x in pkgset if "rock-dkms" not in x ]
-            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+#            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ] # BUG WORKAROUND V1.9
             rocklist = []
         else:
             pkglist = list(pkgset)
@@ -181,7 +185,7 @@ def get_pkglist311(rocmurl, revstring, pkgtype):
             print((" To install rock-dkms package, please remove installed rock-dkms"
                    " first. Reboot may be required. "))
             pkglist = [ x for x in pkgset if "rock-dkms" not in x ]
-            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+#            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ] # BUG WORKAROUND V1.9
             rocklist = []
         else:
             pkglist = list(pkgset)
@@ -229,7 +233,7 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
             print((" To install rock-dkms package, please remove installed rock-dkms"
                    " first. Reboot may be required. "))
             pkglist = [ x for x in pkgset if "rock-dkms" not in x ]
-            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+#            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ] # BUG WORKAROUND V1.9
             rocklist = []
         else:
             pkglist = list(pkgset)
@@ -273,7 +277,7 @@ def get_pkglist(rocmurl, revstring, pkgtype):
             print((" To install rock-dkms package, please remove installed rock-dkms"
                    " first. Reboot may be required. "))
             pkglist = [ x for x in pkgset if "rock-dkms" not in x ]
-            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+#            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ] # BUG WORKAROUND V1.9
             rocklist = []
         else:
             pkglist = list(pkgset)
@@ -283,10 +287,64 @@ def get_pkglist(rocmurl, revstring, pkgtype):
         rocklist = None
         print(urlpath + " : " + str(e))
 
+# Download and install packages utility functions
+def download_and_install_nodeps_rpm(args, rocmbaseurl, pkgname):
+    global pkglist
+    global rocklist
+    if args.repourl:
+        fetchurl = args.repourl[0] + "/"
+    else:
+        fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+    rmcmd = RM_F_CMD
+    rpmicmd = RPM_CMD + " -ivh --nodeps "
+    # download destdir
+    urlretrieve(fetchurl + pkgname, args.destdir[0] + "/" + os.path.basename(pkgname))
+    execcmd = rpmicmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
+    rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
+    try:
+        ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+    try:
+        ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+        print(" Unexpected error encountered! Did you forget sudo?")
+
+# HACK: Ubuntu doesn't like broken packages. So extract rocm-dkms
+def download_and_extract_nodeps_deb(args, rocmbaseurl, pkgname):
+    global pkglist
+    global rocklist
+    if args.repourl:
+        fetchurl = args.repourl[0] + "/"
+    else:
+        fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+    rmcmd = RM_F_CMD
+    dpkgicmd = DPKG_CMD + " -i --force-all "
+    dpkggetcmd = DPKGDEB_CMD + " -xv "
+    # download destdir
+    urlretrieve(fetchurl + pkgname, args.destdir[0] + "/" + os.path.basename(pkgname))
+    execcmd = dpkggetcmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
+    execcmd = execcmd + " / "  # extract under root dir /
+    rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
+    try:
+        ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+    try:
+        ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+        print(" Unexpected error encountered! Did you forget sudo?")
+
+
 def download_and_install_deb(args, rocmbaseurl, pkgname):
     global pkglist
     global rocklist
-    # Download and Install rock-dkms-firmware first (assumes only one)
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
@@ -330,26 +388,13 @@ def download_install_rocm_deb(args, rocmbaseurl):
     if args.repourl:
         pass
         # use rev specific rocm repo
-#        debrepo = "deb [arch=amd64] http://repo.radeon.com/rocm/apt/" + args.revstring[0] + " xenial main "
-#        echocmd = ECHO_CMD + " '" + debrepo + "' "
-#        teecmd = TEE_CMD + " /etc/apt/sources.list.d/rocm" + args.revstring[0] + ".list "
-#        try:
-#            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-#            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
-#            ps1.stdout.close()
-#            out = ps2.communicate()[0]
-#            print(out.decode('utf-8'))
-#        except subprocess.CalledProcessError as err:
-#            for line in str.splitlines(err.output.decode('utf-8')):
-#                print(line)
-#        # apt update repo
-#        aptupdate = APT_CMD + " update"
-#        try:
-#            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
-#        except subprocess.CalledProcessError as err:
-#            for line in str.splitlines(err.output.decode('utf-8')):
-#                print(line)
     else:
+        # Force nodeps install of  rocm-dkms package even if --nokernel is True
+        if args.nokernel is True:
+            pkgn = [ x for x in pkglist if "rocm-dkms" in x ]
+            download_and_extract_nodeps_deb(args, rocmbaseurl, pkgn[0])
+            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+
         # Set up rocm repo for chosen rev to install
         wgetkey = WGET_CMD + " -q -O - http://repo.radeon.com/rocm/apt/debian/rocm.gpg.key "
         aptkeycmd = APTKEY_CMD + " add -"
@@ -387,10 +432,8 @@ def download_install_rocm_deb(args, rocmbaseurl):
     rmcmd = RM_F_CMD
     aptinstcmd = APT_CMD + " install -y "
     aptgetcmd = APTGET_CMD + " -y -f install "
-    # skip rocm-dkms package is --nokernel is True
-    if args.nokernel is True:
-        pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
-    else:
+    # Force nodeps install of  rocm-dkms package even if --nokernel is True
+    if args.nokernel is False:
         # install rock-dkms-firmware first
         pkgn = [ x for x in rocklist if "rock-dkms-firmware" in x ]
         if pkgn:
@@ -448,7 +491,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.6]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.9]rocminstall.py: utility to '
         ' download and install ROCm RPMs for specified version'
         ' (requires sudo privilege) '),
         prefix_chars='-')
@@ -573,7 +616,8 @@ if __name__ == "__main__":
     if args.listonly is True:
         print("List of packages selected:\n")
         if args.nokernel is True:
-            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+            pass
+#            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ] # BUG WORKAROUND V1.9
         else:
             print('\n'.join(sorted(rocklist)) + '\n')
         print('\n'.join(sorted(pkglist)))
@@ -600,6 +644,9 @@ if __name__ == "__main__":
         fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
     # skip if --nokernel option is True
     if args.nokernel is True:
+        # For install rocm-dkms as workaround for bug in packaging
+        pkgn = [ x for x in pkglist if "rocm-dkms" in x ]
+        download_and_install_nodeps_rpm(args, rocmbaseurl, pkgn[0])
         pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
     else:
         for n in sorted(rocklist):
