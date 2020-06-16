@@ -20,9 +20,10 @@ errors in /tmp/rocm_techsupport.log
 Compress/Zip the output file and include with reported issue.
 ```
 
-# [Unofficial] rocminstaller V1.9 Utility to install ROCm releases directly from ROCm repo
+# [Unofficial] rocminstaller V1.9 Utility (requires Python3) to install ROCm releases directly from ROCm repo
 #### WARNING: Does not support CentOS8/RHEL8
-
+#### Download it using:
+***wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
 # $ sudo ./rocminstall.py -h
 ```
 ./rocminstall.py --help
