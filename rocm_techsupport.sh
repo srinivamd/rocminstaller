@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.9
+# Revision: V1.10
+# V1.10: get ROCm related ldconf entries
 # V1.9: Add kfd to message filter
 # V1.8: Add vfio to message filter
 # V1.7: Check persistent logging status
@@ -156,6 +157,9 @@ else
     /usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocblas|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar' | /usr/bin/sort
 fi
 
+# Log ROCm related ldconfig entries
+echo "===== Section: ROCm ldconfig entries   ==============="
+/bin/grep -i 'rocm' /etc/ld.so.conf.d/*
 
 # Select latest ROCM installed version: only supports 3.1 or newer
 ROCM_VERSION=`/bin/ls -d /opt/rocm-* | /usr/bin/sort | /usr/bin/tail -1`
