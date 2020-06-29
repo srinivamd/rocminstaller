@@ -5,6 +5,8 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.10: Disable 3.5.1 install: 3.5.1 breaks 3.5.0 installation
+#       fix nokernel flag logic on Ubuntu
 # V1.9: nokernel install fixes: Always install rocm-dkms to info/version
 #       Workaround for packaging bug, dependency on rocm-dkms
 #       Ubuntu: dpkg-deb extract rocm-dkms in nokernel XXX HACK XXX
@@ -445,6 +447,8 @@ def download_install_rocm_deb(args, rocmbaseurl):
         if pkgn:
             # Download and Install rock-dkms
             download_and_install_deb(args, rocmbaseurl, pkgn[0])
+    else:
+        pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
 
     # Install the rest of the deb packages
     if args.repourl:
@@ -522,6 +526,14 @@ if __name__ == "__main__":
               ' used to install ROCm in docker')
               )
     args = parser.parse_args();
+
+    # Disable installing ROCm 3.5.1 release:
+    # BUG: ROCm 3.5.1 release breaks 3.5.0 installation!
+    if "3.5.1" in args.revstring:
+        print("WARNING: ROCm 3.5.1 release packaging bug!")
+        print("WARNING: ROCm 3.5.1 breaks 3.5.0 installations!")
+        print("Exiting: ROCm 3.5.1 release not supported!")
+        sys.exit(2)
 
     # Determine installed OS type
     ostype = None
