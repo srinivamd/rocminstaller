@@ -5,6 +5,9 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.11: Add CentOS8/RHEL8 ROCm repo support
+#        Setup repo. Don't install hipify-clang package in 3.6 - bug
+#        Update usage to not dkms, kernel-headers should be preinstalled
 # V1.10: Disable 3.5.1 install: 3.5.1 breaks 3.5.0 installation
 #       fix nokernel flag logic on Ubuntu
 # V1.9: nokernel install fixes: Always install rocm-dkms to info/version
@@ -38,9 +41,11 @@ import sys
 import argparse
 import os
 import shlex
+import datetime
 
 # Set ROCm Release Package Distribution repo baseURL below
 # External ROCM release baseurl for rpm/yum: http://repo.radeon.com/rocm/yum
+rocmcentos8_base = "http://repo.radeon.com/rocm/centos8/"
 rocmyum_base = "http://repo.radeon.com/rocm/yum/"
 rocmapt_base = "http://repo.radeon.com/rocm/apt/"
 rocmzyp_base = "http://repo.radeon.com/rocm/zyp/"
@@ -64,11 +69,14 @@ PKGTYPE_RPM = "rpm"
 PKGTYPE_DEB = "deb"
 
 # Supported OS types
-CENTOS_TYPE = "centos"
+CENTOS_TYPE = "centos" # Version 7
+CENTOS8_TYPE = "centos8"
 UBUNTU_TYPE = "ubuntu"
 DEBIAN_TYPE = "debian"
 SLES_TYPE = "sles"
-RHEL_TYPE = "rhel"
+RHEL_TYPE = "rhel" # Version 7
+
+CENTOS_VERSION8_TYPESTRING = 'VERSION="8'
 
 # OS release info
 ETC_OS_RELEASE = "/etc/os-release"
@@ -376,6 +384,68 @@ def download_and_install_deb(args, rocmbaseurl, pkgname):
         print(" Unexpected error encountered! Did you forget sudo?")
 
 
+def setup_sles_zypp_repo(args, fetchurl):
+    global pkglist
+    global rocklist
+
+    if args.repourl:
+        pass
+        # use rev specific rocm repo
+    else:
+        # Set up rocm repo for chosen rev to install
+        # use rev specific rocm repo
+        zypprepo = "[rocm]\nenabled=1\nautorefresh=0\nbaseurl=" + fetchurl + "\ntype=rpm-md\ngpgcheck=0"
+        echocmd = ECHO_CMD + " -e '" + zypprepo + "' "
+        teecmd = TEE_CMD + " /etc/zypp/repos.d/rocm" + args.revstring[0] + ".repo "
+        try:
+            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+        # apt update repo
+        aptupdate = ZYPPER_CMD + " refresh "
+        try:
+            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+def setup_centos_repo(args, fetchurl):
+    global pkglist
+    global rocklist
+
+    if args.repourl:
+        pass
+        # use rev specific rocm repo
+    else:
+        # Set up rocm repo for chosen rev to install
+        # use rev specific rocm repo
+        yumrepo = "[ROCm]\nname=ROCm\nbaseurl=" + fetchurl + "\nenabled=1\ngpgcheck=0"
+        echocmd = ECHO_CMD + " -e '" + yumrepo + "' "
+        teecmd = TEE_CMD + " /etc/yum.repos.d/rocm" + args.revstring[0] + ".repo "
+        try:
+            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+        # apt update repo
+        aptupdate = YUM_CMD + " clean all "
+        try:
+            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+
+
 # On Ubuntu, use the steps below to install downloaded deb
 # 1. Install rock-dkms-firmware apt install -y rock-dkms-firmware
 # 2. Install rock-dkms: apt install -y rock-dkms
@@ -495,18 +565,18 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.9]rocminstall.py: utility to '
-        ' download and install ROCm RPMs for specified version'
-        ' (requires sudo privilege) '),
+    parser = argparse.ArgumentParser(description=('[V1.11]rocminstall.py: utility to '
+        ' download and install ROCm packages for specified rev'
+        ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
     parser.add_argument('--rev', nargs=1, dest='revstring', default='rpm',
         help=('specifies ROCm release repo to use '
-              ' as in http://repo.radeon.com/rocm/{apt, yum zyp}/<REV> '
-              ' Example: --rev 3.3 for ROCm 3.3 repo '
-              ' http://repo.radeon.com/rocm/{apt, yum, zyp}/3.3, '
+              ' as in http://repo.radeon.com/rocm/{apt, yum, zyp, centos8}/<REV> '
+              ' Example: --rev 3.5 for ROCm 3.5 repo '
+              ' http://repo.radeon.com/rocm/{apt, yum, zyp, centos8}/3.5, '
               ' or '
-              ' --rev 3.1.1 for ROCm 3.1.1 repo '
-              ' http://repo.radeon.com/rocm/{apt, yum, zyp}/3.1.1 ')
+              ' --rev 3.3 for ROCm 3.3 repo '
+              ' http://repo.radeon.com/rocm/{apt, yum, zyp}/3.3 ')
               )
     parser.add_argument('--destdir', nargs=1, dest='destdir', default='.',
         help=('specify directory where to download RPM'
@@ -554,16 +624,29 @@ if __name__ == "__main__":
             if RHEL_TYPE.lower() in line.lower():
                 ostype = CENTOS_TYPE
                 break
+
+    # Detect CentOS8/RHEL8 to set the correct ROCm repo
+    if ostype is CENTOS_TYPE:
+        with open(ETC_OS_RELEASE, 'r') as f:
+            for line in f:
+                if CENTOS_VERSION8_TYPESTRING.lower() in line.lower():
+                    ostype = CENTOS8_TYPE
+                    break
+
     if ostype is None:
         print("Exiting: Unknown installed OS type")
         parser.print_help()
         sys.exit(1)
+
+    # Log version and date of run
+    print("Running V1.11 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
     #
     pkgtype = None
     pkgtype = {
+        CENTOS8_TYPE : PKGTYPE_RPM,
         CENTOS_TYPE : PKGTYPE_RPM,
         UBUNTU_TYPE : PKGTYPE_DEB,
         SLES_TYPE : PKGTYPE_RPM
@@ -576,6 +659,7 @@ if __name__ == "__main__":
         rocmbaseurl = args.repourl[0]
     else:
         rocmbaseurl = {
+            CENTOS8_TYPE : rocmcentos8_base,
             CENTOS_TYPE : rocmyum_base,
             UBUNTU_TYPE : rocmapt_base,
             SLES_TYPE : rocmzyp_base
@@ -598,8 +682,9 @@ if __name__ == "__main__":
             get_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0],
                 pkgtype)
 
-    # V1.7: XXX Workaround for ROCm 3.5 on CentOS
-    if (ostype is CENTOS_TYPE  or ostype is RHEL_TYPE) and "3.5" in args.revstring[0]:
+    # V1.7: XXX Workaround for ROCm 3.5 on CentOS, V1.11 Workaround 3.6
+    if ((ostype is CENTOS_TYPE  or ostype is RHEL_TYPE or ostype is CENTOS8_TYPE)
+        and ("3.5" in args.revstring[0] or "3.6" in args.revstring[0])):
         # exclude hipify-clang
         pkglist = [ x for x in pkglist if "hipify-clang" not in x ]
         print("NOTE: Not installing hipify-clang RPM due to packaging issue.")
@@ -610,6 +695,7 @@ if __name__ == "__main__":
     # Based on os type, set the package install command and options
     #
     cmd = {
+       CENTOS8_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
        CENTOS_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
        UBUNTU_TYPE : APTGET_CMD + " --no-download --ignore-missing -y install ",
        SLES_TYPE : ZYPPER_CMD + " install --allow-unsigned-rpm --no-recommends "
@@ -654,6 +740,10 @@ if __name__ == "__main__":
         fetchurl = args.repourl[0] + "/"
     else:
         fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+    if ostype is CENTOS_TYPE or ostype is CENTOS8_TYPE:
+        setup_centos_repo(args, fetchurl)
+    else:
+        setup_sles_zypp_repo(args, fetchurl)
     # skip if --nokernel option is True
     if args.nokernel is True:
         # For install rocm-dkms as workaround for bug in packaging
