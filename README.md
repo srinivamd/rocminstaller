@@ -1,45 +1,41 @@
 # [Unofficial But Works!] rocm_techsupport.sh V1.10 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
-# NOTE: To enable persistent boot logs across reboots, please run:  
-***sudo mkdir -p /var/log/journal***
+### NOTE: To enable persistent boot logs across reboots, please run:  
+***sudo mkdir -p /var/log/journal*** 
 
-***sudo systemctl restart systemd-journald.service***
+***sudo systemctl restart systemd-journald.service*** 
 
-***Example Usage:***
+### Download using:
+***wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh*** 
 
-***mkdir  downloads***
-
-***cd  downloads***
-
-***wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh***
-
-***$ sudo sh <path_to>/rocm_techsupport.sh 2>&1 | tee <path_to>/rocm_techsupport.logs***
+### Example Usage:
 ```
-Example: Run rocm_techsupport.sh in current directory ('.') and save standard output and 
-errors in /tmp/rocm_techsupport.log
-
-# sudo sh ./rocm_techsupport.sh 2>&1 | tee /tmp/rocm_techsupport.log
+mkdir  downloads
+cd  downloads
+wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh
+sudo sh ./rocm_techsupport.sh 2>&1 | tee /tmp/rocm_techsupport.logs
 
 Compress/Zip the output file and include with reported issue.
 ```
 
-# [Unofficial But Works!] rocminstaller V1.11 Utility (requires Python3) to install ROCm releases on Ubuntu/Debian/CentOS7/RHEL7/CentOS8/RHEL8/SLES15 OS
+# [Unofficial But Works!] V1.11 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS7/RHEL7, CentOS8/RHEL8, SLES15 installation
 #### NOTE: Install dkms, kernel headers packages on OS BEFORE installing ROCm
 #### NOTE: On SLES15, the script uses zypper and requires user interaction
-#### Download it using:
+#### Download using:
 ***wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
 
 ```
 Example: Install ROCm 3.5, including kernel components (assumes dkms, kernel header
 preinstalled)
+wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 
 sudo ./rocminstall.py --rev 3.5
 
 Example: Install ROCm 3.3 development packages (no kernel components)
 
-sudo ./rocminstall.py --rev 3.5 --nokernel
+sudo ./rocminstall.py --rev 3.3 --nokernel
 
 ```
-
+#### Usage
 ```
 ./rocminstall.py --help
 usage: rocminstall.py [-h] [--rev REVSTRING] [--destdir DESTDIR] [--list]
