@@ -5,6 +5,8 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.13: Add baseurl option
+#        Install miopenkernel packages
 # V1.12: Do not install rdc ROCm package (requires gRPC preinstalled)
 # V1.11: Add CentOS8/RHEL8 ROCm repo support
 #        Setup repo. Don't install hipify-clang package in 3.6 - bug
@@ -236,6 +238,7 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
                 # Use X.Y part of X.Y.Z revstring
                 # 
                 if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', os.path.basename(pkgname))
+                    or re.search(rf'^miopenkernel.*gfx.+{patrevstr}', os.path.basename(pkgname))
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', os.path.basename(pkgname))):
                         pkgset.add(pkgname)
         # return set as a list
@@ -281,6 +284,7 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                 # Use X.Y part of X.Y.Z revstring
                 # 
                 if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', pkgname)
+                    or re.search(rf'^miopenkernel.*gfx.+{patrevstr}', pkgname)
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', pkgname)):
                         pkgset.add(pkgname)
         # return set as a list
@@ -307,7 +311,10 @@ def download_and_install_nodeps_rpm(args, rocmbaseurl, pkgname):
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        if args.baseurl is None:
+            fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        else:
+            fetchurl = rocmbaseurl + "/"
     rmcmd = RM_F_CMD
     rpmicmd = RPM_CMD + " -ivh --nodeps "
     # download destdir
@@ -333,7 +340,10 @@ def download_and_extract_nodeps_deb(args, rocmbaseurl, pkgname):
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        if args.baseurl is None:
+            fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        else:
+            fetchurl = rocmbaseurl + "/"
     rmcmd = RM_F_CMD
     dpkgicmd = DPKG_CMD + " -i --force-all "
     dpkggetcmd = DPKGDEB_CMD + " -xv "
@@ -361,7 +371,10 @@ def download_and_install_deb(args, rocmbaseurl, pkgname):
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        if args.baseurl is None:
+            fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        else:
+            fetchurl = rocmbaseurl + "/"
     rmcmd = RM_F_CMD
     aptinstcmd = APT_CMD + " install -y "
     aptgetcmd = APTGET_CMD + " -y -f install "
@@ -527,7 +540,10 @@ def download_install_rocm_deb(args, rocmbaseurl):
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        if args.baseurl is None:
+            fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        else:
+            fetchurl = rocmbaseurl + "/"
     rmcmd = RM_F_CMD
     aptinstcmd = APT_CMD + " install -y "
     execcmd = aptinstcmd
@@ -568,7 +584,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.12]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.13]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -593,6 +609,10 @@ if __name__ == "__main__":
     parser.add_argument('--repourl', nargs=1, dest='repourl', default=None,
         help=('specify ROCm repo URL to use from where to download packages'
               ' Example: --repourl http://compute-artifactory/build/xyz')
+              )
+    parser.add_argument('--baseurl', nargs=1, dest='baseurl', default=None,
+        help=('specify early access ROCm repo URL to use from where to download packages'
+              ' Example: --baseurl http://repo.radeon.com/rocm/private/apt_3.6-priv/')
               )
     parser.add_argument('--nokernel', dest='nokernel', action='store_true',
         help=('do not install rock kernel packages, for example, '
@@ -642,7 +662,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.12 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.13 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -661,12 +681,15 @@ if __name__ == "__main__":
     if args.repourl:
         rocmbaseurl = args.repourl[0]
     else:
-        rocmbaseurl = {
-            CENTOS8_TYPE : rocmcentos8_base,
-            CENTOS_TYPE : rocmyum_base,
-            UBUNTU_TYPE : rocmapt_base,
-            SLES_TYPE : rocmzyp_base
-        }[ostype]
+        if args.baseurl:
+            rocmbaseurl = args.baseurl[0]
+        else:
+            rocmbaseurl = {
+                CENTOS8_TYPE : rocmcentos8_base,
+                CENTOS_TYPE : rocmyum_base,
+                UBUNTU_TYPE : rocmapt_base,
+                SLES_TYPE : rocmzyp_base
+            }[ostype]
 
     if "3.1." in args.revstring[0]:
         if pkgtype is PKGTYPE_DEB:
@@ -677,6 +700,11 @@ if __name__ == "__main__":
                 pkgtype)
     elif args.repourl:
         get_pkglist(args.repourl[0] + "/", args.revstring[0], pkgtype)
+    elif args.baseurl:
+        if pkgtype is PKGTYPE_DEB:
+            get_deb_pkglist(rocmbaseurl, args.revstring[0], pkgtype)
+        else:
+            get_pkglist(rocmbaseurl, args.revstring[0], pkgtype)
     else:
         if pkgtype is PKGTYPE_DEB:
             get_deb_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0],
@@ -742,7 +770,11 @@ if __name__ == "__main__":
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        if args.baseurl is None:
+            fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        else:
+            fetchurl = rocmbaseurl + "/"
+
     if ostype is CENTOS_TYPE or ostype is CENTOS8_TYPE:
         setup_centos_repo(args, fetchurl)
     else:
