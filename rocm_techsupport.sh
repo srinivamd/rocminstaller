@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.10
+# Revision: V1.11
+# V1.11: Run dmesg in addition to journalctl
 # V1.10: get ROCm related ldconf entries
 # V1.9: Add kfd to message filter
 # V1.8: Add vfio to message filter
@@ -23,7 +24,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.10 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.11 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -64,6 +65,8 @@ then
 
 elif [ -f /bin/journalctl ]
 then
+    echo "Section: dmesg boot logs"
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Current boot logs"
     /bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Previous boot logs"
@@ -74,6 +77,9 @@ then
     /bin/journalctl -b -3 | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
 elif [ -f /usr/bin/journalctl ]
 then
+    echo "Section: dmesg boot logs"
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    echo "Section: Current boot logs"
     /usr/bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Previous boot logs"
     /usr/bin/journalctl -b -1 | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
@@ -82,7 +88,9 @@ then
     echo "Section: Third Previous boot logs"
     /usr/bin/journalctl -b -3 | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
 else
-    echo "ROCmTechSupportNotFound: journalctl/dmesg utility not found!"
+    echo "Section: dmesg boot logs"
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    echo "ROCmTechSupportNotFound: journalctl utility not found!"
 fi
 
 # CPU information
