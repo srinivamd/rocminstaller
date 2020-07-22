@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.11
+# Revision: V1.12
+# V1.12: List available ROCm versions under /opt
 # V1.11: Run dmesg in addition to journalctl
 # V1.10: get ROCm related ldconf entries
 # V1.9: Add kfd to message filter
@@ -24,7 +25,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.11 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.12 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -170,7 +171,13 @@ echo "===== Section: ROCm ldconfig entries   ==============="
 /bin/grep -i 'rocm' /etc/ld.so.conf.d/*
 
 # Select latest ROCM installed version: only supports 3.1 or newer
-ROCM_VERSION=`/bin/ls -d /opt/rocm-* | /usr/bin/sort | /usr/bin/tail -1`
+echo "===== Section: Available ROCm versions ==============="
+/bin/ls -d /opt/rocm*
+ROCM_VERSION=`/bin/ls -d /opt/rocm-3* | /usr/bin/sort | /usr/bin/tail -1`
+if [ "$ROCM_VERSION"x = "x" ]
+then
+    ROCM_VERSION=`/bin/ls -d /opt/rocm* | /usr/bin/sort | /usr/bin/tail -1`
+fi
 echo "==== Using $ROCM_VERSION to collect ROCm information.==== "
 
 # RBT Topology
@@ -185,10 +192,12 @@ else
 fi
 
 # ROCm SMI 
+echo "===== Section: ROCm SMI                ==============="
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
 then
-    echo "===== Section: ROCm SMI                ==============="
     $ROCM_VERSION/bin/rocm-smi
+else
+    echo " $ROCM_VERSION/bin/rocm-smi NOT FOUND !!! "
 fi
 
 # ROCm SMI - FW version
@@ -196,6 +205,13 @@ if [ -f $ROCM_VERSION/bin/rocm-smi ]
 then
     echo "===== Section: ROCm SMI showhw         ==============="
     $ROCM_VERSION/bin/rocm-smi --showhw
+fi
+
+# ROCm PCIe Clock
+if [ -f $ROCM_VERSION/bin/rocm-smi ]
+then
+    echo "===== Section: ROCm SMI pcieclk clock  ==============="
+    $ROCM_VERSION/bin/rocm-smi -c | /bin/grep "pcie"
 fi
 
 # ROCm SMI - RAS info
