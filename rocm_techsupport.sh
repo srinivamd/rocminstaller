@@ -6,7 +6,7 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.12
+# Revision: V1.12.1
 # V1.12: List available ROCm versions under /opt
 # V1.11: Run dmesg in addition to journalctl
 # V1.10: get ROCm related ldconf entries
@@ -25,7 +25,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.12 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.12.1 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -62,35 +62,35 @@ dockerchk=`/bin/grep cpuset /proc/1/cgroup | /usr/bin/awk 'BEGIN {FS=":"} {print
 if [ "$dockerchk" != "/" ]
 then
     echo "Section: Current boot logs"
-    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
 
 elif [ -f /bin/journalctl ]
 then
     echo "Section: dmesg boot logs"
-    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Current boot logs"
-    /bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Previous boot logs"
-    /bin/journalctl -b -1 | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/journalctl -b -1 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Second Previous boot logs"
-    /bin/journalctl -b -2 | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/journalctl -b -2 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Third Previous boot logs"
-    /bin/journalctl -b -3 | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/journalctl -b -3 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
 elif [ -f /usr/bin/journalctl ]
 then
     echo "Section: dmesg boot logs"
-    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Current boot logs"
-    /usr/bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /usr/bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Previous boot logs"
-    /usr/bin/journalctl -b -1 | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /usr/bin/journalctl -b -1 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Second Previous boot logs"
-    /usr/bin/journalctl -b -2 | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /usr/bin/journalctl -b -2 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Third Previous boot logs"
-    /usr/bin/journalctl -b -3 | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /usr/bin/journalctl -b -3 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
 else
     echo "Section: dmesg boot logs"
-    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "ROCmTechSupportNotFound: journalctl utility not found!"
 fi
 
