@@ -1,4 +1,4 @@
-# [Unofficial But Works!] rocm_techsupport.sh V1.10 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
+# [Unofficial But Works!] rocm_techsupport.sh V1.12 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
 ### NOTE: To enable persistent boot logs across reboots, please run:  
 ***sudo mkdir -p /var/log/journal*** 
 
