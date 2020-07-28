@@ -5,6 +5,8 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.14: Allow 3.5.1 install
+#        Teardown repo setup after install
 # V1.13: Add baseurl option
 #        Install miopenkernel packages
 # V1.12: Do not install rdc ROCm package (requires gRPC preinstalled)
@@ -345,7 +347,6 @@ def download_and_extract_nodeps_deb(args, rocmbaseurl, pkgname):
         else:
             fetchurl = rocmbaseurl + "/"
     rmcmd = RM_F_CMD
-    dpkgicmd = DPKG_CMD + " -i --force-all "
     dpkggetcmd = DPKGDEB_CMD + " -xv "
     # download destdir
     urlretrieve(fetchurl + pkgname, args.destdir[0] + "/" + os.path.basename(pkgname))
@@ -440,9 +441,79 @@ def setup_centos_repo(args, fetchurl):
     else:
         # Set up rocm repo for chosen rev to install
         # use rev specific rocm repo
-        yumrepo = "[ROCm]\nname=ROCm\nbaseurl=" + fetchurl + "\nenabled=1\ngpgcheck=0"
+        yumrepo = "[ROCm" + args.revstring[0] +"]\nname=ROCm\nbaseurl=" + fetchurl + "\nenabled=1\ngpgcheck=0"
         echocmd = ECHO_CMD + " -e '" + yumrepo + "' "
-        teecmd = TEE_CMD + " /etc/yum.repos.d/rocm" + args.revstring[0] + ".repo "
+        repofilename = "/etc/yum.repos.d/rocm" + args.revstring[0] + ".repo"
+        teecmd = TEE_CMD + " " + repofilename + " "
+        try:
+            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+        # clean repo
+        yumupdate = YUM_CMD + " clean all "
+        try:
+            ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+
+def remove_centos_repo(args, fetchurl):
+    global pkglist
+    global rocklist
+
+    if args.repourl:
+        pass
+        # use rev specific rocm repo
+    else:
+        # remove rocm repo for chosen rev to install
+        # use rev specific rocm repo
+        repofilename = "/etc/yum.repos.d/rocm" + args.revstring[0] + ".repo"
+        rmrepocmd = RM_F_CMD + " " + repofilename
+        try:
+            ps1 = subprocess.Popen(rmrepocmd.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+        # clean repo
+        yumupdate = YUM_CMD + " clean all "
+        try:
+            ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+
+def setup_debian_repo(args, fetchurl):
+    global pkglist
+    global rocklist
+
+    if args.repourl:
+        pass
+    else:
+        # Set up rocm repo for chosen rev to install
+        wgetkey = WGET_CMD + " -q -O - http://repo.radeon.com/rocm/apt/debian/rocm.gpg.key "
+        aptkeycmd = APTKEY_CMD + " add -"
+        try:
+            ps1 = subprocess.Popen(wgetkey.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(aptkeycmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+        # use rev specific rocm repo
+        debrepo = "deb [arch=amd64] http://repo.radeon.com/rocm/apt/" + args.revstring[0] + " xenial main "
+        echocmd = ECHO_CMD + " '" + debrepo + "' "
+        repofilename = "/etc/apt/sources.list.d/rocm" + args.revstring[0] + ".list "
+        teecmd = TEE_CMD + " " + repofilename
         try:
             ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
@@ -453,13 +524,41 @@ def setup_centos_repo(args, fetchurl):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
         # apt update repo
-        aptupdate = YUM_CMD + " clean all "
+        aptupdate = APT_CMD + " update"
         try:
             ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
 
+
+
+
+def remove_debian_repo(args, fetchurl):
+    global pkglist
+    global rocklist
+
+    if args.repourl:
+        pass
+        # use rev specific rocm repo
+    else:
+        # remove rocm repo for chosen rev to install
+        # use rev specific rocm repo
+        repofilename = "/etc/apt/sources.list.d/rocm" + args.revstring[0] + ".list "
+        rmrepocmd = RM_F_CMD + " " + repofilename
+        try:
+            ps1 = subprocess.Popen(rmrepocmd.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+        # clean repo
+        # apt update repo
+        aptupdate = APT_CMD + " clean all"
+        try:
+            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
 
 
 # On Ubuntu, use the steps below to install downloaded deb
@@ -620,13 +719,9 @@ if __name__ == "__main__":
               )
     args = parser.parse_args();
 
-    # Disable installing ROCm 3.5.1 release:
     # BUG: ROCm 3.5.1 release breaks 3.5.0 installation!
     if "3.5.1" in args.revstring:
-        print("WARNING: ROCm 3.5.1 release packaging bug!")
         print("WARNING: ROCm 3.5.1 breaks 3.5.0 installations!")
-        print("Exiting: ROCm 3.5.1 release not supported!")
-        sys.exit(2)
 
     # Determine installed OS type
     ostype = None
@@ -813,4 +908,9 @@ if __name__ == "__main__":
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
 #
+    if ostype is CENTOS_TYPE or ostype is CENTOS8_TYPE:
+        remove_centos_repo(args, fetchurl)
+    else:
+        remove_sles_zypp_repo(args, fetchurl)
+
     sys.exit(0)
