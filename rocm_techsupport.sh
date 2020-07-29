@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.12.1
+# Revision: V1.14
+# V1.14: List PCIe current link width/speed
 # V1.12: List available ROCm versions under /opt
 # V1.11: Run dmesg in addition to journalctl
 # V1.10: get ROCm related ldconf entries
@@ -25,7 +26,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.12.1 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.14 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -213,6 +214,15 @@ then
     echo "===== Section: ROCm SMI pcieclk clock  ==============="
     $ROCM_VERSION/bin/rocm-smi -c | /bin/grep "pcie"
 fi
+
+    echo "===== Section: GPU PCIe Link Config    ==============="
+for i in $(seq 0 8)
+do
+    echo "GPU $i PCIe Link Width Speed: "
+    cat /sys/class/drm/card$i/device/current_link_width
+    cat /sys/class/drm/card$i/device/current_link_speed
+done
+
 
 # ROCm SMI - RAS info
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
