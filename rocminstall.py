@@ -5,6 +5,8 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.15: Fix Debian repo setup
+#        Always extract rocm-dkms
 # V1.14.1: Fix message
 # V1.14: Allow 3.5.1 install
 #        Teardown repo setup after install
@@ -511,7 +513,7 @@ def setup_debian_repo(args, fetchurl):
                 print(line)
 
         # use rev specific rocm repo
-        debrepo = "deb [arch=amd64] http://repo.radeon.com/rocm/apt/" + args.revstring[0] + " xenial main "
+        debrepo = "deb [arch=amd64] " + fetchurl + " xenial main "
         echocmd = ECHO_CMD + " '" + debrepo + "' "
         repofilename = "/etc/apt/sources.list.d/rocm" + args.revstring[0] + ".list "
         teecmd = TEE_CMD + " " + repofilename
@@ -525,14 +527,20 @@ def setup_debian_repo(args, fetchurl):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
         # apt update repo
-        aptupdate = APT_CMD + " update"
+        aptupdate = APT_CMD + " clean"
         try:
             ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
 
-
+        # apt update repo
+        aptupdate = APT_CMD + " update"
+        try:
+            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
 
 
 def remove_debian_repo(args, fetchurl):
@@ -554,7 +562,7 @@ def remove_debian_repo(args, fetchurl):
                 print(line)
         # clean repo
         # apt update repo
-        aptupdate = APT_CMD + " clean all"
+        aptupdate = APT_CMD + " clean"
         try:
             ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
         except subprocess.CalledProcessError as err:
@@ -578,43 +586,18 @@ def download_install_rocm_deb(args, rocmbaseurl):
         # use rev specific rocm repo
     else:
         # Force nodeps install of  rocm-dkms package even if --nokernel is True
-        if args.nokernel is True:
-            pkgn = [ x for x in pkglist if "rocm-dkms" in x ]
-            download_and_extract_nodeps_deb(args, rocmbaseurl, pkgn[0])
-            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
+        # if args.nokernel is True:
+        # Always extract rocm-dkms, don't install 
+        pkgn = [ x for x in pkglist if "rocm-dkms" in x ]
+        download_and_extract_nodeps_deb(args, rocmbaseurl, pkgn[0])
+        pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
 
+        if args.baseurl is None:
+            fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+        else:
+            fetchurl = rocmbaseurl + "/"
         # Set up rocm repo for chosen rev to install
-        wgetkey = WGET_CMD + " -q -O - http://repo.radeon.com/rocm/apt/debian/rocm.gpg.key "
-        aptkeycmd = APTKEY_CMD + " add -"
-        try:
-            ps1 = subprocess.Popen(wgetkey.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            ps2 = subprocess.Popen(aptkeycmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
-            ps1.stdout.close()
-            out = ps2.communicate()[0]
-            print(out.decode('utf-8'))
-        except subprocess.CalledProcessError as err:
-            for line in str.splitlines(err.output.decode('utf-8')):
-                print(line)
-        # use rev specific rocm repo
-        debrepo = "deb [arch=amd64] http://repo.radeon.com/rocm/apt/" + args.revstring[0] + " xenial main "
-        echocmd = ECHO_CMD + " '" + debrepo + "' "
-        teecmd = TEE_CMD + " /etc/apt/sources.list.d/rocm" + args.revstring[0] + ".list "
-        try:
-            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
-            ps1.stdout.close()
-            out = ps2.communicate()[0]
-            print(out.decode('utf-8'))
-        except subprocess.CalledProcessError as err:
-            for line in str.splitlines(err.output.decode('utf-8')):
-                print(line)
-        # apt update repo
-        aptupdate = APT_CMD + " update"
-        try:
-            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
-        except subprocess.CalledProcessError as err:
-            for line in str.splitlines(err.output.decode('utf-8')):
-                print(line)
+        setup_debian_repo(args, fetchurl)
 
     # Download and install from custom repo URL
     rmcmd = RM_F_CMD
@@ -684,7 +667,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.14.1]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.15]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -758,7 +741,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.14.1 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.15 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -858,6 +841,7 @@ if __name__ == "__main__":
     # for Ubuntu/Debian
     if ostype is UBUNTU_TYPE:
         download_install_rocm_deb(args, rocmbaseurl)
+        remove_debian_repo(args, rocmbaseurl)
         sys.exit(0)
 
     # for CentOS and SLES use the following
