@@ -19,7 +19,7 @@ NOTE: Use of back quotes (`) in above command to get a date timestamp based file
 Compress/Zip the output file and include with reported issue.
 ```
 
-# [Unofficial But Works!] V1.14 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS7/RHEL7, CentOS8/RHEL8, SLES15 installation
+# [Unofficial But Works!] V1.15 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS7/RHEL7, CentOS8/RHEL8, SLES15 installation
 #### NOTE: Install dkms, kernel headers packages on OS BEFORE installing ROCm
 #### NOTE: On SLES15, the script uses zypper and requires user interaction
 #### Download using:
