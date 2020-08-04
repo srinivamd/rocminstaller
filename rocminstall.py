@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.16: SLES repo handling
 # V1.15: Fix Debian repo setup
 #        Always extract rocm-dkms
 # V1.14.1: Fix message
@@ -414,9 +415,10 @@ def setup_sles_zypp_repo(args, fetchurl):
     else:
         # Set up rocm repo for chosen rev to install
         # use rev specific rocm repo
-        zypprepo = "[rocm]\nenabled=1\nautorefresh=0\nbaseurl=" + fetchurl + "\ntype=rpm-md\ngpgcheck=0"
+        zypprepo = "[rocm" + args.revstring[0] + "]\nenabled=1\nautorefresh=0\nbaseurl=" + fetchurl + "\ntype=rpm-md\ngpgcheck=0"
         echocmd = ECHO_CMD + " -e '" + zypprepo + "' "
-        teecmd = TEE_CMD + " /etc/zypp/repos.d/rocm" + args.revstring[0] + ".repo "
+        repofilename = "/etc/zypp/repos.d/rocm" + args.revstring[0] + ".repo "
+        teecmd = TEE_CMD + " " + repofilename + " "
         try:
             ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
@@ -427,9 +429,9 @@ def setup_sles_zypp_repo(args, fetchurl):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
         # apt update repo
-        aptupdate = ZYPPER_CMD + " refresh "
+        zypprefresh = ZYPPER_CMD + " refresh "
         try:
-            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
+            ps1 = subprocess.Popen(zypprefresh.split(), bufsize=0).communicate()[0]
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
@@ -487,6 +489,31 @@ def remove_centos_repo(args, fetchurl):
         yumupdate = YUM_CMD + " clean all "
         try:
             ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+def remove_sles_zypp_repo(args, fetchurl):
+    global pkglist
+    global rocklist
+
+    if args.repourl:
+        pass
+        # use rev specific rocm repo
+    else:
+        # remove rocm repo for chosen rev to install
+        # use rev specific rocm repo
+        repofilename = "/etc/zypp/repos.d/rocm" + args.revstring[0] + ".repo "
+        rmrepocmd = RM_F_CMD + " " + repofilename
+        try:
+            ps1 = subprocess.Popen(rmrepocmd.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+        # clean repo
+        zyppclean = ZYPPER_CMD + " clean "
+        try:
+            ps1 = subprocess.Popen(zyppclean.split(), bufsize=0).communicate()[0]
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
@@ -667,7 +694,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.15]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.16]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -741,7 +768,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.15 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.16 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -808,7 +835,7 @@ if __name__ == "__main__":
        CENTOS8_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
        CENTOS_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
        UBUNTU_TYPE : APTGET_CMD + " --no-download --ignore-missing -y install ",
-       SLES_TYPE : ZYPPER_CMD + " install --allow-unsigned-rpm --no-recommends "
+       SLES_TYPE : ZYPPER_CMD + " --no-gpg-checks install --allow-unsigned-rpm --no-recommends "
     }[ostype]
 
     #
