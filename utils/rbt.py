@@ -6,6 +6,7 @@
 #
 # Wrapper to run rocm-bandwidth-test traffic between CPUs and GPUs
 #
+# V1.4: Add --ncpu and --ngpu options
 # V1.3: Add rev_copy_dir
 # V1.2: Trim to 2 decimals
 # V1.1: Nicer output
@@ -50,7 +51,7 @@ def run_rbt(rbtpath, src, dst, unidir=False):
         return " N/A "
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.3]rbt.py: Wrapper to '
+    parser = argparse.ArgumentParser(description=('[V1.4]rbt.py: Wrapper to '
         ' run rocm-bandwidth-test from ROCm release installation'),
         prefix_chars='-')
     parser.add_argument('--rev', nargs=1, dest='revstring', default=None,
@@ -59,15 +60,23 @@ if __name__ == "__main__":
               ' or '
               ' --rev 3.6.0 to use /opt/rocm-3.6.0/bin/rocm-bandwidth-test')
               )
+    parser.add_argument('--ncpu', nargs=1, dest='ncpus', type=int, default=2,
+        help=('specifies number of CPU devices, default 2 '
+              ' --ncpu 4 to specify 4 CPU devices/agents')
+              )
+    parser.add_argument('--ngpu', nargs=1, dest='ngpus', type=int, default=8,
+        help=('specifies number of CPU devices, default 2 '
+              ' --ncpu 4 to specify 4 CPU devices/agents')
+              )
     args = parser.parse_args();
 
     if args.revstring:
         rbtloc = "/opt/rocm-" + args.revstring[0] + "/bin/rocm-bandwidth-test"
     else:
         rbtloc = "/opt/rocm-3.6.0/bin/rocm-bandwidth-test"
-    ncpus = 2
-    ngpus = 8
-    print("[V1.3]rbt.py Using: {0} NCPU={1} NGPU={2}".format(rbtloc, ncpus, ngpus))
+    ncpus = args.ncpus
+    ngpus = args.ngpus
+    print("[V1.4]rbt.py Using: {0} NCPU={1} NGPU={2}".format(rbtloc, ncpus, ngpus))
     run_rbt_topo(rbtloc)
 
     print("Starting unidirectional test.");
