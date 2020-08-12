@@ -6,6 +6,7 @@
 #
 # Wrapper to run rocm-bandwidth-test traffic between CPUs and GPUs
 #
+# V1.5: remove HSA_REV_COPY
 # V1.4: Add --ncpu and --ngpu options
 # V1.3: Add rev_copy_dir
 # V1.2: Trim to 2 decimals
@@ -51,7 +52,7 @@ def run_rbt(rbtpath, src, dst, unidir=False):
         return " N/A "
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.4]rbt.py: Wrapper to '
+    parser = argparse.ArgumentParser(description=('[V1.5]rbt.py: Wrapper to '
         ' run rocm-bandwidth-test from ROCm release installation'),
         prefix_chars='-')
     parser.add_argument('--rev', nargs=1, dest='revstring', default=None,
@@ -76,7 +77,7 @@ if __name__ == "__main__":
         rbtloc = "/opt/rocm-3.6.0/bin/rocm-bandwidth-test"
     ncpus = args.ncpus
     ngpus = args.ngpus
-    print("[V1.4]rbt.py Using: {0} NCPU={1} NGPU={2}".format(rbtloc, ncpus, ngpus))
+    print("[V1.5]rbt.py Using: {0} NCPU={1} NGPU={2}".format(rbtloc, ncpus, ngpus))
     run_rbt_topo(rbtloc)
 
     print("Starting unidirectional test.");
@@ -129,6 +130,7 @@ if __name__ == "__main__":
             print("{0:10}".format(bwout[i][j][0:5]),end=' ')
         print("")
 
+    sys.exit(0)
     print("HSA_REV_COPY_DIR=1 Starting unidirectional test.");
     os.environ['HSA_REV_COPY_DIR'] = '1'
     for i in range(ncpus):
