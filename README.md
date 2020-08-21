@@ -1,4 +1,4 @@
-# [Unofficial But Works!] rocm_techsupport.sh V1.14 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
+# rocm_techsupport.sh V1.14 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
 ### NOTE: To enable persistent boot logs across reboots, please run:  
 ***sudo mkdir -p /var/log/journal*** 
 
@@ -13,21 +13,21 @@ mkdir  downloads
 cd  downloads
 wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh
 
-#Redirect output to file with date prefixed-name
-sudo sh ./rocm_techsupport.sh > `date +"%y-%m-%d-%H-%M-%S"`.rocm_techsupport.log 2>&1
+#Redirect output to file with <SYSTEM_NAME> and date prefixed-name
+sudo sh ./rocm_techsupport.sh > <SYSTEM_NAME>.`date +"%y-%m-%d-%H-%M-%S"`.rocm_techsupport.log 2>&1
 
 NOTE: Use of back quotes (`) in above command to get a date timestamp based filename
 Compress/Zip the output file and include with reported issue.
 ```
 
-# [Unofficial But Works!] V1.15 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS7/RHEL7, CentOS8/RHEL8, SLES15 installation
-#### NOTE: Install dkms, kernel headers packages on OS BEFORE installing ROCm
+# [Supports 3.3, 3.5, 3.7] V1.16 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
+#### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm
 #### NOTE: On SLES15, the script uses zypper and requires user interaction
 #### Download using:
 ***wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
 
 ```
-Example: Install ROCm 3.5, including kernel components (assumes dkms, kernel header
+Example: Install ROCm 3.5, including kernel components (assumes dkms, kernel header, gcc
 preinstalled)
 wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 
@@ -40,11 +40,10 @@ sudo ./rocminstall.py --rev 3.3 --nokernel
 ```
 #### Usage
 ```
-./rocminstall.py --help
 usage: rocminstall.py [-h] [--rev REVSTRING] [--destdir DESTDIR] [--list]
-                      [--repourl REPOURL] [--nokernel]
+                      [--repourl REPOURL] [--baseurl BASEURL] [--nokernel]
 
-[V1.11]rocminstall.py: utility to download and install ROCm packages for
+[V1.16]rocminstall.py: utility to download and install ROCm packages for
 specified rev (dkms, kernel headers must be installed, requires sudo
 privilege)
 
@@ -64,6 +63,9 @@ optional arguments:
   --repourl REPOURL  specify ROCm repo URL to use from where to download
                      packages Example: --repourl http://compute-
                      artifactory/build/xyz
+  --baseurl BASEURL  specify early access ROCm repo URL to use from where to
+                     download packages Example: --baseurl
+                     http://repo.radeon.com/rocm/private/apt_3.6-priv/
   --nokernel         do not install rock kernel packages, for example, used to
                      install ROCm in docker
 ```
