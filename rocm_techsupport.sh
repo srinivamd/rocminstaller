@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.14
+# Revision: V1.15
+# V1.15: Add rdc ROCm package filter, env, ldcache
 # V1.14: List PCIe current link width/speed
 # V1.12: List available ROCm versions under /opt
 # V1.11: Run dmesg in addition to journalctl
@@ -162,14 +163,22 @@ fi
 echo "===== Section: ROCm Packages Installed ==============="
 if [ "$pkgtype" = "deb" ]
 then
-    /usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^hip|hcc|hsa|rocm|atmi|^comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar' | /usr/bin/sort
+    /usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc' | /usr/bin/sort
 else
-    /usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocblas|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar' | /usr/bin/sort
+    /usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocblas|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc' | /usr/bin/sort
 fi
 
 # Log ROCm related ldconfig entries
 echo "===== Section: ROCm ldconfig entries   ==============="
 /bin/grep -i 'rocm' /etc/ld.so.conf.d/*
+
+# Dump ROCm cached ldconfig entries
+echo "===== Section: ROCm ldcache entries      ============="
+ldconfig -p | grep rocm
+
+# Dump ROCm related environmental variables
+echo "===== Section: ROCm environment variables============="
+env | /bin/grep -i 'rocm'
 
 # Select latest ROCM installed version: only supports 3.1 or newer
 echo "===== Section: Available ROCm versions ==============="
