@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.15
+# Revision: V1.16
+# V1.16: Add nmi to grep, lspci -t
 # V1.15: Add rdc ROCm package filter, env, ldcache
 # V1.14: List PCIe current link width/speed
 # V1.12: List available ROCm versions under /opt
@@ -27,7 +28,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.14 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.16 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -64,35 +65,35 @@ dockerchk=`/bin/grep cpuset /proc/1/cgroup | /usr/bin/awk 'BEGIN {FS=":"} {print
 if [ "$dockerchk" != "/" ]
 then
     echo "Section: Current boot logs"
-    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
 
 elif [ -f /bin/journalctl ]
 then
     echo "Section: dmesg boot logs"
-    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Current boot logs"
-    /bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Previous boot logs"
-    /bin/journalctl -b -1 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/journalctl -b -1 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Second Previous boot logs"
-    /bin/journalctl -b -2 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/journalctl -b -2 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Third Previous boot logs"
-    /bin/journalctl -b -3 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/journalctl -b -3 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
 elif [ -f /usr/bin/journalctl ]
 then
     echo "Section: dmesg boot logs"
-    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Current boot logs"
-    /usr/bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /usr/bin/journalctl -b | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Previous boot logs"
-    /usr/bin/journalctl -b -1 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /usr/bin/journalctl -b -1 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Second Previous boot logs"
-    /usr/bin/journalctl -b -2 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /usr/bin/journalctl -b -2 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "Section: Third Previous boot logs"
-    /usr/bin/journalctl -b -3 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /usr/bin/journalctl -b -3 | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
 else
     echo "Section: dmesg boot logs"
-    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
+    /bin/dmesg | /bin/grep -i -E ' Linux v| Command line|power|pci|gpu|drm|error|xgmi|panic|nmi|dazed|oop|fail|fault|atom|bios|kfd|vfio|iommu|ras_mask|ECC|smpboot.*CPU|pcieport.*AER'
     echo "ROCmTechSupportNotFound: journalctl utility not found!"
 fi
 
@@ -148,12 +149,15 @@ echo "===== Section: dmidecode Information   ==============="
 echo "===== Section: lspci verbose output    ==============="
 if [ -f /usr/bin/lspci ]
 then
+    /usr/bin/lspci -vvvt
     /usr/bin/lspci -vvv
 elif [ -f /usr/sbin/lspci ]
 then
+    /usr/sbin/lspci -vvvt
     /usr/sbin/lspci -vvv
 elif [ -f /sbin/lspci ]
 then
+    /sbin/lspci -vvvt
     /sbin/lspci -vvv
 else
     echo "ROCmTechSupportNotFound: lspci utility not found!"
