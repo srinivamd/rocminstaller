@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.16
+# Revision: V1.17
+# V1.17: dump pids /sys/class/kfd/kfd/proc/
 # V1.16: Add nmi to grep, lspci -t
 # V1.15: Add rdc ROCm package filter, env, ldcache
 # V1.14: List PCIe current link width/speed
@@ -28,7 +29,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.16 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.17 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -236,6 +237,8 @@ do
     cat /sys/class/drm/card$i/device/current_link_speed
 done
 
+    echo "===== Section: KFD PIDs sysfs kfd proc ==============="
+ls /sys/class/kfd/kfd/proc/
 
 # ROCm SMI - RAS info
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
