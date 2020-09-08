@@ -27,15 +27,15 @@ Compress/Zip the output file and include with reported issue.
 ***wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
 
 ```
-Example: Install ROCm 3.5, including kernel components (assumes dkms, kernel header, gcc
+Example: Install ROCm 3.7, including kernel components (assumes dkms, kernel header, gcc
 preinstalled)
 wget --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 
-sudo ./rocminstall.py --rev 3.5
+sudo python3 ./rocminstall.py --rev 3.7
 
-Example: Install ROCm 3.3 development packages (no kernel components)
+Example: Install ROCm 3.5 development packages (no kernel components)
 
-sudo ./rocminstall.py --rev 3.3 --nokernel
+sudo python3 ./rocminstall.py --rev 3.5 --nokernel
 
 ```
 #### Usage
