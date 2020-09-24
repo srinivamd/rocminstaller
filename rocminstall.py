@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.17: add --justkernel option
 # V1.16: SLES repo handling
 # V1.15: Fix Debian repo setup
 #        Always extract rocm-dkms
@@ -646,6 +647,9 @@ def download_install_rocm_deb(args, rocmbaseurl):
     else:
         pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
 
+    if args.justkernel is True:
+        return
+
     # Install the rest of the deb packages
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
@@ -694,7 +698,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.16]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.17]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -727,6 +731,10 @@ if __name__ == "__main__":
     parser.add_argument('--nokernel', dest='nokernel', action='store_true',
         help=('do not install rock kernel packages, for example, '
               ' used to install ROCm in docker')
+              )
+    parser.add_argument('--justkernel', dest='justkernel', action='store_true',
+        help=('ONLY install rock kernel packages of specified version '
+              ' - undefined behavior if --nokernel also specified')
               )
     args = parser.parse_args();
 
@@ -768,7 +776,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.16 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.17 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -900,25 +908,26 @@ if __name__ == "__main__":
             rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
             print('.', end='', flush=True)
 
-    for n in sorted(pkglist):
-        # download to destdir
-        urlretrieve(fetchurl + n, args.destdir[0] + "/" + os.path.basename(n))
-        execcmd = execcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
-        rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
-        print('.', end='', flush=True)
+    if args.justkernel is False:
+        for n in sorted(pkglist):
+            # download to destdir
+            urlretrieve(fetchurl + n, args.destdir[0] + "/" + os.path.basename(n))
+            execcmd = execcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
+            rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
+            print('.', end='', flush=True)
 
-    try:
-        ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
-    except subprocess.CalledProcessError as err:
-        for line in str.splitlines(err.output.decode('utf-8')):
-            print(line)
-        print(" Unexpected error encountered! Did you forget sudo?")
+        try:
+            ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+            print(" Unexpected error encountered! Did you forget sudo?")
 
-    try:
-        ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
-    except subprocess.CalledProcessError as err:
-        for line in str.splitlines(err.output.decode('utf-8')):
-            print(line)
+        try:
+            ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
 #
     if ostype is CENTOS_TYPE or ostype is CENTOS8_TYPE:
         remove_centos_repo(args, fetchurl)

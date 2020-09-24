@@ -20,7 +20,7 @@ NOTE: Use of back quotes (`) in above command to get a date timestamp based file
 Compress/Zip the output file and include with reported issue.
 ```
 
-# [Supports 3.3, 3.5, 3.7, 3.8] V1.16 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
+# [Supports 3.3, 3.5, 3.7, 3.8] V1.17 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm
 #### NOTE: On SLES15, the script uses zypper and requires user interaction
 #### Download using:
@@ -42,8 +42,9 @@ sudo python3 ./rocminstall.py --rev 3.5 --nokernel
 ```
 usage: rocminstall.py [-h] [--rev REVSTRING] [--destdir DESTDIR] [--list]
                       [--repourl REPOURL] [--baseurl BASEURL] [--nokernel]
+                      [--justkernel]
 
-[V1.16]rocminstall.py: utility to download and install ROCm packages for
+[V1.17]rocminstall.py: utility to download and install ROCm packages for
 specified rev (dkms, kernel headers must be installed, requires sudo
 privilege)
 
@@ -68,5 +69,8 @@ optional arguments:
                      http://repo.radeon.com/rocm/private/apt_3.6-priv/
   --nokernel         do not install rock kernel packages, for example, used to
                      install ROCm in docker
+  --justkernel       ONLY install rock kernel packages of specified version -
+                     undefined behavior if --nokernel also specified
+
 ```
 
