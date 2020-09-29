@@ -5,13 +5,13 @@
 ***sudo systemctl restart systemd-journald.service*** 
 
 ### Download using:
-***wget -O --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh*** 
+***wget -O rocm_techsupport.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh*** 
 
 ### Example Usage:
 ```
 mkdir  downloads
 cd  downloads
-wget -O --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh
+wget -O rocm_techsupport.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh
 
 #Redirect output to file with <SYSTEM_NAME> and date prefixed-name
 sudo sh ./rocm_techsupport.sh > <SYSTEM_NAME>.`date +"%y-%m-%d-%H-%M-%S"`.rocm_techsupport.log 2>&1
@@ -24,12 +24,12 @@ Compress/Zip the output file and include with reported issue.
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm
 #### NOTE: On SLES15, the script uses zypper and requires user interaction
 #### Download using:
-***wget -O --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
+***wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
 
 ```
 Example: Install ROCm 3.7, including kernel components (assumes dkms, kernel header, gcc
 preinstalled)
-wget -O --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
+wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 
 sudo python3 ./rocminstall.py --rev 3.7
 
