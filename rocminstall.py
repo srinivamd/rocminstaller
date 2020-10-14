@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.20: rocm-dkms changed in 3.9 release
 # V1.19: remove 3.8 migraphx bug fix
 # V1.18: rocm 3.8 bug: migraphx package missing in debian repo
 # V1.17: add --justkernel option
@@ -250,6 +251,11 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
                     or re.search(rf'^miopenkernel.*gfx.+{patrevstr}', os.path.basename(pkgname))
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', os.path.basename(pkgname))):
                         pkgset.add(pkgname)
+                        continue
+                # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
+                if "rocm-dkms".lower() in pkgname.lower():
+                    rockset.add(pkgname)
+                    continue
         # return set as a list
         if check_rock_dkms(pkgtype) is True:
             # remove rock-dkms and rock-dkms-firmware from list
@@ -262,6 +268,9 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
         else:
             pkglist = list(pkgset)
             rocklist = list(rockset)
+            pkgn = [ x for x in pkglist if "rocm-dkms" in x ]
+            if pkgn: # remove rocm-dkms from rocklist
+                rocklist = [x for x in rocklist if "rocm-dkms" not in x ]
     except Exception as e:
         pkglist = None
         rocklist = None
@@ -296,6 +305,10 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                     or re.search(rf'^miopenkernel.*gfx.+{patrevstr}', pkgname)
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', pkgname)):
                         pkgset.add(pkgname)
+                # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
+                if "rocm-dkms".lower() in pkgname.lower():
+                    rockset.add(pkgname)
+                    continue
         # return set as a list
         if check_rock_dkms(pkgtype) is True:
             # remove rock-dkms and rock-dkms-firmware from list
@@ -308,6 +321,9 @@ def get_pkglist(rocmurl, revstring, pkgtype):
         else:
             pkglist = list(pkgset)
             rocklist = list(rockset)
+            pkgn = [ x for x in pkglist if "rocm-dkms" in x ]
+            if pkgn: # remove rocm-dkms from rocklist
+                rocklist = [x for x in rocklist if "rocm-dkms" not in x ]
     except Exception as e:
         pkglist = None
         rocklist = None
@@ -619,7 +635,8 @@ def download_install_rocm_deb(args, rocmbaseurl):
         # if args.nokernel is True:
         # Always extract rocm-dkms, don't install 
         pkgn = [ x for x in pkglist if "rocm-dkms" in x ]
-        download_and_extract_nodeps_deb(args, rocmbaseurl, pkgn[0])
+        if pkgn:
+            download_and_extract_nodeps_deb(args, rocmbaseurl, pkgn[0])
         pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
 
         if args.baseurl is None:
@@ -644,7 +661,11 @@ def download_install_rocm_deb(args, rocmbaseurl):
             download_and_install_deb(args, rocmbaseurl, pkgn[0])
         pkgn = [ x for x in rocklist if "rock-dkms" in x ]
         if pkgn:
+            rocklist = [ x for x in rocklist if "rock-dkms" not in x ]
             # Download and Install rock-dkms
+            download_and_install_deb(args, rocmbaseurl, pkgn[0])
+        pkgn = [ x for x in rocklist if "rocm-dkms" in x ]
+        if pkgn:
             download_and_install_deb(args, rocmbaseurl, pkgn[0])
     else:
         pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
@@ -700,7 +721,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.19]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.20]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -778,7 +799,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.19 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.20 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -900,7 +921,8 @@ if __name__ == "__main__":
     if args.nokernel is True:
         # For install rocm-dkms as workaround for bug in packaging
         pkgn = [ x for x in pkglist if "rocm-dkms" in x ]
-        download_and_install_nodeps_rpm(args, rocmbaseurl, pkgn[0])
+        if pkgn:
+            download_and_install_nodeps_rpm(args, rocmbaseurl, pkgn[0])
         pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
     else:
         for n in sorted(rocklist):
