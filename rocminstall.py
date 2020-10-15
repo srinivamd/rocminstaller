@@ -5,6 +5,8 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.21: rocm-dkms package not required to be installed (starting 3.9)
+#        don't install openmp-extras - packaging bug in 3.9
 # V1.20: rocm-dkms changed in 3.9 release
 # V1.19: remove 3.8 migraphx bug fix
 # V1.18: rocm 3.8 bug: migraphx package missing in debian repo
@@ -253,9 +255,7 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
                         pkgset.add(pkgname)
                         continue
                 # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
-                if "rocm-dkms".lower() in pkgname.lower():
-                    rockset.add(pkgname)
-                    continue
+                # and rocm-dkms is optional package
         # return set as a list
         if check_rock_dkms(pkgtype) is True:
             # remove rock-dkms and rock-dkms-firmware from list
@@ -306,9 +306,7 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', pkgname)):
                         pkgset.add(pkgname)
                 # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
-                if "rocm-dkms".lower() in pkgname.lower():
-                    rockset.add(pkgname)
-                    continue
+                # and rocm-dkms is optional package
         # return set as a list
         if check_rock_dkms(pkgtype) is True:
             # remove rock-dkms and rock-dkms-firmware from list
@@ -721,7 +719,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.20]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.21]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -799,7 +797,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.20 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.21 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -858,6 +856,14 @@ if __name__ == "__main__":
         print("NOTE: Not installing hipify-clang RPM due to packaging issue.")
         print("NOTE: Please install hipify-clang RPM manually using: ")
         print("NOTE:  sudo rpm -ivh --force hipify-clang3.5.0-11.0.0.x86_64.rpm ")
+
+    # V1.21 XXX Workaround for ROCm 3.9 Packaging hipfort, openmp-extras packaging bug XXX
+    if ("3.9" in args.revstring[0]):
+        # exclude openmp-extras package due to packaging BUG
+        pkglist = [ x for x in pkglist if "openmp-extra" not in x ]
+        pkglist = [ x for x in pkglist if "hipfort" not in x ]
+        print("NOTE: Not installing openmp-extra package due to ROCm 3.9 bug.")
+        print("NOTE: Please install openmp-extra manually")
 
     #
     # Based on os type, set the package install command and options
