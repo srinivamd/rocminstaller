@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.18
+# Revision: V1.19
+# V1.19: support for 3.10 release
 # V1.18: add pnp filter
 # V1.17: dump pids /sys/class/kfd/kfd/proc/
 # V1.16: Add nmi to grep, lspci -t
@@ -30,7 +31,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.18 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.19 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -188,7 +189,7 @@ env | /bin/grep -i 'rocm'
 
 # Select latest ROCM installed version: only supports 3.1 or newer
 echo "===== Section: Available ROCm versions ==============="
-/bin/ls -d /opt/rocm*
+/bin/ls -v -d /opt/rocm*
 ROCM_VERSION=`/bin/ls -d /opt/rocm-3* | /usr/bin/sort | /usr/bin/tail -1`
 if [ "$ROCM_VERSION"x = "x" ]
 then
