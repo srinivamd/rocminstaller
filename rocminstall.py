@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.22: support for 3.10 release
 # V1.21: rocm-dkms package not required to be installed (starting 3.9)
 #        don't install openmp-extras - packaging bug in 3.9
 # V1.20: rocm-dkms changed in 3.9 release
@@ -229,7 +230,10 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
-    patrevstr = revstring[0:2] # adjust search pattern to X.Y
+    if len(revstring) == 3:
+        patrevstr = revstring[0:2] # adjust search pattern to X.Y
+    else:
+        patrevstr = revstring[0:3] # adjust search pattern to X.YY
     try:
         urld = request.urlopen(urlpath)
         for line in str.splitlines(urld.read().decode('utf-8'), True):
@@ -280,7 +284,10 @@ def get_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl
-    patrevstr = revstring[0:2] # adjust pat to X.Y
+    if len(revstring) == 3:
+        patrevstr = revstring[0:2] # adjust pat to X.Y
+    else:
+        patrevstr = revstring[0:3] # adjust pat to X.YY
     try:
         urld = request.urlopen(urlpath)
         for line in str.splitlines(urld.read().decode('utf-8'), True):
@@ -719,7 +726,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.21]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.22]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -797,7 +804,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.21 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.22 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
