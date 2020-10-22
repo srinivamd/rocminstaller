@@ -13,8 +13,8 @@ mkdir  downloads
 cd  downloads
 wget -O rocm_techsupport.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh
 
-#Redirect output to file with <SYSTEM_NAME> and date prefixed-name
-sudo sh ./rocm_techsupport.sh > <SYSTEM_NAME>.`date +"%y-%m-%d-%H-%M-%S"`.rocm_techsupport.log 2>&1
+#Redirect output to file with SYSTEM_NAME_or_ISSUEID and date prefixed-name
+sudo sh ./rocm_techsupport.sh > SYSTEM_NAME_or_ISSUEID.rocm_techsupport.log 2>&1
 
 NOTE: Use of back quotes (`) in above command to get a date timestamp based filename
 Compress/Zip the output file and include with reported issue.
