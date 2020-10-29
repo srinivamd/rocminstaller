@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.21
+# Revision: V1.22
+# V1.22: workaround ROCm 3.9 rocm-smi bug
 # V1.21: fix 3.10 detect
 # V1.20: check openmp-extras package install
 # V1.19: support for 3.10 release
@@ -33,7 +34,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.21 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.22 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -214,7 +215,7 @@ fi
 echo "===== Section: ROCm SMI                ==============="
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
 then
-    $ROCM_VERSION/bin/rocm-smi
+    LD_LIBRARY_PATH=$ROCM_VERSION/lib:$LD_LIBRARY_PATH $ROCM_VERSION/bin/rocm-smi
 else
     echo " $ROCM_VERSION/bin/rocm-smi NOT FOUND !!! "
 fi
@@ -223,14 +224,14 @@ fi
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
 then
     echo "===== Section: ROCm SMI showhw         ==============="
-    $ROCM_VERSION/bin/rocm-smi --showhw
+    LD_LIBRARY_PATH=$ROCM_VERSION/lib:$LD_LIBRARY_PATH $ROCM_VERSION/bin/rocm-smi --showhw
 fi
 
 # ROCm PCIe Clock
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
 then
     echo "===== Section: ROCm SMI pcieclk clock  ==============="
-    $ROCM_VERSION/bin/rocm-smi -c | /bin/grep "pcie"
+    LD_LIBRARY_PATH=$ROCM_VERSION/lib:$LD_LIBRARY_PATH $ROCM_VERSION/bin/rocm-smi -c | /bin/grep "pcie"
 fi
 
     echo "===== Section: GPU PCIe Link Config    ==============="
@@ -248,21 +249,21 @@ ls /sys/class/kfd/kfd/proc/
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
 then
     echo "===== Section: ROCm SMI showrasinfo all==============="
-    $ROCM_VERSION/bin/rocm-smi --showrasinfo all
+    LD_LIBRARY_PATH=$ROCM_VERSION/lib:$LD_LIBRARY_PATH $ROCM_VERSION/bin/rocm-smi --showrasinfo all
 fi
 
 # ROCm SMI - xgmierr
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
 then
     echo "===== Section: ROCm SMI showxgmierr    ==============="
-    $ROCM_VERSION/bin/rocm-smi --showxgmierr
+    LD_LIBRARY_PATH=$ROCM_VERSION/lib:$LD_LIBRARY_PATH $ROCM_VERSION/bin/rocm-smi --showxgmierr
 fi
 
 # ROCm SMI - FW version clocks etc.
 if [ -f $ROCM_VERSION/bin/rocm-smi ]
 then
     echo "===== Section: ROCm SMI clocks         ==============="
-    $ROCM_VERSION/bin/rocm-smi -cga
+    LD_LIBRARY_PATH=$ROCM_VERSION/lib:$LD_LIBRARY_PATH $ROCM_VERSION/bin/rocm-smi -cga
 fi
 
 # ROCm Agent Information
