@@ -29,6 +29,7 @@ Compress/Zip the output file and include with reported issue.
   sudo yum update (this would update kernel to latest. Do this before installing kernel-headers.)
   sudo yum install kernel-headers  (OR sudo yum install kernel-headers-`uname -r` )
   sudo yum install gcc
+  sudo yum install gcc-c++
   sudo yum install -y epel-release
   sudo yum install dkms
   sudo yum install kernel-devel (OR sudo yum install kernel-devel-`uname -r` )
@@ -47,6 +48,7 @@ Compress/Zip the output file and include with reported issue.
    sudo reboot
    sudo apt install dkms
    sudo apt install gcc
+   sudo yum install gcc-c++
    sudo apt install linux-headers ( OR sudo apt install linux-headers-`uname -r` )
    sudo apt install linux-tools ( OR sudo apt install linux-tools-`uname -r` )
    sudo reboot
