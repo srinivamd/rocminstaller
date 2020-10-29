@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.25: Fix justkernel install on centos
 # V1.24: Fix message - hipfot3.9.0 not installed
 # V1.23: Create dummy .info/version workaround for 3.9
 # V1.22: support for 3.10 release
@@ -341,6 +342,9 @@ def workaround_dummy_versionfile_deb(args, rocmbaseurl):
     global pkglist
     global rocklist
 
+    if args.justkernel is True:
+        return
+
     touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
     try:
         ps1 = subprocess.Popen(touchcmd.split(), bufsize=0).communicate()[0]
@@ -351,6 +355,9 @@ def workaround_dummy_versionfile_deb(args, rocmbaseurl):
 def workaround_dummy_versionfile_rpm(args, rocmbaseurl):
     global pkglist
     global rocklist
+
+    if args.justkernel is True:
+        return
 
     touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
     try:
@@ -752,7 +759,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.24]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.25]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -830,7 +837,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.24 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.25 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -980,18 +987,18 @@ if __name__ == "__main__":
             rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
             print('.', end='', flush=True)
 
-        try:
-            ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
-        except subprocess.CalledProcessError as err:
-            for line in str.splitlines(err.output.decode('utf-8')):
-                print(line)
-            print(" Unexpected error encountered! Did you forget sudo?")
+    try:
+        ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+        print(" Unexpected error encountered! Did you forget sudo?")
 
-        try:
-            ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
-        except subprocess.CalledProcessError as err:
-            for line in str.splitlines(err.output.decode('utf-8')):
-                print(line)
+    try:
+        ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
 #
     if ostype is CENTOS_TYPE or ostype is CENTOS8_TYPE:
         remove_centos_repo(args, fetchurl)
