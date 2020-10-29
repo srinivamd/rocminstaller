@@ -19,7 +19,7 @@ sudo sh ./rocm_techsupport.sh > SYSTEM_NAME_or_ISSUEID.rocm_techsupport.log 2>&1
 Compress/Zip the output file and include with reported issue.
 ```
 
-# [Supports 3.3, 3.5, 3.7, 3.8, 3.9, 3.10] V1.23 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
+# [Supports 3.3, 3.5, 3.7, 3.8, 3.9, 3.10] V1.24 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm
 #### NOTE: On SLES15, the script uses zypper and requires user interaction
 #### Download using:
@@ -43,7 +43,7 @@ usage: rocminstall.py [-h] [--rev REVSTRING] [--destdir DESTDIR] [--list]
                       [--repourl REPOURL] [--baseurl BASEURL] [--nokernel]
                       [--justkernel]
 
-[V1.23]rocminstall.py: utility to download and install ROCm packages for
+[V1.24]rocminstall.py: utility to download and install ROCm packages for
 specified rev (dkms, kernel headers must be installed, requires sudo
 privilege)
 

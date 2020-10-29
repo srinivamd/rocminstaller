@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.24: Fix message - hipfot3.9.0 not installed
 # V1.23: Create dummy .info/version workaround for 3.9
 # V1.22: support for 3.10 release
 # V1.21: rocm-dkms package not required to be installed (starting 3.9)
@@ -751,7 +752,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.23]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.24]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -829,7 +830,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.23 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.24 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -894,8 +895,8 @@ if __name__ == "__main__":
         # exclude openmp-extras package due to packaging BUG
         pkglist = [ x for x in pkglist if "openmp-extra" not in x ]
         pkglist = [ x for x in pkglist if "hipfort" not in x ]
-        print("NOTE: Not installing openmp-extra package due to ROCm 3.9 bug.")
-        print("NOTE: Please install openmp-extra manually")
+        print("NOTE: Not installing hipfort3.9.0 package due to ROCm 3.9 bug.")
+        print("NOTE: Please install hipfot3.9.0 manually using force option")
 
     #
     # Based on os type, set the package install command and options
