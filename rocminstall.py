@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.23: Create dummy .info/version workaround for 3.9
 # V1.22: support for 3.10 release
 # V1.21: rocm-dkms package not required to be installed (starting 3.9)
 #        don't install openmp-extras - packaging bug in 3.9
@@ -333,6 +334,30 @@ def get_pkglist(rocmurl, revstring, pkgtype):
         pkglist = None
         rocklist = None
         print(urlpath + " : " + str(e))
+
+# Workaround: create .info/version dummy file
+def workaround_dummy_versionfile_deb(args, rocmbaseurl):
+    global pkglist
+    global rocklist
+
+    touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
+    try:
+        ps1 = subprocess.Popen(touchcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+
+def workaround_dummy_versionfile_rpm(args, rocmbaseurl):
+    global pkglist
+    global rocklist
+
+    touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
+    try:
+        ps1 = subprocess.Popen(touchcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+
 
 # Download and install packages utility functions
 def download_and_install_nodeps_rpm(args, rocmbaseurl, pkgname):
@@ -726,7 +751,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.22]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.23]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -804,7 +829,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.22 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.23 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -912,6 +937,7 @@ if __name__ == "__main__":
     # for Ubuntu/Debian
     if ostype is UBUNTU_TYPE:
         download_install_rocm_deb(args, rocmbaseurl)
+        workaround_dummy_versionfile_deb(args, rocmbaseurl)
         remove_debian_repo(args, rocmbaseurl)
         sys.exit(0)
 
@@ -970,5 +996,6 @@ if __name__ == "__main__":
         remove_centos_repo(args, fetchurl)
     else:
         remove_sles_zypp_repo(args, fetchurl)
+    workaround_dummy_versionfile_rpm(args, fetchurl)
 
     sys.exit(0)
