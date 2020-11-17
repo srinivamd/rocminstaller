@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.26: Add support 3.9.1 (uses 3.9.1 string in pkg name!)
 # V1.25: Fix justkernel install on centos
 # V1.24: Fix message - hipfot3.9.0 not installed
 # V1.23: Create dummy .info/version workaround for 3.9
@@ -233,7 +234,9 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
-    if len(revstring) == 3:
+    if "3.9.1" in revstring:
+        patrevstr = revstring[0:4] # adjust search pattern to X.Y
+    elif len(revstring) == 3:
         patrevstr = revstring[0:2] # adjust search pattern to X.Y
     else:
         patrevstr = revstring[0:3] # adjust search pattern to X.YY
@@ -287,7 +290,9 @@ def get_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl
-    if len(revstring) == 3:
+    if "3.9.1" in revstring:
+        patrevstr = revstring[0:4] # adjust search pattern to X.Y.Z
+    elif len(revstring) == 3:
         patrevstr = revstring[0:2] # adjust pat to X.Y
     else:
         patrevstr = revstring[0:3] # adjust pat to X.YY
@@ -759,7 +764,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.25]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.26]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -803,6 +808,10 @@ if __name__ == "__main__":
     if "3.5.1" in args.revstring:
         print("WARNING: ROCm 3.5.1 breaks 3.5.0 installations!")
 
+    # BUG: ROCm 3.9.1 release breaks 3.9.0 installation!
+    if "3.9.1" in args.revstring:
+        print("WARNING: ROCm 3.9.1 breaks 3.9.0 installations!")
+
     # Determine installed OS type
     ostype = None
     with open(ETC_OS_RELEASE, 'r') as f:
@@ -837,7 +846,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.25 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.26 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
