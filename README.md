@@ -48,7 +48,7 @@ Compress/Zip the output file and include with reported issue.
    sudo reboot
    sudo apt install dkms
    sudo apt install gcc
-   sudo yum install gcc-c++
+   sudo apt install gcc-c++
    sudo apt install linux-headers ( OR sudo apt install linux-headers-`uname -r` )
    sudo apt install linux-tools ( OR sudo apt install linux-tools-`uname -r` )
    sudo reboot
