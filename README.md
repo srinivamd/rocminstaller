@@ -50,6 +50,7 @@ Compress/Zip the output file and include with reported issue.
    sudo apt install gcc
    sudo apt install g++
    sudo apt upgrade (this may be needed for kernel updates to correspond with headers, etc.)
+   sudo reboot (for above upgrade to take effect)
    sudo apt install linux-headers ( OR sudo apt install linux-headers-`uname -r` )
    sudo apt install linux-tools ( OR sudo apt install linux-tools-`uname -r` )
    sudo reboot
