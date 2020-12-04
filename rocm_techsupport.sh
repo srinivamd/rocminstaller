@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.22
+# Revision: V1.23
+# V1.23: add 4.0 check
 # V1.22: workaround ROCm 3.9 rocm-smi bug
 # V1.21: fix 3.10 detect
 # V1.20: check openmp-extras package install
@@ -34,7 +35,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.22 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.23 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
