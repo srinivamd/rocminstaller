@@ -6,7 +6,8 @@
 # It requires 'sudo' supervisor privileges for some log collection
 # such as dmidecode, dmesg, lspci -vvv to read capabilities.
 # Author: srinivasan.subramanian@amd.com
-# Revision: V1.23
+# Revision: V1.24
+# V1.24: add dkms status
 # V1.23: add 4.0 check
 # V1.22: workaround ROCm 3.9 rocm-smi bug
 # V1.21: fix 3.10 detect
@@ -35,7 +36,7 @@
 #       Check paths for lspci, lshw
 # V1.0: Initial version
 #
-echo "=== ROCm TechSupport Log Collection Utility: V1.23 ==="
+echo "=== ROCm TechSupport Log Collection Utility: V1.24 ==="
 /bin/date
 
 ret=`/bin/grep -i -E 'debian|ubuntu' /etc/os-release`
@@ -136,6 +137,10 @@ echo "===== Section: lsmod loaded module     ==============="
 # amdgpu modinfo
 echo "===== Section: amdgpu modinfo          ==============="
 /sbin/modinfo amdgpu
+
+# dkms status
+echo "===== Section: dkms status             ==============="
+/usr/sbin/dkms status
 
 # Hardware Topology
 echo "===== Section: Hardware Topology       ==============="
