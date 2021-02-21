@@ -82,9 +82,9 @@ sudo python3 ./rocminstall.py --rev 4.0 --nokernel
 ```
 usage: rocminstall.py [-h] [--rev REVSTRING] [--destdir DESTDIR] [--list]
                       [--repourl REPOURL] [--baseurl BASEURL] [--nokernel]
-                      [--justkernel]
+                      [--justkernel] [--justrdc] [--nomiopenkernels]
 
-[V1.30]rocminstall.py: utility to download and install ROCm packages for
+[V1.31]rocminstall.py: utility to download and install ROCm packages for
 specified rev (dkms, kernel headers must be installed, requires sudo
 privilege)
 
@@ -111,6 +111,10 @@ optional arguments:
                      install ROCm in docker
   --justkernel       ONLY install rock kernel packages of specified version -
                      undefined behavior if --nokernel also specified
+  --justrdc          ONLY install ROCm Radeon Data Center Monitor tool -
+                     attempts to install rdcX.Y.Z package corresponding to rev
+  --nomiopenkernels  do not install pre-built miopenkernels packages - saves
+                     space and installation time
 
 ```
 

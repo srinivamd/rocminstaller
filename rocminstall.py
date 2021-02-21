@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.31: Add --nomiopenkernels to exclude pre-built miopenkernels pkgs
 # V1.30: Add --justrdc to install only RDC package
 # V1.29: Add support for 4.0.1 release (uses 4.0.1 in pkg name)
 # V1.28: Fix touch bug cut-and-paste typo
@@ -850,7 +851,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.29]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.31]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -891,6 +892,10 @@ if __name__ == "__main__":
     parser.add_argument('--justrdc', dest='justrdc', action='store_true',
         help=('ONLY install ROCm Radeon Data Center Monitor tool      '
               ' - attempts to install rdcX.Y.Z package corresponding to rev')
+              )
+    parser.add_argument('--nomiopenkernels', dest='nomiopenkernels', action='store_true',
+        help=('do not install pre-built miopenkernels packages        '
+              ' - saves space and installation time')
               )
 
     args = parser.parse_args();
@@ -1025,6 +1030,10 @@ if __name__ == "__main__":
     if pkglist is None:
         parser.print_help()
         sys.exit(1)
+
+    # if no miopenkernels option, remove miopenkernels packages
+    if args.nomiopenkernels is True:
+        pkglist = [ x for x in pkglist if "miopenkernel" not in x ]
 
     #
     # If --list specified, print the package list and exit
