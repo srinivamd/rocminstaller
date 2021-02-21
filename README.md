@@ -20,7 +20,7 @@ sudo sh ./rocm_techsupport.sh > SYSTEM_NAME_or_ISSUEID.rocm_techsupport.log 2>&1
 Compress/Zip the output file and include with reported issue.
 ```
 
-# [Supports 3.3, 3.5, 3.7, 3.8, 3.9, 3.10] V1.24 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
+# V1.30 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm Kernel
 ## Section CentOS
 **CentOS 7/8 Preparing System for ROCm Kernel:**
@@ -68,14 +68,14 @@ Compress/Zip the output file and include with reported issue.
 ***wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
 
 ```
-Example: Install ROCm 3.9, including kernel components (assumes dkms, kernel header, gcc preinstalled)
+Example: Install ROCm 4.0, including kernel components (assumes dkms, kernel header, gcc preinstalled)
   wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 
-  sudo python3 ./rocminstall.py --rev 3.9
+  sudo python3 ./rocminstall.py --rev 4.0
 
-Example: Install ROCm 3.9 development packages (exclude kernel components)
+Example: Install ROCm 4.0 development packages in container (no kernel components)
 
-sudo python3 ./rocminstall.py --rev 3.9 --nokernel
+sudo python3 ./rocminstall.py --rev 4.0 --nokernel
 
 ```
 #### Usage
@@ -84,7 +84,7 @@ usage: rocminstall.py [-h] [--rev REVSTRING] [--destdir DESTDIR] [--list]
                       [--repourl REPOURL] [--baseurl BASEURL] [--nokernel]
                       [--justkernel]
 
-[V1.29]rocminstall.py: utility to download and install ROCm packages for
+[V1.30]rocminstall.py: utility to download and install ROCm packages for
 specified rev (dkms, kernel headers must be installed, requires sudo
 privilege)
 

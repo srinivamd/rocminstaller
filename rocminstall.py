@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.30: Add --justrdc to install only RDC package
 # V1.29: Add support for 4.0.1 release (uses 4.0.1 in pkg name)
 # V1.28: Fix touch bug cut-and-paste typo
 # V1.27: Fix touch for 3.9.1 (dot releases)
@@ -284,6 +285,82 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
             pkgn = [ x for x in pkglist if "rocm-dkms" in x ]
             if pkgn: # remove rocm-dkms from rocklist
                 rocklist = [x for x in rocklist if "rocm-dkms" not in x ]
+    except Exception as e:
+        pkglist = None
+        rocklist = None
+        print(urlpath + " : " + str(e))
+
+# justrdc
+def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
+    global pkglist
+    global rocklist
+    urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
+    if "3.9.1" in revstring or "4.0.1" in revstring:
+        patrevstr = revstring[0:4] # adjust search pattern to X.Y
+    elif len(revstring) == 3:
+        patrevstr = revstring[0:2] # adjust search pattern to X.Y
+    else:
+        patrevstr = revstring[0:3] # adjust search pattern to X.YY
+    try:
+        urld = request.urlopen(urlpath)
+        for line in str.splitlines(urld.read().decode('utf-8'), True):
+            mat = re.search(rf'Filename: pool.*\.{pkgtype}', line)
+            if mat:
+                pkgname = line[mat.start()+len("Filename: "):mat.end()]
+                # MIOpen-HIP conflicts with MIOpen-OpenCL from same repo
+                if ("rdc".lower() not in pkgname.lower()):
+                    continue
+
+                #
+                # Use X.Y part of X.Y.Z revstring
+                # 
+                if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', os.path.basename(pkgname))
+                    or re.search(rf'^miopenkernel.*gfx.+{patrevstr}', os.path.basename(pkgname))
+                    or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', os.path.basename(pkgname))):
+                        pkgset.add(pkgname)
+                        continue
+                # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
+                # and rocm-dkms is optional package
+        # return set as a list
+        pkglist = list(pkgset)
+        rocklist = list(rockset)
+    except Exception as e:
+        pkglist = None
+        rocklist = None
+        print(urlpath + " : " + str(e))
+
+def get_justrdc_pkglist(rocmurl, revstring, pkgtype):
+    global pkglist
+    global rocklist
+    urlpath = rocmurl
+    if "3.9.1" in revstring or "4.0.1" in revstring:
+        patrevstr = revstring[0:4] # adjust search pattern to X.Y.Z
+    elif len(revstring) == 3:
+        patrevstr = revstring[0:2] # adjust pat to X.Y
+    else:
+        patrevstr = revstring[0:3] # adjust pat to X.YY
+    try:
+        urld = request.urlopen(urlpath)
+        for line in str.splitlines(urld.read().decode('utf-8'), True):
+            mat = re.search(rf'".*\.{pkgtype}"', line)
+            if mat:
+                pkgname = line[mat.start()+1:mat.end()-1]
+                # MIOpen-HIP conflicts with MIOpen-OpenCL from same repo
+                # default is MIOpen-HIP
+                if ("rdc".lower() not in pkgname.lower()):
+                        continue
+                #
+                # Use X.Y part of X.Y.Z revstring
+                # 
+                if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', pkgname)
+                    or re.search(rf'^miopenkernel.*gfx.+{patrevstr}', pkgname)
+                    or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', pkgname)):
+                        pkgset.add(pkgname)
+                # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
+                # and rocm-dkms is optional package
+        # return set as a list
+        pkglist = list(pkgset)
+        rocklist = list(rockset)
     except Exception as e:
         pkglist = None
         rocklist = None
@@ -811,6 +888,11 @@ if __name__ == "__main__":
         help=('ONLY install rock kernel packages of specified version '
               ' - undefined behavior if --nokernel also specified')
               )
+    parser.add_argument('--justrdc', dest='justrdc', action='store_true',
+        help=('ONLY install ROCm Radeon Data Center Monitor tool      '
+              ' - attempts to install rdcX.Y.Z package corresponding to rev')
+              )
+
     args = parser.parse_args();
 
     # BUG: ROCm 3.5.1 release breaks 3.5.0 installation!
@@ -900,11 +982,15 @@ if __name__ == "__main__":
             get_pkglist(rocmbaseurl, args.revstring[0], pkgtype)
     else:
         if pkgtype is PKGTYPE_DEB:
-            get_deb_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0],
-                pkgtype)
+            if args.justrdc is True:
+                get_deb_justrdc_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0], pkgtype)
+            else:
+                get_deb_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0], pkgtype)
         else:
-            get_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0],
-                pkgtype)
+            if args.justrdc is True:
+                get_justrdc_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0], pkgtype)
+            else:
+                get_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0], pkgtype)
 
     # V1.7: XXX Workaround for ROCm 3.5 on CentOS, V1.11 Workaround 3.6
     if ((ostype is CENTOS_TYPE  or ostype is RHEL_TYPE or ostype is CENTOS8_TYPE)
