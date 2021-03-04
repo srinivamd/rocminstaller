@@ -71,11 +71,14 @@ Compress/Zip the output file and include with reported issue.
 Example: Install ROCm 4.0, including kernel components (assumes dkms, kernel header, gcc preinstalled)
   wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 
+Example: Install ROCm, excluding pre-built miopenkernels (faster install)
+  sudo python3 ./rocminstall.py --rev 4.0 --nomiopenkernels
+
+Example: Install ROCm including pre-built miopenkernels
   sudo python3 ./rocminstall.py --rev 4.0
 
 Example: Install ROCm 4.0 development packages in container (no kernel components)
-
-sudo python3 ./rocminstall.py --rev 4.0 --nokernel
+  sudo python3 ./rocminstall.py --rev 4.0 --nokernel
 
 ```
 #### Usage
@@ -84,7 +87,7 @@ usage: rocminstall.py [-h] [--rev REVSTRING] [--destdir DESTDIR] [--list]
                       [--repourl REPOURL] [--baseurl BASEURL] [--nokernel]
                       [--justkernel] [--justrdc] [--nomiopenkernels]
 
-[V1.31]rocminstall.py: utility to download and install ROCm packages for
+[V1.32]rocminstall.py: utility to download and install ROCm packages for
 specified rev (dkms, kernel headers must be installed, requires sudo
 privilege)
 
