@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.34: Add 4.1.1 dependencies extras
 # V1.33: Add support for 4.1.1
 # V1.32: (for internal use) suppress rocfft-client install
 # V1.31: Add --nomiopenkernels to exclude pre-built miopenkernels pkgs
@@ -581,6 +582,14 @@ def setup_sles_zypp_repo(args, fetchurl):
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
+        # zypper install ROCm dependencies - starting with ROCm 4.1.1!
+        zypprefresh = ZYPPER_CMD + " addrepo https://download.opensuse.org/repositories/devel:languages:perl/SLE_15/devel:languages:perl.repo"
+        try:
+            ps1 = subprocess.Popen(zypprefresh.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
         # apt update repo
         zypprefresh = ZYPPER_CMD + " refresh "
         try:
@@ -612,6 +621,15 @@ def setup_centos_repo(args, fetchurl):
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
+
+        # install ROCm dependencies - starting with ROCm 4.1.1!!
+        yumupdate = YUM_CMD + " install --assumeyes perl-File-Which perl-File-BaseDir perl-File-Copy-Recursive perl-URI-Encode "
+        try:
+            ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
         # clean repo
         yumupdate = YUM_CMD + " clean all "
         try:
@@ -620,6 +638,23 @@ def setup_centos_repo(args, fetchurl):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
 
+def setup_centos8_repo(args, fetchurl):
+    global pkglist
+    global rocklist
+
+    if args.repourl:
+        pass
+        # use rev specific rocm repo
+    else:
+        # install ROCm dependencies - enable powertools - starting with ROCm 4.1.1!!
+        yumupdate = YUM_CMD + " config-manager --set-enabled powertools"
+        try:
+            ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+        setup_centos_repo(args, fetchurl)
 
 def remove_centos_repo(args, fetchurl):
     global pkglist
@@ -671,7 +706,6 @@ def remove_sles_zypp_repo(args, fetchurl):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
 
-
 def setup_debian_repo(args, fetchurl):
     global pkglist
     global rocklist
@@ -721,6 +755,15 @@ def setup_debian_repo(args, fetchurl):
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
+
+        # install ROCm dependencies - starting with ROCm 4.1.1!!
+        aptupdate = APTGET_CMD + " -y install libfile-which-perl libfile-basedir-perl libfile-copy-recursive-perl liburi-encode-perl"
+        try:
+            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
 
 
 def remove_debian_repo(args, fetchurl):
@@ -855,7 +898,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.33]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.34]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -946,7 +989,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.33 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.34 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1077,8 +1120,10 @@ if __name__ == "__main__":
         else:
             fetchurl = rocmbaseurl + "/"
 
-    if ostype is CENTOS_TYPE or ostype is CENTOS8_TYPE:
+    if ostype is CENTOS_TYPE:
         setup_centos_repo(args, fetchurl)
+    elif ostype is CENTOS8_TYPE:
+        setup_centos8_repo(args, fetchurl)
     else:
         setup_sles_zypp_repo(args, fetchurl)
     # skip if --nokernel option is True
