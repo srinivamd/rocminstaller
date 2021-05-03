@@ -1,28 +1,7 @@
-# rocm_techsupport.sh V1.25 Shell Utility for Ubuntu/CentOS/SLES/docker log collection from last 3 boots
-### NOTE: To enable persistent boot logs across reboots, please run:  
-```
-  sudo mkdir -p /var/log/journal
-  sudo systemctl restart systemd-journald.service
-```
-
-### Download rocm_techsupport.sh shell script using:
-***wget -O rocm_techsupport.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh*** 
-
-### Example Usage:
-```
-mkdir  downloads
-cd  downloads
-wget -O rocm_techsupport.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocm_techsupport.sh
-
-#Redirect output to file with SYSTEM_NAME_or_ISSUEID
-sudo sh ./rocm_techsupport.sh > SYSTEM_NAME_or_ISSUEID.rocm_techsupport.log 2>&1
-
-Compress/Zip the output file and include with reported issue.
-```
-
-# V1.30 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
+# V1.34 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm Kernel
-## Section CentOS
+
+## Section CentOS Pre-Install Steps
 **CentOS 7/8 Preparing System for ROCm Kernel:**
 ```
   sudo yum clean all
@@ -36,12 +15,14 @@ Compress/Zip the output file and include with reported issue.
   sudo yum install python3
   sudo reboot (for above updates to take effect)
 ```
-**CentOS/rpm Commands to UNinstall old ROCm rock-dkms rock-dkms-firmware packages for update**
+#### To Update ROCm Kernel (rock-dkms rock-dkms-firmware) Packages:
+**CentOS/rpm Commands to UNINSTALL rock-dkms rock-dkms-firmware packages FIRST before install**
 ```
   sudo rpm -evh rock-dkms rock-dkms-firmware (OR sudo rpm -evh --nodeps rock-dkms rock-dkms-firmware)
   sudo reboot
 ```
-## Section: Ubuntu
+
+## Section: Ubuntu Pre-Install Steps
 **Ubuntu 18 HWE Preparing System for ROCm Kernel**
 ```
    sudo apt-get install --install-recommends linux-generic-hwe-18.04  (Do this before installing linux-headers.)
@@ -55,7 +36,8 @@ Compress/Zip the output file and include with reported issue.
    sudo apt install linux-tools ( OR sudo apt install linux-tools-`uname -r` )
    sudo reboot
 ```
-**Ubuntu dpkg Commands to UNinstall old ROCm rock-dkms rock-dkms-firmware packages for update**
+#### To Update ROCm Kernel (rock-dkms rock-dkms-firmware) Packages:
+**Ubuntu dpkg Commands to UNINSTALL ROCm rock-dkms rock-dkms-firmware packages FIRST before install**
 ```
   sudo dpkg -r --force-all rock-dkms rock-dkms-firmware
   sudo dpkg --purge --force-all rock-dkms rock-dkms-firmware
@@ -65,11 +47,11 @@ Compress/Zip the output file and include with reported issue.
 
 ## Section: Install ROCm
 #### Download Python3 rocminstall.py script:
-***wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
+***wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/amddcgpuce/rocminstaller/master/rocminstall.py***
 
 ```
 Example: Install ROCm 4.0, including kernel components (assumes dkms, kernel header, gcc preinstalled)
-  wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
+  wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/amddcgpuce/rocminstaller/master/rocminstall.py
 
 Example: Install ROCm, excluding pre-built miopenkernels (faster install)
   sudo python3 ./rocminstall.py --rev 4.0 --nomiopenkernels
@@ -87,7 +69,7 @@ usage: rocminstall.py [-h] [--rev REVSTRING] [--destdir DESTDIR] [--list]
                       [--repourl REPOURL] [--baseurl BASEURL] [--nokernel]
                       [--justkernel] [--justrdc] [--nomiopenkernels]
 
-[V1.32]rocminstall.py: utility to download and install ROCm packages for
+[V1.34]rocminstall.py: utility to download and install ROCm packages for
 specified rev (dkms, kernel headers must be installed, requires sudo
 privilege)
 
