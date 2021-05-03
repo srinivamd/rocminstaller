@@ -16,7 +16,7 @@
   sudo reboot (for above updates to take effect)
 ```
 #### To Update ROCm Kernel (rock-dkms rock-dkms-firmware) Packages:
-**CentOS/rpm Commands to UNINSTALL rock-dkms rock-dkms-firmware packages FIRST before install**
+**CentOS/RHEL rpm Commands to UNINSTALL rock-dkms rock-dkms-firmware packages FIRST before install**
 ```
   sudo rpm -evh rock-dkms rock-dkms-firmware (OR sudo rpm -evh --nodeps rock-dkms rock-dkms-firmware)
   sudo reboot
@@ -101,5 +101,49 @@ optional arguments:
   --nomiopenkernels  do not install pre-built miopenkernels packages - saves
                      space and installation time
 
+```
+
+# ROCm Uninstall Utility
+## NOTE: Does not uninstall ROCm Kernel packages (rock-dkms rock-dkms-firmware) 
+#### To uninstall ROCm kernel
+**CentOS/RHEL rpm Commands to UNINSTALL rock-dkms rock-dkms-firmware packages ONLY**
+```
+  sudo rpm -evh rock-dkms rock-dkms-firmware (OR sudo rpm -evh --nodeps rock-dkms rock-dkms-firmware)
+  sudo reboot
+```
+**Ubuntu dpkg Commands to UNINSTALL rock-dkms rock-dkms-firmware packages ONLY**
+```
+  sudo dpkg -r --force-all rock-dkms rock-dkms-firmware
+  sudo dpkg --purge --force-all rock-dkms rock-dkms-firmware
+  sudo reboot
+```
+
+### Steps to Run rocmuninstall.sh Script
+#### Download the rocmuninstall.sh shell script:
+***wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/amddcgpuce/rocminstaller/master/rocmuninstall.sh***
+#### NOTE: User will be prompted with list of selected packages to confirm uninstallation.
+
+```
+Examples
+# Download the rocmuninstall.sh script
+ wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/amddcgpuce/rocminstaller/master/rocmuninstall.sh
+
+ Example: To uninstall ROCm 4.1 packages use (requires sudo):
+    sudo sh ./rocmuninstall.sh 4.1.0 
+
+ Example: To uninstall all ROCm packages use (requires sudo):
+    sudo sh ./rocmuninstall.sh all 
+```
+#### Usage of rocmuninstall.sh script
+```
+=== ROCm Uninstall Utility V1.0 ===
+Mon May  3 15:39:50 PDT 2021
+Usage: sudo sh ./rocmuninstall.sh <X.Y.Z>|all, where <X.Y.Z> is the ROCm version to uninstall
+ To uninstall all ROCm packages (except kernel) use 'all' option
+ Example: To uninstall ROCm 4.1 packages use:
+    sudo sh ./rocmuninstall.sh 4.1.0 
+ Example: To uninstall all ROCm packages use:
+    sudo sh ./rocmuninstall.sh all 
+ User will be prompted with list of selected packages to confirm uninstallation.
 ```
 
