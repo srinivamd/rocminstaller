@@ -1,4 +1,4 @@
-# V1.34 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
+# [Unofficial] V1.34 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm Kernel
 
 ## Section CentOS Pre-Install Steps
@@ -47,11 +47,11 @@
 
 ## Section: Install ROCm
 #### Download Python3 rocminstall.py script:
-***wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/amddcgpuce/rocminstaller/master/rocminstall.py***
+***wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
 
 ```
 Example: Install ROCm 4.0, including kernel components (assumes dkms, kernel header, gcc preinstalled)
-  wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/amddcgpuce/rocminstaller/master/rocminstall.py
+  wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 
 Example: Install ROCm, excluding pre-built miopenkernels (faster install)
   sudo python3 ./rocminstall.py --rev 4.0 --nomiopenkernels
@@ -103,7 +103,7 @@ optional arguments:
 
 ```
 
-# ROCm Uninstall Utility
+# [Unofficial] ROCm Uninstall Utility
 ## NOTE: Does not uninstall ROCm Kernel packages (rock-dkms rock-dkms-firmware) 
 #### To uninstall ROCm kernel
 **CentOS/RHEL rpm Commands to UNINSTALL rock-dkms rock-dkms-firmware packages ONLY**
@@ -120,13 +120,13 @@ optional arguments:
 
 ### Steps to Run rocmuninstall.sh Script
 #### Download the rocmuninstall.sh shell script:
-***wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/amddcgpuce/rocminstaller/master/rocmuninstall.sh***
+***wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocmuninstall.sh***
 #### NOTE: User will be prompted with list of selected packages to confirm uninstallation.
 
 ```
 Examples
 # Download the rocmuninstall.sh script
- wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/amddcgpuce/rocminstaller/master/rocmuninstall.sh
+ wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocmuninstall.sh
 
  Example: To uninstall ROCm 4.1 packages use (requires sudo):
     sudo sh ./rocmuninstall.sh 4.1.0 
