@@ -13,10 +13,11 @@
 #
 # NOTE: To uninstall rock-dkms, rock-dkms-firmware ROCm kernel modules
 #       manually uninstall them and reboot the system
+# V1.2: Fix miopenkernel name match
 # V1.1: Fix CentOS uninstall
 # V1.0: Initial version
 #
-echo "=== ROCm Uninstall Utility V1.1 ==="
+echo "=== ROCm Uninstall Utility V1.2 ==="
 /bin/date
 
 if [ $# -ne 1 ]
@@ -60,9 +61,9 @@ else
     echo "Remove ROCm packages for release $REV"
     if [ "$pkgtype" = "deb" ]
     then
-        pkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /usr/bin/awk '!/Status/ {print $2}' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV}'|^miopenkernels-gfx.*'${REV} | /usr/bin/sort`
+        pkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /usr/bin/awk '!/Status/ {print $2}' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV}'|^miopenkernels-gfx.+db'${REV} | /usr/bin/sort`
     else
-        pkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV}'|^miopenkernels-gfx.*'${REV} | /usr/bin/sort`
+        pkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV}'|^miopenkernels-gfx.+db'${REV} | /usr/bin/sort`
     fi
 fi
 

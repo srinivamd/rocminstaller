@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.35: Fix miopenkernels name pattern
 # V1.34: Add 4.1.1 dependencies extras
 # V1.33: Add support for 4.1.1
 # V1.32: (for internal use) suppress rocfft-client install
@@ -269,7 +270,7 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
                 # Use X.Y part of X.Y.Z revstring
                 # 
                 if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', os.path.basename(pkgname))
-                    or re.search(rf'^miopenkernel.*gfx.+{patrevstr}', os.path.basename(pkgname))
+                    or re.search(rf'^miopenkernel.*gfx.+db{patrevstr}', os.path.basename(pkgname))
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', os.path.basename(pkgname))):
                         pkgset.add(pkgname)
                         continue
@@ -320,7 +321,7 @@ def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
                 # Use X.Y part of X.Y.Z revstring
                 # 
                 if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', os.path.basename(pkgname))
-                    or re.search(rf'^miopenkernel.*gfx.+{patrevstr}', os.path.basename(pkgname))
+                    or re.search(rf'^miopenkernel.*gfx.+db{patrevstr}', os.path.basename(pkgname))
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', os.path.basename(pkgname))):
                         pkgset.add(pkgname)
                         continue
@@ -358,7 +359,7 @@ def get_justrdc_pkglist(rocmurl, revstring, pkgtype):
                 # Use X.Y part of X.Y.Z revstring
                 # 
                 if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', pkgname)
-                    or re.search(rf'^miopenkernel.*gfx.+{patrevstr}', pkgname)
+                    or re.search(rf'^miopenkernel.*gfx.+db{patrevstr}', pkgname)
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', pkgname)):
                         pkgset.add(pkgname)
                 # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
@@ -403,7 +404,7 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                 # Use X.Y part of X.Y.Z revstring
                 # 
                 if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', pkgname)
-                    or re.search(rf'^miopenkernel.*gfx.+{patrevstr}', pkgname)
+                    or re.search(rf'^miopenkernel.*gfx.+db{patrevstr}', pkgname)
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', pkgname)):
                         pkgset.add(pkgname)
                 # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
@@ -898,7 +899,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.34]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.35]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -989,7 +990,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.34 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.35 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
