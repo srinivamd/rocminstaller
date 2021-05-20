@@ -25,7 +25,8 @@
 ## Section: Ubuntu Pre-Install Steps
 **Ubuntu 18 HWE Preparing System for ROCm Kernel**
 ```
-   sudo apt-get install --install-recommends linux-generic-hwe-18.04  (Do this before installing linux-headers.)
+   sudo apt-get install --install-recommends linux-generic-hwe-18.04  (Use linux-generic-hwe-20.04 for Ubuntu 20.04 HWE.) 
+   (Update to LTS HWE before installing linux-headers.)
    sudo reboot
    sudo apt install dkms
    sudo apt install gcc
