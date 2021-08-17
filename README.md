@@ -1,4 +1,4 @@
-# [Unofficial] V1.37 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
+# [Unofficial] V1.38 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm Kernel
 
 ## Section CentOS Pre-Install Steps
@@ -54,14 +54,14 @@
 Example: Install ROCm 4.0, including kernel components (assumes dkms, kernel header, gcc preinstalled)
   wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 
-Example: Install ROCm, excluding pre-built miopenkernels (faster install)
-  sudo python3 ./rocminstall.py --rev 4.0 --nomiopenkernels
+Example: Install ROCm 4.3, excluding pre-built miopenkernels (faster install)
+  sudo python3 ./rocminstall.py --rev 4.3 --nomiopenkernels
 
-Example: Install ROCm including pre-built miopenkernels
-  sudo python3 ./rocminstall.py --rev 4.0
+Example: Install ROCm 4.3 including pre-built miopenkernels
+  sudo python3 ./rocminstall.py --rev 4.3
 
-Example: Install ROCm 4.0 development packages in container (no kernel components)
-  sudo python3 ./rocminstall.py --rev 4.0 --nokernel
+Example: Install ROCm 4.3 development packages in container (no kernel components)
+  sudo python3 ./rocminstall.py --rev 4.3 --nokernel
 
 ```
 #### Usage
@@ -70,7 +70,7 @@ usage: rocminstall.py [-h] [--rev REVSTRING] [--destdir DESTDIR] [--list]
                       [--repourl REPOURL] [--baseurl BASEURL] [--nokernel]
                       [--justkernel] [--justrdc] [--nomiopenkernels]
 
-[V1.37]rocminstall.py: utility to download and install ROCm packages for
+[V1.38]rocminstall.py: utility to download and install ROCm packages for
 specified rev (dkms, kernel headers must be installed, requires sudo
 privilege)
 
