@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.39: add support for 4.4.1
 # V1.38: add support for 4.3.1
 # V1.37: for internal repo: filter out gdb-tests
 # V1.36: 4.3 release fix, do not install rccl-rdma-sharp pkg
@@ -246,7 +247,7 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
-    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring:
+    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring or "4.4.1" in revstring:
         patrevstr = revstring[0:4] # adjust search pattern to X.Y
     elif len(revstring) == 3:
         patrevstr = revstring[0:2] # adjust search pattern to X.Y
@@ -306,7 +307,7 @@ def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
-    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring:
+    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring or "4.4.1" in revstring:
         patrevstr = revstring[0:4] # adjust search pattern to X.Y
     elif len(revstring) == 3:
         patrevstr = revstring[0:2] # adjust search pattern to X.Y
@@ -344,7 +345,7 @@ def get_justrdc_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl
-    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring:
+    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring or "4.4.1" in revstring:
         patrevstr = revstring[0:4] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
         patrevstr = revstring[0:2] # adjust pat to X.Y
@@ -381,7 +382,7 @@ def get_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl
-    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring:
+    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring or "4.4.1" in revstring:
         patrevstr = revstring[0:4] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
         patrevstr = revstring[0:2] # adjust pat to X.Y
@@ -444,7 +445,7 @@ def workaround_dummy_versionfile_deb(args, rocmbaseurl):
     if args.justkernel is True:
         return
 
-    if args.revstring[0] == "3.9.1" or args.revstring[0] == "4.0.1" or args.revstring[0] == "4.1.1" or args.revstring[0] == "4.3.1":
+    if args.revstring[0] == "3.9.1" or args.revstring[0] == "4.0.1" or args.revstring[0] == "4.1.1" or args.revstring[0] == "4.3.1" or args.revstring[0] == "4.4.1":
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
     else:
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
@@ -461,7 +462,7 @@ def workaround_dummy_versionfile_rpm(args, rocmbaseurl):
     if args.justkernel is True:
         return
 
-    if args.revstring[0] == "3.9.1" or args.revstring[0] == "4.0.1" or args.revstring[0] == "4.1.1" or args.revstring[0] == "4.3.1":
+    if args.revstring[0] == "3.9.1" or args.revstring[0] == "4.0.1" or args.revstring[0] == "4.1.1" or args.revstring[0] == "4.3.1" or args.revstring[0] == "4.4.1":
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
     else:
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
@@ -906,7 +907,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.38]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.39]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -997,7 +998,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.38 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.39 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
