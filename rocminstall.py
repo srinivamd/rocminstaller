@@ -248,7 +248,10 @@ def get_pkglist311(rocmurl, revstring, pkgtype):
 def get_deb_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
-    urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
+    if "4.5" in revstring:
+        urlpath = rocmurl + "/dists/ubuntu/main/binary-amd64/Packages"
+    else:
+        urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
     if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring or "4.4.1" in revstring:
         patrevstr = revstring[0:4] # adjust search pattern to X.Y
     elif len(revstring) == 3:
