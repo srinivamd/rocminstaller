@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.41: fix ubuntu repo: change xenial to ubuntu
 # V1.40: add support for 4.5 (filter out nvidia pkgs)
 # V1.39: add support for 4.4.1
 # V1.38: add support for 4.3.1
@@ -570,7 +571,6 @@ def download_and_install_deb(args, rocmbaseurl, pkgname):
             print(line)
         print(" Unexpected error encountered! Did you forget sudo?")
 
-
 def setup_sles_zypp_repo(args, fetchurl):
     global pkglist
     global rocklist
@@ -1001,7 +1001,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.40 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.41 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
