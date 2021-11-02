@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.42: Only user packages installation ROCm 4.5 (amdgpu separated)
 # V1.41: fix ubuntu repo: change xenial to ubuntu
 # V1.40: add support for 4.5 (filter out nvidia pkgs)
 # V1.39: add support for 4.4.1
@@ -127,7 +128,18 @@ def check_rock_dkms(pkgtype):
         PKGTYPE_DEB : DPKG_CMD + " -l rock-dkms ",
     }[pkgtype]
     if pkgtype is PKGTYPE_RPM:
-        check_cmd = RPM_CMD + " -q rock-dkms "
+        check_cmd = RPM_CMD + " -q rock-dkms"
+        try:
+            ps1 = subprocess.run(check_cmd.split(), stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, check=True)
+            print(ps1.stdout.decode('utf-8'))
+            return True
+        except subprocess.CalledProcessError as err:
+            #return False
+            pass
+
+        # check for amdgpu-dkms
+        check_cmd = RPM_CMD + " -q amdgpu-dkms"
         try:
             ps1 = subprocess.run(check_cmd.split(), stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT, check=True)
@@ -136,7 +148,7 @@ def check_rock_dkms(pkgtype):
         except subprocess.CalledProcessError as err:
             return False
     elif pkgtype is PKGTYPE_DEB:
-        check_cmd = DPKG_CMD + " -l rock-dkms "
+        check_cmd = DPKG_CMD + " -l rock-dkms amdgpu-dkms"
         try:
             ps1 = subprocess.run(check_cmd.split(), stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT, check=True)
@@ -144,11 +156,13 @@ def check_rock_dkms(pkgtype):
             for line in str.splitlines(ps1.stdout.decode('utf-8')):
                 if re.search(r'^i.*rock-dkms.*all', line): # 'i' for installed
                     return True
+                if re.search(r'^i.*amdgpu-dkms.*all', line): # 'i' for installed
+                    return True
             return False
         except subprocess.CalledProcessError as err:
             return False
     else:
-        print("Unknown package type {}. Cannot detect rock-dkms status.".format(pkgtype))
+        print("Unknown package type {}. Cannot detect rock-dkms amdgpu-dkms status.".format(pkgtype))
         return False
 
 # Get the list of ROCm rpm packages from the ROCm release URL
@@ -252,7 +266,9 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
         urlpath = rocmurl + "/dists/ubuntu/main/binary-amd64/Packages"
     else:
         urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
-    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring or "4.4.1" in revstring:
+    if ("3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring
+        or "4.3.1" in revstring or "4.4.1" in revstring
+        or "4.5.1" in revstring or "4.5.2" in revstring):
         patrevstr = revstring[0:4] # adjust search pattern to X.Y
     elif len(revstring) == 3:
         patrevstr = revstring[0:2] # adjust search pattern to X.Y
@@ -313,7 +329,9 @@ def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
-    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring or "4.4.1" in revstring:
+    if ("3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring
+        or "4.3.1" in revstring or "4.4.1" in revstring
+        or "4.5.1" in revstring or "4.5.2" in revstring):
         patrevstr = revstring[0:4] # adjust search pattern to X.Y
     elif len(revstring) == 3:
         patrevstr = revstring[0:2] # adjust search pattern to X.Y
@@ -351,7 +369,9 @@ def get_justrdc_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl
-    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring or "4.4.1" in revstring:
+    if ("3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring
+        or "4.3.1" in revstring or "4.4.1" in revstring
+        or "4.5.1" in revstring or "4.5.2" in revstring):
         patrevstr = revstring[0:4] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
         patrevstr = revstring[0:2] # adjust pat to X.Y
@@ -388,7 +408,9 @@ def get_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
     urlpath = rocmurl
-    if "3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring or "4.3.1" in revstring or "4.4.1" in revstring:
+    if ("3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring
+        or "4.3.1" in revstring or "4.4.1" in revstring
+        or "4.5.1" in revstring or "4.5.2" in revstring):
         patrevstr = revstring[0:4] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
         patrevstr = revstring[0:2] # adjust pat to X.Y
@@ -452,7 +474,9 @@ def workaround_dummy_versionfile_deb(args, rocmbaseurl):
     if args.justkernel is True:
         return
 
-    if args.revstring[0] == "3.9.1" or args.revstring[0] == "4.0.1" or args.revstring[0] == "4.1.1" or args.revstring[0] == "4.3.1" or args.revstring[0] == "4.4.1":
+    if (args.revstring[0] == "3.9.1" or args.revstring[0] == "4.0.1" or args.revstring[0] == "4.1.1"
+        or args.revstring[0] == "4.3.1" or args.revstring[0] == "4.4.1"
+        or args.revstring[0] == "4.5.1" or args.revstring == "4.5.2"):
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
     else:
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
@@ -469,7 +493,9 @@ def workaround_dummy_versionfile_rpm(args, rocmbaseurl):
     if args.justkernel is True:
         return
 
-    if args.revstring[0] == "3.9.1" or args.revstring[0] == "4.0.1" or args.revstring[0] == "4.1.1" or args.revstring[0] == "4.3.1" or args.revstring[0] == "4.4.1":
+    if (args.revstring[0] == "3.9.1" or args.revstring[0] == "4.0.1" or args.revstring[0] == "4.1.1"
+        or args.revstring[0] == "4.3.1" or args.revstring[0] == "4.4.1"
+        or args.revstring[0] == "4.5.1" or args.revstring[0] == "4.5.2"):
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
     else:
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
@@ -913,7 +939,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.40]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.42]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -970,6 +996,10 @@ if __name__ == "__main__":
     if "3.9.1" in args.revstring:
         print("WARNING: ROCm 3.9.1 breaks 3.9.0 installations!")
 
+    if "4.5" in args.revstring:
+        print("NOTE: Starting with ROCM 4.5 kernel/amdgpu dkms not installed!")
+        args.nokernel = True
+
     # Determine installed OS type
     ostype = None
     with open(ETC_OS_RELEASE, 'r') as f:
@@ -1004,7 +1034,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.41 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.42 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
