@@ -141,7 +141,7 @@ Examples
 ```
 #### Usage of rocmuninstall.sh script
 ```
-=== ROCm Uninstall Utility V1.3 ===
+=== ROCm Uninstall Utility V1.4 ===
 Mon May  3 15:39:50 PDT 2021
 Usage: sudo sh ./rocmuninstall.sh <X.Y.Z>|all, where <X.Y.Z> is the ROCm version to uninstall
  To uninstall all ROCm packages (except kernel) use 'all' option

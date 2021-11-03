@@ -13,6 +13,7 @@
 #
 # NOTE: To uninstall rock-dkms, rock-dkms-firmware ROCm kernel modules
 #       manually uninstall them and reboot the system
+# V1.4: ROCm 4.5 support: Add amdgpu-dkms
 # V1.3: Fix miopenkernel uninstall
 # V1.2: Fix miopenkernel name match
 # V1.1: Fix CentOS uninstall
@@ -54,18 +55,18 @@ then
     echo "Remove ALL ROCm packages"
     if [ "$pkgtype" = "deb" ]
     then
-        pkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /usr/bin/awk '!/Status/ {print $2}' | /usr/bin/sort`
+        pkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|aomp|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /usr/bin/awk '!/Status/ {print $2}' | /usr/bin/sort`
     else
-        pkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /usr/bin/sort`
+        pkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|aomp|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /usr/bin/sort`
     fi
 else
     echo "Remove ROCm packages for release $REV"
     if [ "$pkgtype" = "deb" ]
     then
-        pkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /usr/bin/awk '!/Status/ {print $2}' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV} | /usr/bin/sort`
+        pkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|aomp|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /usr/bin/awk '!/Status/ {print $2}' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV} | /usr/bin/sort`
         miopenkernelpkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'miopenkernel' | /bin/grep -E 'miopenkernels-gfx.+'${REV}'|miopenkernels-gfx.+db'${REV} | /usr/bin/awk '!/Status/ {print $2}' | /usr/bin/sort`
     else
-        pkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|aomp|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV} | /usr/bin/sort`
+        pkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|aomp|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rdc|openmp-' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV} | /usr/bin/sort`
         miopenkernelpkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'miopenkernel' | /bin/grep -E '^miopenkernels-gfx.+'${REV}'|^miopenkernels-gfx.+db'${REV} | /usr/bin/sort`
     fi
 fi
