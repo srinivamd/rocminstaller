@@ -5,6 +5,8 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.43: Only user packages installation ROCm 4.5 (fix dkms check)
+#        Use ubuntu not xenial
 # V1.42: Only user packages installation ROCm 4.5 (amdgpu separated)
 # V1.41: fix ubuntu repo: change xenial to ubuntu
 # V1.40: add support for 4.5 (filter out nvidia pkgs)
@@ -148,7 +150,7 @@ def check_rock_dkms(pkgtype):
         except subprocess.CalledProcessError as err:
             return False
     elif pkgtype is PKGTYPE_DEB:
-        check_cmd = DPKG_CMD + " -l rock-dkms amdgpu-dkms"
+        check_cmd = DPKG_CMD + " -l rock-dkms"
         try:
             ps1 = subprocess.run(check_cmd.split(), stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT, check=True)
@@ -156,6 +158,15 @@ def check_rock_dkms(pkgtype):
             for line in str.splitlines(ps1.stdout.decode('utf-8')):
                 if re.search(r'^i.*rock-dkms.*all', line): # 'i' for installed
                     return True
+        except subprocess.CalledProcessError as err:
+            return False
+
+        check_cmd = DPKG_CMD + " -l amdgpu-dkms"
+        try:
+            ps1 = subprocess.run(check_cmd.split(), stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, check=True)
+            print(ps1.stdout.decode('utf-8'))
+            for line in str.splitlines(ps1.stdout.decode('utf-8')):
                 if re.search(r'^i.*amdgpu-dkms.*all', line): # 'i' for installed
                     return True
             return False
@@ -328,7 +339,10 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
 def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
-    urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
+    if "4.5" in revstring:
+        urlpath = rocmurl + "/dists/ubuntu/main/binary-amd64/Packages"
+    else:
+        urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
     if ("3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring
         or "4.3.1" in revstring or "4.4.1" in revstring
         or "4.5.1" in revstring or "4.5.2" in revstring):
@@ -768,7 +782,10 @@ def setup_debian_repo(args, fetchurl):
                 print(line)
 
         # use rev specific rocm repo
-        debrepo = "deb [arch=amd64] " + fetchurl + " xenial main "
+        if "4.5" in args.revstring[0]:
+            debrepo = "deb [arch=amd64] " + fetchurl + " ubuntu main "
+        else:
+            debrepo = "deb [arch=amd64] " + fetchurl + " xenial main "
         echocmd = ECHO_CMD + " '" + debrepo + "' "
         repofilename = "/etc/apt/sources.list.d/rocm" + args.revstring[0] + ".list "
         teecmd = TEE_CMD + " " + repofilename
@@ -939,7 +956,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.42]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.43]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1034,7 +1051,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.42 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.43 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
