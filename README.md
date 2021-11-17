@@ -113,7 +113,7 @@ optional arguments:
 ### Usage: To install ROCm kernel packages
 ```
 Download the Python3 script:
-  wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
+  wget -O amdgpuinst.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
 
 Example: Install ROCm 4.5 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
   sudo python3 ./amdgpuinst.py --rev 4.5
