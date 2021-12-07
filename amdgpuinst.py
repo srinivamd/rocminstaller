@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.3: Add support for 4.5.1 and 4.5.2
 # V1.2: Fix bug in ubuntu install, name change
 # V1.0: Initial version 11/2/2021
 #
@@ -25,6 +26,20 @@ kernurl = { "4.5" :
         "centos84" : "https://repo.radeon.com/amdgpu/21.40/rhel/8.4/main/x86_64/",
         "ubuntu" : "https://repo.radeon.com/amdgpu/21.40/ubuntu",
         "centos" : "https://repo.radeon.com/amdgpu/21.40/rhel/7.9/main/x86_64/"
+        },
+        "4.5.1" :
+        { "sles" : "https://repo.radeon.com/amdgpu/21.40.1/sle/15/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/21.40.1/rhel/8.5/main/x86_64/",
+        "centos84" : "https://repo.radeon.com/amdgpu/21.40.1/rhel/8.4/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/21.40.1/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/21.40.1/rhel/7.9/main/x86_64/"
+        },
+        "4.5.2" :
+        { "sles" : "https://repo.radeon.com/amdgpu/21.40.2/sle/15/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/21.40.2/rhel/8.5/main/x86_64/",
+        "centos84" : "https://repo.radeon.com/amdgpu/21.40.2/rhel/8.4/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/21.40.2/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/21.40.2/rhel/7.9/main/x86_64/"
         }
     }
 
@@ -454,13 +469,13 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.2]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.3]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
     parser.add_argument('--rev', nargs=1, dest='revstring', default='rpm',
         help=('specifies ROCm release version '
-              ' Example: --rev 4.5 for ROCm 4.5'
+              ' Example: --rev 4.5 for ROCm 4.5 or --rev 4.5.1 for ROCm 4.5.1'
               )
               )
     parser.add_argument('--destdir', nargs=1, dest='destdir', default='.',
@@ -524,7 +539,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.2 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.3 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
