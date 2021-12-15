@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.44: Fix touch version error for 4.5.2
 # V1.43: Only user packages installation ROCm 4.5 (fix dkms check)
 #        Use ubuntu not xenial
 # V1.42: Only user packages installation ROCm 4.5 (amdgpu separated)
@@ -490,7 +491,7 @@ def workaround_dummy_versionfile_deb(args, rocmbaseurl):
 
     if (args.revstring[0] == "3.9.1" or args.revstring[0] == "4.0.1" or args.revstring[0] == "4.1.1"
         or args.revstring[0] == "4.3.1" or args.revstring[0] == "4.4.1"
-        or args.revstring[0] == "4.5.1" or args.revstring == "4.5.2"):
+        or args.revstring[0] == "4.5.1" or args.revstring[0] == "4.5.2"):
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
     else:
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
@@ -956,7 +957,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.43]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.44]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1051,7 +1052,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.43 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.44 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
