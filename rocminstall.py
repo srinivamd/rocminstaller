@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2021 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright (c) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 #
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.45: Add support 5.0 release
 # V1.44: Fix touch version error for 4.5.2
 # V1.43: Only user packages installation ROCm 4.5 (fix dkms check)
 #        Use ubuntu not xenial
@@ -274,7 +275,7 @@ def get_pkglist311(rocmurl, revstring, pkgtype):
 def get_deb_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
-    if "4.5" in revstring:
+    if int(revstring[0]) > 4 or "4.5" in revstring:
         urlpath = rocmurl + "/dists/ubuntu/main/binary-amd64/Packages"
     else:
         urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
@@ -340,7 +341,7 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
 def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
-    if "4.5" in revstring:
+    if int(revstring[0]) > 4 or "4.5" in revstring:
         urlpath = rocmurl + "/dists/ubuntu/main/binary-amd64/Packages"
     else:
         urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
@@ -783,7 +784,7 @@ def setup_debian_repo(args, fetchurl):
                 print(line)
 
         # use rev specific rocm repo
-        if "4.5" in args.revstring[0]:
+        if int(args.revstring[0][0]) > 5 or "4.5" in args.revstring[0]:
             debrepo = "deb [arch=amd64] " + fetchurl + " ubuntu main "
         else:
             debrepo = "deb [arch=amd64] " + fetchurl + " xenial main "
@@ -957,7 +958,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.44]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.45]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1052,7 +1053,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.44 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.45 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
