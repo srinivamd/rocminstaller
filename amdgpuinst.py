@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2021 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright (c) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 #
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.4: Add support for 5.0.0
 # V1.3: Add support for 4.5.1 and 4.5.2
 # V1.2: Fix bug in ubuntu install, name change
 # V1.0: Initial version 11/2/2021
@@ -40,6 +41,13 @@ kernurl = { "4.5" :
         "centos84" : "https://repo.radeon.com/amdgpu/21.40.2/rhel/8.4/main/x86_64/",
         "ubuntu" : "https://repo.radeon.com/amdgpu/21.40.2/ubuntu",
         "centos" : "https://repo.radeon.com/amdgpu/21.40.2/rhel/7.9/main/x86_64/"
+        },
+        "5.0.0" :
+        { "sles" : "https://repo.radeon.com/amdgpu/.21.50/sle/15/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/.21.50/rhel/8.5/main/x86_64/",
+        "centos84" : "https://repo.radeon.com/amdgpu/.21.50/rhel/8.4/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/.21.50/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/.21.50/rhel/7.9/main/x86_64/"
         }
     }
 
@@ -469,7 +477,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.3]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.4]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -539,7 +547,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.3 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.4 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
