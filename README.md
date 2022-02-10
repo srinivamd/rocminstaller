@@ -106,7 +106,7 @@ optional arguments:
                      space and installation time
 
 ```
-# [Unofficial] V1.3 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
+# [Unofficial] V1.5 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
 ## NOTE: This can be used to amdgpu-dkms* packages for ROCm release starting with 4.5
 ## Currently, only support 4.5 and newer releases
 #
@@ -115,8 +115,8 @@ optional arguments:
 Download the Python3 script:
   wget -O amdgpuinst.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
 
-Example: Install ROCm 4.5 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
-  sudo python3 ./amdgpuinst.py --rev 4.5
+Example: Install ROCm 5.0 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
+  sudo python3 ./amdgpuinst.py --rev 5.0.0
 
 Example: List ROCm 4.5 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
   sudo python3 ./amdgpuinst.py --rev 4.5 --list
