@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.6: ROCm 5.0.1 GA
 # V1.5: ROCm 5.0 GA
 # V1.4: Add support for 5.0.0
 # V1.3: Add support for 4.5.1 and 4.5.2
@@ -49,6 +50,20 @@ kernurl = { "4.5" :
         "centos84" : "https://repo.radeon.com/amdgpu/21.50/rhel/8.4/main/x86_64/",
         "ubuntu" : "https://repo.radeon.com/amdgpu/21.50/ubuntu",
         "centos" : "https://repo.radeon.com/amdgpu/21.50/rhel/7.9/main/x86_64/"
+        },
+        "5.0" :
+        { "sles" : "https://repo.radeon.com/amdgpu/21.50/sle/15/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/21.50/rhel/8.5/main/x86_64/",
+        "centos84" : "https://repo.radeon.com/amdgpu/21.50/rhel/8.4/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/21.50/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/21.50/rhel/7.9/main/x86_64/"
+        },
+        "5.0.1" :
+        { "sles" : "https://repo.radeon.com/amdgpu/21.50.1/sle/15/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/21.50.1/rhel/8.5/main/x86_64/",
+        "centos84" : "https://repo.radeon.com/amdgpu/21.50.1/rhel/8.4/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/21.50.1/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/21.50.1/rhel/7.9/main/x86_64/"
         }
     }
 
@@ -478,7 +493,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.5]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.6]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -548,7 +563,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.5 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.6 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
