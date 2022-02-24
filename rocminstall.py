@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.47: Fix rev pattern len, check
 # V1.46: Add support for 5.0.1 release
 # V1.45: Add support 5.0 release
 # V1.44: Fix touch version error for 4.5.2
@@ -276,7 +277,7 @@ def get_pkglist311(rocmurl, revstring, pkgtype):
 def get_deb_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
-    if int(revstring[0]) > 4 or "4.5" in revstring:
+    if int(revstring[0]) >= 5 or "4.5" in revstring:
         urlpath = rocmurl + "/dists/ubuntu/main/binary-amd64/Packages"
     else:
         urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
@@ -284,9 +285,9 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
         or "4.3.1" in revstring or "4.4.1" in revstring
         or "4.5.1" in revstring or "4.5.2" in revstring
         or "5.0.1" in revstring or "5.0.2" in revstring):
-        patrevstr = revstring[0:4] # adjust search pattern to X.Y
+        patrevstr = revstring[0:5] # adjust search pattern to X.Y
     elif len(revstring) == 3:
-        patrevstr = revstring[0:2] # adjust search pattern to X.Y
+        patrevstr = revstring[0:3] # adjust search pattern to X.Y
     else:
         patrevstr = revstring[0:3] # adjust search pattern to X.YY
     try:
@@ -351,9 +352,9 @@ def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
         or "4.3.1" in revstring or "4.4.1" in revstring
         or "4.5.1" in revstring or "4.5.2" in revstring
         or "5.0.1" in revstring or "5.0.2" in revstring):
-        patrevstr = revstring[0:4] # adjust search pattern to X.Y
+        patrevstr = revstring[0:5] # adjust search pattern to X.Y
     elif len(revstring) == 3:
-        patrevstr = revstring[0:2] # adjust search pattern to X.Y
+        patrevstr = revstring[0:3] # adjust search pattern to X.Y
     else:
         patrevstr = revstring[0:3] # adjust search pattern to X.YY
     try:
@@ -392,9 +393,9 @@ def get_justrdc_pkglist(rocmurl, revstring, pkgtype):
         or "4.3.1" in revstring or "4.4.1" in revstring
         or "4.5.1" in revstring or "4.5.2" in revstring
         or "5.0.1" in revstring or "5.0.2" in revstring):
-        patrevstr = revstring[0:4] # adjust search pattern to X.Y.Z
+        patrevstr = revstring[0:5] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
-        patrevstr = revstring[0:2] # adjust pat to X.Y
+        patrevstr = revstring[0:3] # adjust pat to X.Y
     else:
         patrevstr = revstring[0:3] # adjust pat to X.YY
     try:
@@ -432,9 +433,9 @@ def get_pkglist(rocmurl, revstring, pkgtype):
         or "4.3.1" in revstring or "4.4.1" in revstring
         or "4.5.1" in revstring or "4.5.2" in revstring
         or "5.0.1" in revstring or "5.0.2" in revstring):
-        patrevstr = revstring[0:4] # adjust search pattern to X.Y.Z
+        patrevstr = revstring[0:5] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
-        patrevstr = revstring[0:2] # adjust pat to X.Y
+        patrevstr = revstring[0:3] # adjust pat to X.Y
     else:
         patrevstr = revstring[0:3] # adjust pat to X.YY
     try:
@@ -791,7 +792,7 @@ def setup_debian_repo(args, fetchurl):
                 print(line)
 
         # use rev specific rocm repo
-        if int(args.revstring[0][0]) > 5 or "4.5" in args.revstring[0]:
+        if int(args.revstring[0][0]) >= 5 or "4.5" in args.revstring[0]:
             debrepo = "deb [arch=amd64] " + fetchurl + " ubuntu main "
         else:
             debrepo = "deb [arch=amd64] " + fetchurl + " xenial main "
@@ -965,7 +966,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.46]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.47]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1060,7 +1061,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.46 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.47 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
