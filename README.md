@@ -1,3 +1,25 @@
+# [Unofficial] ROCM Installer TL;DR
+***Steps to install/uninstall ROCm (multiple releases side-by-side)***
+```
+Download rocminstall.py script to install ROCm User Level Packages:
+  wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
+Example: Install ROCm 5.1 [add --nomiopenkernels to exclude pre-built miopenkernels]
+  sudo python3 ./rocminstall.py --rev 5.1
+
+Download amdgpuinst.py script to install ROCm AMDGPU DKMS packages:
+  wget -O amdgpuinst.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
+
+Example: Install ROCm 5.1 DKMS/kernel packages amdgpu-dkms and amdgpu-dkms-firmware
+  sudo python3 ./amdgpuinst.py --rev 5.1.0
+  sudo reboot
+
+Download the rocmuninstall.sh script
+ wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocmuninstall.sh
+
+Example: To uninstall ROCm 5.0 packages use (requires sudo):
+    sudo sh ./rocmuninstall.sh 5.0.0  [use "all" instead of "5.0.0" to uninstall ALL packages]
+
+```
 # [Unofficial] V1.47 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm Kernel
 
@@ -106,7 +128,7 @@ optional arguments:
                      space and installation time
 
 ```
-# [Unofficial] V1.8 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
+# [Unofficial] V1.9 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
 ## NOTE: This can be used to amdgpu-dkms* packages for ROCm release starting with 4.5
 ## Currently, only support 4.5 and newer releases
 #
