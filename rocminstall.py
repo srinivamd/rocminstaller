@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.49: CentOS, SLES use main/ repo from 5.1
 # V1.48: Add support for 5.1.1 release
 # V1.47: Fix rev pattern len, check
 # V1.46: Add support for 5.0.1 release
@@ -973,7 +974,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.48]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.49]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1068,7 +1069,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.48 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.49 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1118,10 +1119,13 @@ if __name__ == "__main__":
             else:
                 get_deb_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0], pkgtype)
         else:
+            subdir = ""
+            if args.revstring[0] > "5.0.2":
+                subdir ="/main"
             if args.justrdc is True:
-                get_justrdc_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0], pkgtype)
+                get_justrdc_pkglist(rocmbaseurl + "/" + args.revstring[0] + subdir, args.revstring[0], pkgtype)
             else:
-                get_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0], pkgtype)
+                get_pkglist(rocmbaseurl + "/" + args.revstring[0] + subdir, args.revstring[0], pkgtype)
 
     # V1.7: XXX Workaround for ROCm 3.5 on CentOS, V1.11 Workaround 3.6
     if ((ostype is CENTOS_TYPE  or ostype is RHEL_TYPE or ostype is CENTOS8_TYPE)
@@ -1195,7 +1199,10 @@ if __name__ == "__main__":
         fetchurl = args.repourl[0] + "/"
     else:
         if args.baseurl is None:
-            fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
+            if args.revstring[0] > "5.0.2":
+                fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/main/"
+            else:
+                fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
         else:
             fetchurl = rocmbaseurl + "/"
 
