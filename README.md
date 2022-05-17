@@ -20,7 +20,7 @@ Example: To uninstall ROCm 5.0 packages use (requires sudo):
     sudo sh ./rocmuninstall.sh 5.0.0  [use "all" to uninstall user AND kernel packages]
 
 ```
-# [Unofficial] V1.49 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
+# [Unofficial] V1.50 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm Kernel
 
 ## Section CentOS Pre-Install Steps
@@ -92,7 +92,7 @@ usage: rocminstall.py [-h] [--rev REVSTRING] [--destdir DESTDIR] [--list]
                       [--repourl REPOURL] [--baseurl BASEURL] [--nokernel]
                       [--justkernel] [--justrdc] [--nomiopenkernels]
 
-[V1.49]rocminstall.py: utility to download and install ROCm packages for
+[V1.50]rocminstall.py: utility to download and install ROCm packages for
 specified rev (dkms, kernel headers must be installed, requires sudo
 privilege)
 
@@ -125,7 +125,7 @@ optional arguments:
                      space and installation time
 
 ```
-# [Unofficial] V1.10 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
+# [Unofficial] V1.11 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
 ## NOTE: This can be used to amdgpu-dkms* packages for ROCm release starting with 4.5
 ## Currently, only support 4.5 and newer releases
 #
