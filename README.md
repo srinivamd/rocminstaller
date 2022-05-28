@@ -1,18 +1,19 @@
 # [Unofficial] ROCM Installer TL;DR
 ***Steps to install/uninstall ROCm (multiple releases side-by-side)***
 ```
-1. Download rocminstall.py script to install ROCm User Level Packages:
-  wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
-Example: Install ROCm [add --nomiopenkernels to exclude pre-built miopenkernels]
-  sudo python3 ./rocminstall.py --rev 5.1
-
-2. Download amdgpuinst.py script, install ROCm AMDGPU DKMS packages and reboot:
+1. Download amdgpuinst.py script, install ROCm AMDGPU DKMS packages and reboot:
   wget -O amdgpuinst.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
 
 Example: Install ROCm DKMS/kernel packages amdgpu-dkms and amdgpu-dkms-firmware
   sudo python3 ./amdgpuinst.py --rev 5.1.1
   sudo reboot
 
+2. Download rocminstall.py script to install ROCm User Level Packages:
+  wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
+Example: Install ROCm [add --nomiopenkernels to exclude pre-built miopenkernels]
+  sudo python3 ./rocminstall.py --rev 5.1
+
+#### UNINSTALL ROCM
 1. To uninstall ROCm, download the rocmuninstall.sh script, run with version or "all":
  wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocmuninstall.sh
 
@@ -28,6 +29,7 @@ Example: To uninstall ROCm 5.0 packages use (requires sudo):
 ```
   sudo yum clean all
   sudo yum update (this would update kernel to latest. Do this before installing kernel-headers.)
+  sudo reboot
   sudo yum install kernel-headers-`uname -r`
   sudo yum install gcc
   sudo yum install gcc-c++
@@ -36,6 +38,7 @@ Example: To uninstall ROCm 5.0 packages use (requires sudo):
   sudo yum install kernel-devel-`uname -r`
   sudo yum install python3
   sudo reboot (for above updates to take effect)
+  NOTE: install devtoolset-7 for CentOS7/RHEL7
 ```
 #### To Update ROCm Kernel (rock-dkms rock-dkms-firmware) Packages:
 **CentOS/RHEL rpm Commands to UNINSTALL rock-dkms rock-dkms-firmware packages FIRST before install**
@@ -125,7 +128,7 @@ optional arguments:
                      space and installation time
 
 ```
-# [Unofficial] V1.11 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
+# [Unofficial] V1.12 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
 ## NOTE: This can be used to amdgpu-dkms* packages for ROCm release starting with 4.5
 ## Currently, only support 4.5 and newer releases
 #
