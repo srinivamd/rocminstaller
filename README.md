@@ -37,6 +37,8 @@ Example: To uninstall ROCm 5.0 packages use (requires sudo):
   sudo yum install dkms
   sudo yum install kernel-devel-`uname -r`
   sudo yum install python3
+  sudo yum install wget
+  sudo yum install git
   sudo reboot (for above updates to take effect)
   NOTE: install devtoolset-7 for CentOS7/RHEL7
 ```
