@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.13: ROCm 5.2 support
 # V1.12: Install libdrm-amdgpu packages
 # V1.11: ROCm 5.1.x versions
 # V1.10: ROCm 5.1.1 GA
@@ -115,6 +116,26 @@ kernurl = { "4.5" :
         "centos84" : "https://repo.radeon.com/amdgpu/22.10.3/rhel/8.4/main/x86_64/",
         "ubuntu" : "https://repo.radeon.com/amdgpu/22.10.3/ubuntu",
         "centos" : "https://repo.radeon.com/amdgpu/22.10.3/rhel/7.9/main/x86_64/"
+        },
+        "5.2.0" :
+        { "sles" : "https://repo.radeon.com/amdgpu/.22.20/sle/15.3/main/x86_64/",
+        "sles154" : "https://repo.radeon.com/amdgpu/.22.20/sle/15.4/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.6/main/x86_64/",
+        "centos85" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.5/main/x86_64/",
+        "centos84" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.4/main/x86_64/",
+        "centos9" : "https://repo.radeon.com/amdgpu/.22.20/rhel/9.0/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/.22.20/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/.22.20/rhel/7.9/main/x86_64/"
+        },
+        "5.2" :
+        { "sles" : "https://repo.radeon.com/amdgpu/.22.20/sle/15.3/main/x86_64/",
+        "sles154" : "https://repo.radeon.com/amdgpu/.22.20/sle/15.4/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.6/main/x86_64/",
+        "centos85" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.5/main/x86_64/",
+        "centos84" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.4/main/x86_64/",
+        "centos9" : "https://repo.radeon.com/amdgpu/.22.20/rhel/9.0/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/.22.20/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/.22.20/rhel/7.9/main/x86_64/"
         }
     }
 
@@ -139,15 +160,22 @@ PKGTYPE_DEB = "deb"
 # Supported OS types
 CENTOS_TYPE = "centos" # Version 7
 CENTOS8_TYPE = "centos8"
+CENTOS9_TYPE = "centos9"
 UBUNTU_TYPE = "ubuntu"
 DEBIAN_TYPE = "debian"
 SLES_TYPE = "sles"
 RHEL_TYPE = "rhel" # Version 7
+RHEL8_TYPE = "rhel8"
+RHEL9_TYPE = "rhel9"
 
 CENTOS_VERSION8_TYPESTRING = 'VERSION="8'
+CENTOS_VERSION9_TYPESTRING = 'VERSION="9'
+RHEL_VERSION8_TYPESTRING = 'VERSION="8'
+RHEL_VERSION9_TYPESTRING = 'VERSION="9'
 
 BIONIC_TYPE = "bionic"
 FOCAL_TYPE = "focal"
+JAMMY_TYPE = "jammy"
 
 
 # OS release info
@@ -366,6 +394,15 @@ def setup_centos_repo(args, fetchurl):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
 
+def setup_centos9_repo(args, fetchurl):
+    global rocklist
+
+    if args.repourl:
+        pass
+        # use rev specific rocm repo
+    else:
+        setup_centos_repo(args, fetchurl)
+
 def setup_centos8_repo(args, fetchurl):
     global rocklist
 
@@ -550,7 +587,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.12]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.13]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -591,6 +628,10 @@ if __name__ == "__main__":
             if DEBIAN_TYPE.lower() in line.lower():
                 ostype = UBUNTU_TYPE
                 break
+            if JAMMY_TYPE.lower() in line.lower():
+                ostype = UBUNTU_TYPE
+                ubuntutype = FOCAL_TYPE
+                break
             if FOCAL_TYPE.lower() in line.lower():
                 ostype = UBUNTU_TYPE
                 ubuntutype = FOCAL_TYPE
@@ -613,6 +654,15 @@ if __name__ == "__main__":
                 if CENTOS_VERSION8_TYPESTRING.lower() in line.lower():
                     ostype = CENTOS8_TYPE
                     break
+                if RHEL_VERSION8_TYPESTRING.lower() in line.lower():
+                    ostype = CENTOS8_TYPE
+                    break
+                if CENTOS_VERSION9_TYPESTRING.lower() in line.lower():
+                    ostype = RHEL9_TYPE
+                    break
+                if RHEL_VERSION9_TYPESTRING.lower() in line.lower():
+                    ostype = RHEL9_TYPE
+                    break
 
     if ostype is None:
         print("Exiting: Unknown installed OS type")
@@ -620,13 +670,14 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.12 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.13 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
     #
     pkgtype = None
     pkgtype = {
+        RHEL9_TYPE : PKGTYPE_RPM,
         CENTOS8_TYPE : PKGTYPE_RPM,
         CENTOS_TYPE : PKGTYPE_RPM,
         UBUNTU_TYPE : PKGTYPE_DEB,
@@ -664,6 +715,7 @@ if __name__ == "__main__":
     # Based on os type, set the package install command and options
     #
     cmd = {
+       RHEL9_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
        CENTOS8_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
        CENTOS_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
        UBUNTU_TYPE : APTGET_CMD + " --no-download --ignore-missing -y install ",
@@ -713,6 +765,8 @@ if __name__ == "__main__":
         setup_centos_repo(args, fetchurl)
     elif ostype is CENTOS8_TYPE:
         setup_centos8_repo(args, fetchurl)
+    elif ostype is RHEL9_TYPE:
+        setup_centos9_repo(args, fetchurl)
     else:
         setup_sles_zypp_repo(args, fetchurl)
 
@@ -736,7 +790,7 @@ if __name__ == "__main__":
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
 
-    if ostype is CENTOS_TYPE or ostype is CENTOS8_TYPE:
+    if ostype is CENTOS_TYPE or ostype is CENTOS8_TYPE or ostype is RHEL9_TYPE:
         remove_centos_repo(args, fetchurl)
     else:
         remove_sles_zypp_repo(args, fetchurl)
