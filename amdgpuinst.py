@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.14: include libdrm2 amdgpu-core
 # V1.13: ROCm 5.2 support
 # V1.12: Install libdrm-amdgpu packages
 # V1.11: ROCm 5.1.x versions
@@ -256,6 +257,8 @@ def get_deb_pkglist(rocmurl, pkgtype, ubuntutype):
             if mat:
                 pkgname = line[mat.start()+len("Filename: "):mat.end()]
                 if ("amdgpu-dkms".lower() in pkgname.lower()
+                    or "amdgpu-core".lower() in pkgname.lower()
+                    or "libdrm2-amdgpu".lower() in pkgname.lower()
                     or "libdrm-amdgpu".lower() in pkgname.lower()):
                         rockset.add(pkgname)
                         continue
@@ -282,6 +285,8 @@ def get_pkglist(rocmurl, pkgtype):
             if mat:
                 pkgname = line[mat.start()+1:mat.end()-1]
                 if ("amdgpu-dkms".lower() in pkgname.lower()
+                    or "amdgpu-core".lower() in pkgname.lower()
+                    or "libdrm2-amdgpu".lower() in pkgname.lower()
                     or "libdrm-amdgpu".lower() in pkgname.lower()):
                         rockset.add(pkgname)
                         continue
@@ -587,7 +592,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.13]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.14]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -670,7 +675,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.13 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.14 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
