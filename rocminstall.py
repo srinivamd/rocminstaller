@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.51: Fix rocm gpgkey path
 # V1.50: Add support for 5.1.3
 # V1.49: CentOS, SLES use main/ repo from 5.1
 # V1.48: Add support for 5.1.1 release
@@ -788,7 +789,7 @@ def setup_debian_repo(args, fetchurl):
         pass
     else:
         # Set up rocm repo for chosen rev to install
-        wgetkey = WGET_CMD + " -q -O - http://repo.radeon.com/rocm/apt/debian/rocm.gpg.key "
+        wgetkey = WGET_CMD + " -q -O - http://repo.radeon.com/rocm/rocm.gpg.key "
         aptkeycmd = APTKEY_CMD + " add -"
         try:
             ps1 = subprocess.Popen(wgetkey.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -975,7 +976,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.50]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.51]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1070,7 +1071,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.50 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.51 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
