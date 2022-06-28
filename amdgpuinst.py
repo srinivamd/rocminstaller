@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.15: fix path to rocm.gpg.key
 # V1.14: include libdrm2 amdgpu-core
 # V1.13: ROCm 5.2 support
 # V1.12: Install libdrm-amdgpu packages
@@ -472,7 +473,7 @@ def setup_debian_repo(args, fetchurl, ubuntutype):
         pass
     else:
         # Set up rocm repo for chosen rev to install
-        wgetkey = WGET_CMD + " -q -O - http://repo.radeon.com/rocm/apt/debian/rocm.gpg.key "
+        wgetkey = WGET_CMD + " -q -O - http://repo.radeon.com/rocm/rocm.gpg.key "
         aptkeycmd = APTKEY_CMD + " add -"
         try:
             ps1 = subprocess.Popen(wgetkey.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -592,7 +593,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.14]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.15]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -675,7 +676,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.14 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.15 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
