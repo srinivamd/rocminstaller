@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.16: 5.2 GA
 # V1.15: fix path to rocm.gpg.key
 # V1.14: include libdrm2 amdgpu-core
 # V1.13: ROCm 5.2 support
@@ -120,24 +121,24 @@ kernurl = { "4.5" :
         "centos" : "https://repo.radeon.com/amdgpu/22.10.3/rhel/7.9/main/x86_64/"
         },
         "5.2.0" :
-        { "sles" : "https://repo.radeon.com/amdgpu/.22.20/sle/15.3/main/x86_64/",
-        "sles154" : "https://repo.radeon.com/amdgpu/.22.20/sle/15.4/main/x86_64/",
-        "centos8" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.6/main/x86_64/",
-        "centos85" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.5/main/x86_64/",
-        "centos84" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.4/main/x86_64/",
-        "centos9" : "https://repo.radeon.com/amdgpu/.22.20/rhel/9.0/main/x86_64/",
-        "ubuntu" : "https://repo.radeon.com/amdgpu/.22.20/ubuntu",
-        "centos" : "https://repo.radeon.com/amdgpu/.22.20/rhel/7.9/main/x86_64/"
+        { "sles" : "https://repo.radeon.com/amdgpu/22.20/sle/15.3/main/x86_64/",
+        "sles154" : "https://repo.radeon.com/amdgpu/22.20/sle/15.4/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/22.20/rhel/8.6/main/x86_64/",
+        "centos85" : "https://repo.radeon.com/amdgpu/22.20/rhel/8.5/main/x86_64/",
+        "centos84" : "https://repo.radeon.com/amdgpu/22.20/rhel/8.4/main/x86_64/",
+        "centos9" : "https://repo.radeon.com/amdgpu/22.20/rhel/9.0/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/22.20/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/22.20/rhel/7.9/main/x86_64/"
         },
         "5.2" :
-        { "sles" : "https://repo.radeon.com/amdgpu/.22.20/sle/15.3/main/x86_64/",
-        "sles154" : "https://repo.radeon.com/amdgpu/.22.20/sle/15.4/main/x86_64/",
-        "centos8" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.6/main/x86_64/",
-        "centos85" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.5/main/x86_64/",
-        "centos84" : "https://repo.radeon.com/amdgpu/.22.20/rhel/8.4/main/x86_64/",
-        "centos9" : "https://repo.radeon.com/amdgpu/.22.20/rhel/9.0/main/x86_64/",
-        "ubuntu" : "https://repo.radeon.com/amdgpu/.22.20/ubuntu",
-        "centos" : "https://repo.radeon.com/amdgpu/.22.20/rhel/7.9/main/x86_64/"
+        { "sles" : "https://repo.radeon.com/amdgpu/22.20/sle/15.3/main/x86_64/",
+        "sles154" : "https://repo.radeon.com/amdgpu/22.20/sle/15.4/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/22.20/rhel/8.6/main/x86_64/",
+        "centos85" : "https://repo.radeon.com/amdgpu/22.20/rhel/8.5/main/x86_64/",
+        "centos84" : "https://repo.radeon.com/amdgpu/22.20/rhel/8.4/main/x86_64/",
+        "centos9" : "https://repo.radeon.com/amdgpu/22.20/rhel/9.0/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/22.20/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/22.20/rhel/7.9/main/x86_64/"
         }
     }
 
@@ -593,7 +594,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.15]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.16]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -636,7 +637,7 @@ if __name__ == "__main__":
                 break
             if JAMMY_TYPE.lower() in line.lower():
                 ostype = UBUNTU_TYPE
-                ubuntutype = FOCAL_TYPE
+                ubuntutype = JAMMY_TYPE
                 break
             if FOCAL_TYPE.lower() in line.lower():
                 ostype = UBUNTU_TYPE
@@ -676,7 +677,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.15 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.16 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
