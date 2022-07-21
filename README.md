@@ -1,4 +1,4 @@
-# [Unofficial] ROCM Installer TL;DR
+# [Unofficial] ROCM Installer TL;DR (see Pre-Install Steps for your OS Distro)
 ***Steps to install/uninstall ROCm (multiple releases side-by-side)***
 ```
 1. Download amdgpuinst.py script, install ROCm AMDGPU DKMS packages and reboot:
@@ -24,7 +24,7 @@ Example: To uninstall ROCm 5.0 packages use (requires sudo):
 # [Unofficial] V1.50 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm Kernel
 
-## Section CentOS Pre-Install Steps
+## Section CentOS Pre-Install Steps (Install Perl dependencies)
 **CentOS 7/8 Preparing System for ROCm Kernel:**
 ```
   sudo yum clean all
@@ -39,13 +39,15 @@ Example: To uninstall ROCm 5.0 packages use (requires sudo):
   sudo yum install python3
   sudo yum install wget
   sudo yum install git
+  sudo yum install perl
+  sudo yum install perl-URI-Encode
   sudo reboot (for above updates to take effect)
   NOTE: install devtoolset-7 for CentOS7/RHEL7
 ```
-#### To Update ROCm Kernel (rock-dkms rock-dkms-firmware) Packages:
-**CentOS/RHEL rpm Commands to UNINSTALL rock-dkms rock-dkms-firmware packages FIRST before install**
+#### To remove ROCm Kernel (amdgpu-dkms amdgpu-dkms-firmware) Packages:
+**CentOS/RHEL rpm Commands to UNINSTALL amdgpu-dkms amdgpu-dkms-firmware packages FIRST before install**
 ```
-  sudo rpm -evh rock-dkms rock-dkms-firmware (OR sudo rpm -evh --nodeps rock-dkms rock-dkms-firmware)
+  sudo rpm -evh amdgpu-dkms amdgpu-dkms-firmware (OR sudo rpm -evh --nodeps rock-dkms rock-dkms-firmware)
   sudo reboot
 ```
 
