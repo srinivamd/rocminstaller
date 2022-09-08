@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.22: add rhel9 for 5.2.3 GA
 # V1.21: 5.2.3 GA
 # V1.20: 5.2.3 RC
 # V1.19: 5.2.2 RC
@@ -172,6 +173,7 @@ kernurl = { "4.5" :
         "centos85" : "https://repo.radeon.com/amdgpu/22.20.3/rhel/8.5/main/x86_64/",
         "centos84" : "https://repo.radeon.com/amdgpu/22.20.3/rhel/8.4/main/x86_64/",
         "centos9" : "https://repo.radeon.com/amdgpu/22.20.3/rhel/9.0/main/x86_64/",
+        "rhel9" : "https://repo.radeon.com/amdgpu/22.20.3/rhel/9.0/main/x86_64/",
         "ubuntu" : "https://repo.radeon.com/amdgpu/22.20.3/ubuntu",
         "centos" : "https://repo.radeon.com/amdgpu/22.20.3/rhel/7.9/main/x86_64/"
         }
@@ -629,7 +631,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.21]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.22]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -712,7 +714,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.21 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.22 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
