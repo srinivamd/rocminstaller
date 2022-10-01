@@ -47,7 +47,7 @@ Example: To uninstall ROCm 5.0 packages use (requires sudo):
 #### To remove ROCm Kernel (amdgpu-dkms amdgpu-dkms-firmware) Packages:
 **CentOS/RHEL rpm Commands to UNINSTALL amdgpu-dkms amdgpu-dkms-firmware packages FIRST before install**
 ```
-  sudo rpm -evh amdgpu-dkms amdgpu-dkms-firmware (OR sudo rpm -evh --nodeps rock-dkms rock-dkms-firmware)
+  sudo rpm -evh amdgpu-dkms amdgpu-dkms-firmware (OR sudo rpm -evh --nodeps amdgpu-dkms amdgpu-dkms-firmware)
   sudo reboot
 ```
 
@@ -122,9 +122,9 @@ optional arguments:
   --baseurl BASEURL  specify early access ROCm repo URL to use from where to
                      download packages Example: --baseurl
                      http://repo.radeon.com/rocm/private/apt_3.6-priv/
-  --nokernel         do not install rock kernel packages, for example, used to
+  --nokernel         do not install amdgpu kernel packages, for example, used to
                      install ROCm in docker
-  --justkernel       ONLY install rock kernel packages of specified version -
+  --justkernel       ONLY install amdgpu kernel packages of specified version -
                      undefined behavior if --nokernel also specified
   --justrdc          ONLY install ROCm Radeon Data Center Monitor tool -
                      attempts to install rdcX.Y.Z package corresponding to rev
@@ -132,7 +132,7 @@ optional arguments:
                      space and installation time
 
 ```
-# [Unofficial] V1.21 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
+# [Unofficial] V1.24 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
 ## NOTE: This can be used to amdgpu-dkms* packages for ROCm release starting with 4.5
 ## Currently, only support 4.5 and newer releases
 #
@@ -141,30 +141,30 @@ optional arguments:
 Download the Python3 script:
   wget -O amdgpuinst.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
 
-Example: Install ROCm 5.2 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
-  sudo python3 ./amdgpuinst.py --rev 5.2.0
+Example: Install ROCm 5.3 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
+  sudo python3 ./amdgpuinst.py --rev 5.3.0
 
-Example: List ROCm 5.2 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
-  sudo python3 ./amdgpuinst.py --rev 5.2.0 --list
+Example: List ROCm 5.3 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
+  sudo python3 ./amdgpuinst.py --rev 5.3.0 --list
 
-Example: List ROCm 5.1.3 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
-  sudo python3 ./amdgpuinst.py --rev 5.1.3 --list
+Example: List ROCm 5.2.3 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
+  sudo python3 ./amdgpuinst.py --rev 5.2.3 --list
 
 ```
 
 # [Unofficial] Interactive ROCm Uninstall Utility
-## NOTE: Does not uninstall ROCm Kernel packages (rock-dkms rock-dkms-firmware) 
+## NOTE: Does not uninstall ROCm Kernel packages (amdgpu-dkms amdgpu-dkms-firmware) 
 ##       unless "all" option is specified
 #### To uninstall ROCm kernel
-**CentOS/RHEL rpm Commands to UNINSTALL rock-dkms rock-dkms-firmware packages ONLY**
+**CentOS/RHEL rpm Commands to UNINSTALL amdgpu-dkms amdgpu-dkms-firmware packages ONLY**
 ```
-  sudo rpm -evh rock-dkms rock-dkms-firmware (OR sudo rpm -evh --nodeps rock-dkms rock-dkms-firmware)
+  sudo rpm -evh amdgpu-dkms amdgpu-dkms-firmware (OR sudo rpm -evh --nodeps amdgpu-dkms amdgpu-dkms-firmware)
   sudo reboot
 ```
-**Ubuntu dpkg Commands to UNINSTALL rock-dkms rock-dkms-firmware packages ONLY**
+**Ubuntu dpkg Commands to UNINSTALL amdgpu-dkms amdgpu-dkms-firmware packages ONLY**
 ```
-  sudo dpkg -r --force-all rock-dkms rock-dkms-firmware
-  sudo dpkg --purge --force-all rock-dkms rock-dkms-firmware
+  sudo dpkg -r --force-all amdgpu-dkms amdgpu-dkms-firmware
+  sudo dpkg --purge --force-all amdgpu-dkms amdgpu-dkms-firmware
   sudo reboot
 ```
 
