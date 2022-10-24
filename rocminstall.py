@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.53: 5.3.x release
 # V1.52: 5.2.x release
 # V1.51: Fix rocm gpgkey path
 # V1.50: Add support for 5.1.3
@@ -291,7 +292,8 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype):
         or "4.5.1" in revstring or "4.5.2" in revstring
         or "5.0.1" in revstring or "5.0.2" in revstring
         or "5.1.1" in revstring or "5.1.2" in revstring or "5.1.3" in revstring
-        or "5.2.1" in revstring or "5.2.2" in revstring or "5.2.3" in revstring):
+        or "5.2.1" in revstring or "5.2.2" in revstring or "5.2.3" in revstring
+        or "5.3.1" in revstring or "5.3.2" in revstring or "5.3.3" in revstring):
         patrevstr = revstring[0:5] # adjust search pattern to X.Y
     elif len(revstring) == 3:
         patrevstr = revstring[0:3] # adjust search pattern to X.Y
@@ -360,7 +362,8 @@ def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
         or "4.5.1" in revstring or "4.5.2" in revstring
         or "5.0.1" in revstring or "5.0.2" in revstring
         or "5.1.1" in revstring or "5.1.2" in revstring or "5.1.3" in revstring
-        or "5.2.1" in revstring or "5.2.2" in revstring or "5.2.3" in revstring):
+        or "5.2.1" in revstring or "5.2.2" in revstring or "5.2.3" in revstring
+        or "5.3.1" in revstring or "5.3.2" in revstring or "5.3.3" in revstring):
         patrevstr = revstring[0:5] # adjust search pattern to X.Y
     elif len(revstring) == 3:
         patrevstr = revstring[0:3] # adjust search pattern to X.Y
@@ -403,7 +406,8 @@ def get_justrdc_pkglist(rocmurl, revstring, pkgtype):
         or "4.5.1" in revstring or "4.5.2" in revstring
         or "5.0.1" in revstring or "5.0.2" in revstring
         or "5.1.1" in revstring or "5.1.2" in revstring or "5.1.3" in revstring
-        or "5.2.1" in revstring or "5.2.2" in revstring or "5.2.3" in revstring):
+        or "5.2.1" in revstring or "5.2.2" in revstring or "5.2.3" in revstring
+        or "5.3.1" in revstring or "5.3.2" in revstring or "5.3.3" in revstring):
         patrevstr = revstring[0:5] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
         patrevstr = revstring[0:3] # adjust pat to X.Y
@@ -445,7 +449,8 @@ def get_pkglist(rocmurl, revstring, pkgtype):
         or "4.5.1" in revstring or "4.5.2" in revstring
         or "5.0.1" in revstring or "5.0.2" in revstring
         or "5.1.1" in revstring or "5.1.2" in revstring or "5.1.3" in revstring
-        or "5.2.1" in revstring or "5.2.2" in revstring or "5.2.3" in revstring):
+        or "5.2.1" in revstring or "5.2.2" in revstring or "5.2.3" in revstring
+        or "5.3.1" in revstring or "5.3.2" in revstring or "5.3.3" in revstring):
         patrevstr = revstring[0:5] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
         patrevstr = revstring[0:3] # adjust pat to X.Y
@@ -514,7 +519,8 @@ def workaround_dummy_versionfile_deb(args, rocmbaseurl):
         or args.revstring[0] == "4.5.1" or args.revstring[0] == "4.5.2"
         or args.revstring[0] == "5.0.1" or args.revstring[0] == "5.0.2"
         or args.revstring[0] == "5.1.1" or args.revstring[0] == "5.1.2" or args.revstring[0] == "5.1.3"
-        or args.revstring[0] == "5.2.1" or args.revstring[0] == "5.2.2" or args.revstring[0] == "5.2.3"):
+        or args.revstring[0] == "5.2.1" or args.revstring[0] == "5.2.2" or args.revstring[0] == "5.2.3"
+        or args.revstring[0] == "5.3.1" or args.revstring[0] == "5.3.2" or args.revstring[0] == "5.3.3"):
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
     else:
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
@@ -536,7 +542,8 @@ def workaround_dummy_versionfile_rpm(args, rocmbaseurl):
         or args.revstring[0] == "4.5.1" or args.revstring[0] == "4.5.2"
         or args.revstring[0] == "5.0.1" or args.revstring[0] == "5.0.2"
         or args.revstring[0] == "5.1.1" or args.revstring[0] == "5.1.2" or args.revstring[0] == "5.1.3"
-        or args.revstring[0] == "5.2.1" or args.revstring[0] == "5.2.2" or args.revstring[0] == "5.2.3"):
+        or args.revstring[0] == "5.2.1" or args.revstring[0] == "5.2.2" or args.revstring[0] == "5.2.3"
+        or args.revstring[0] == "5.3.1" or args.revstring[0] == "5.3.2" or args.revstring[0] == "5.3.3"):
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
     else:
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
@@ -983,7 +990,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.52]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.53]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1078,7 +1085,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.52 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.53 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
