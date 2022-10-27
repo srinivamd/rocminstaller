@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the amdfwflash utility
+# V0.4: fix list
 # V0.3: exit on amdgpu driver
 # V0.2: fix ubuntu
 # V0.1: Initial version 10.26.2022
@@ -480,11 +481,11 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V0.3 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V0.4 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     if is_amdgpu_driver_loaded():
         print("amdgpu driver is LOADED. Please blacklist amdgpu and try again")
-		sys.exit(0)
+        sys.exit(0)
     else:
         print("amdgpu driver is NOT LOADED")
 
@@ -527,14 +528,6 @@ if __name__ == "__main__":
        SLES_TYPE : ZYPPER_CMD + " install amdfwflash "
     }[ostype]
 
-    #
-    # If --list specified, print the package list and exit
-    #
-    if args.listonly is True:
-        print("List device\n")
-        list_devices()
-        sys.exit(0)
-
     # for Ubuntu/Debian
     if ostype is UBUNTU_TYPE:
         setup_debian_repo(args, fwbaseurl, "ubuntu")
@@ -559,6 +552,14 @@ if __name__ == "__main__":
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
         print(" Unexpected error encountered! Did you forget sudo?")
+
+    #
+    # If --list specified, print the package list and exit
+    #
+    if args.listonly is True:
+        print("List device\n")
+        list_devices()
+        sys.exit(0)
 
     if args.updateifwi is True:
         print("Update IFWI")
