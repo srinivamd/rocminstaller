@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the amdfwflash utility
+# V0.3: exit on amdgpu driver
 # V0.2: fix ubuntu
 # V0.1: Initial version 10.26.2022
 #
@@ -479,7 +480,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V0.2 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V0.3 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     if is_amdgpu_driver_loaded():
         print("amdgpu driver is LOADED. Please blacklist amdgpu and try again")
