@@ -5,7 +5,8 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the amdfwflash utility
-# V1.0: Initial version 10.26.2022
+# V0.2: fix ubuntu
+# V0.1: Initial version 10.26.2022
 #
 from urllib import request
 from urllib.request import urlretrieve
@@ -24,7 +25,7 @@ fwupdatorurl = { "1.0" :
         "rhel8" : "https://repo.radeon.com/fwupdator/amdfwflash/.1.0/rpm",
         "centos9" : "https://repo.radeon.com/fwupdator/amdfwflash/.1.0/rpm",
         "rhel9" : "https://repo.radeon.com/fwupdator/amdfwflash/.1.0/rpm",
-        "ubuntu" : "https://repo.radeon.com/fwupdator/amdfwflash/.1.0/rpm",
+        "ubuntu" : "https://repo.radeon.com/fwupdator/amdfwflash/.1.0/deb",
         "centos" : "https://repo.radeon.com/fwupdator/amdfwflash/.1.0/rpm"
         }
     }
@@ -478,7 +479,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V0.1 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V0.2 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     if is_amdgpu_driver_loaded():
         print("amdgpu driver is LOADED. Please blacklist amdgpu and try again")
