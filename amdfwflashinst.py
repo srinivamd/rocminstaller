@@ -483,6 +483,7 @@ if __name__ == "__main__":
 
     if is_amdgpu_driver_loaded():
         print("amdgpu driver is LOADED. Please blacklist amdgpu and try again")
+		sys.exit(0)
     else:
         print("amdgpu driver is NOT LOADED")
 
