@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the amdfwflash utility
+# V0.6: removed code duplication for apt update cmd
 # V0.5: sbin
 # V0.4: fix list
 # V0.3: exit on amdgpu driver
@@ -350,14 +351,6 @@ def setup_debian_repo(args, fetchurl, ubuntutype):
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
-
-        try:
-            ps1 = subprocess.Popen(aptupdate.split(), bufsize=0).communicate()[0]
-        except subprocess.CalledProcessError as err:
-            for line in str.splitlines(err.output.decode('utf-8')):
-                print(line)
-
-
 
 def remove_debian_repo(args, fetchurl):
     global rocklist
