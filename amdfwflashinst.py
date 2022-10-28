@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the amdfwflash utility
+# V0.5: sbin
 # V0.4: fix list
 # V0.3: exit on amdgpu driver
 # V0.2: fix ubuntu
@@ -47,7 +48,7 @@ ECHO_CMD = "/bin/echo"
 TEE_CMD = "/usr/bin/tee"
 LSMOD_CMD = "/sbin/lsmod"
 GREP_CMD = "/bin/grep"
-AMDFWFLASH_CMD = "/opt/amdfwflash/bin/amdfwflash"
+AMDFWFLASH_CMD = "/opt/amdfwflash/sbin/amdfwflash"
 SED_CMD = "/bin/sed"
 
 # Package type suffixes
@@ -481,7 +482,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V0.4 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V0.5 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     if is_amdgpu_driver_loaded():
         print("amdgpu driver is LOADED. Please blacklist amdgpu and try again")
