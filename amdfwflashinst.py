@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the amdfwflash utility
+# V0.7: tar saved ifwi after rollback, update
 # V0.6: removed code duplication for apt update cmd
 # V0.5: sbin
 # V0.4: fix list
@@ -51,6 +52,7 @@ LSMOD_CMD = "/sbin/lsmod"
 GREP_CMD = "/bin/grep"
 AMDFWFLASH_CMD = "/opt/amdfwflash/sbin/amdfwflash"
 SED_CMD = "/bin/sed"
+TAR_CMD = "/bin/tar"
 
 # Package type suffixes
 PKGTYPE_RPM = "rpm"
@@ -173,6 +175,24 @@ def list_devices():
             print(line)
        return False
     return True
+
+# tar saved ifwi
+def tar_saved_ifwi(args):
+    if args.destdir is True:
+        destdir = args.destdir[0]
+    else:
+        destdir = "./"  # default current dir
+
+    # use timestamp to create unique tar filename
+    tar_cmd = TAR_CMD + " -cvf  " + destdir + "saved_ifwi" + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".tar " + "/tmp/amdfwflash/ifwi/backup "
+    try:
+        ps1 = subprocess.Popen(shlex.split(tar_cmd), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+       for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+       return False
+    return True
+
 
 # Setup/remove repo
 def setup_sles_zypp_repo(args, fetchurl):
@@ -390,12 +410,12 @@ if __name__ == "__main__":
         prefix_chars='-')
     parser.add_argument('--rev', nargs=1, dest='revstring', default='rpm',
         help=('specifies release version '
-              ' Example: --rev 1.0 for amdfwflash 1.0'
+              ' Example: sudo python3 ./amdfwflashint.py --rev 1.0 for amdfwflash 1.0'
               )
               )
     parser.add_argument('--destdir', nargs=1, dest='destdir', default='.',
-        help=('specify directory where to download RPM'
-              ' before installation. Default: current directory '
+        help=('specify directory where to save old IFWI '
+              ' after update. Default: current directory '
               ' --destdir /tmp to use /tmp directory')
               )
     parser.add_argument('--update', dest='updateifwi', action='store_true',
@@ -475,7 +495,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V0.5 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V0.7 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     if is_amdgpu_driver_loaded():
         print("amdgpu driver is LOADED. Please blacklist amdgpu and try again")
@@ -558,9 +578,11 @@ if __name__ == "__main__":
     if args.updateifwi is True:
         print("Update IFWI")
         update_ifwi()
+        tar_saved_ifwi(args)
     elif args.rollbackifwi is True:
         print("Rollback IFWI")
         rollback_ifwi()
+        tar_saved_ifwi(args)
 
     if ostype is CENTOS_TYPE or ostype is CENTOS8_TYPE or ostype is RHEL9_TYPE:
         remove_centos_repo(args, fwbaseurl)
