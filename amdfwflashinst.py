@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the amdfwflash utility
+# V0.8: destdir fix
 # V0.7: tar saved ifwi after rollback, update
 # V0.6: removed code duplication for apt update cmd
 # V0.5: sbin
@@ -178,13 +179,12 @@ def list_devices():
 
 # tar saved ifwi
 def tar_saved_ifwi(args):
-    if args.destdir is True:
-        destdir = args.destdir[0]
-    else:
-        destdir = "./"  # default current dir
-
     # use timestamp to create unique tar filename
-    tar_cmd = TAR_CMD + " -cvf  " + destdir + "saved_ifwi" + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".tar " + "/tmp/amdfwflash/ifwi/backup "
+    tar_cmd = (TAR_CMD + " -cvf  " + args.destdir[0] + "/" + "saved_ifwi"
+        + datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".tar "
+        + "/tmp/amdfwflash/ifwi/backup ")
+    print("Archiving save IFWI image: ")
+    print(tar_cmd)
     try:
         ps1 = subprocess.Popen(shlex.split(tar_cmd), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
@@ -495,7 +495,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V0.7 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V0.8 amdfwflashinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     if is_amdgpu_driver_loaded():
         print("amdgpu driver is LOADED. Please blacklist amdgpu and try again")
