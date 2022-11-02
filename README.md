@@ -2,20 +2,20 @@
 ***Steps to install/uninstall ROCm (multiple releases side-by-side)***
 ```
 1. Download amdgpuinst.py script, install ROCm AMDGPU DKMS packages and reboot:
-  wget -O amdgpuinst.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
+  wget -O amdgpuinst.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
 
 Example: Install ROCm DKMS/kernel packages amdgpu-dkms and amdgpu-dkms-firmware
   sudo python3 ./amdgpuinst.py --rev 5.1.1
   sudo reboot
 
 2. Download rocminstall.py script to install ROCm User Level Packages:
-  wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
+  wget -O rocminstall.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 Example: Install ROCm [add --nomiopenkernels to exclude pre-built miopenkernels]
   sudo python3 ./rocminstall.py --rev 5.1
 
 #### UNINSTALL ROCM
 1. To uninstall ROCm, download the rocmuninstall.sh script, run with version or "all":
- wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocmuninstall.sh
+ wget -O rocmuninstall.sh --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocmuninstall.sh
 
 Example: To uninstall ROCm 5.0 packages use (requires sudo):
     sudo sh ./rocmuninstall.sh 5.0.0  [use "all" to uninstall user AND kernel packages]
@@ -77,11 +77,11 @@ Example: To uninstall ROCm 5.0 packages use (requires sudo):
 
 ## Section: Install ROCm
 #### Download Python3 rocminstall.py script:
-***wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
+***wget -O rocminstall.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py***
 
 ```
 Example: Install ROCm, including kernel components (assumes dkms, kernel header, gcc preinstalled)
-  wget -O rocminstall.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
+  wget -O rocminstall.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 
 Example: Install ROCm, excluding pre-built miopenkernels (faster install)
   sudo python3 ./rocminstall.py --rev 5.1 --nomiopenkernels
@@ -139,7 +139,7 @@ optional arguments:
 ### Usage: To install ROCm kernel packages
 ```
 Download the Python3 script:
-  wget -O amdgpuinst.py --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
+  wget -O amdgpuinst.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
 
 Example: Install ROCm 5.3 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
   sudo python3 ./amdgpuinst.py --rev 5.3.0
@@ -161,22 +161,21 @@ Example: List ROCm 5.2.3 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
   sudo rpm -evh amdgpu-dkms amdgpu-dkms-firmware (OR sudo rpm -evh --nodeps amdgpu-dkms amdgpu-dkms-firmware)
   sudo reboot
 ```
-**Ubuntu dpkg Commands to UNINSTALL amdgpu-dkms amdgpu-dkms-firmware packages ONLY**
+**Ubuntu Commands to UNINSTALL amdgpu-dkms amdgpu-dkms-firmware packages ONLY**
 ```
-  sudo dpkg -r --force-all amdgpu-dkms amdgpu-dkms-firmware
-  sudo dpkg --purge --force-all amdgpu-dkms amdgpu-dkms-firmware
+  sudo apt remove amdgpu-core amdgpu-dkms amdgpu-dkms-firmware
   sudo reboot
 ```
 
 ### Steps to Run rocmuninstall.sh Script
 #### Download the rocmuninstall.sh shell script:
-***wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocmuninstall.sh***
+***wget -O rocmuninstall.sh --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocmuninstall.sh***
 #### NOTE: User will be prompted with list of selected packages to confirm uninstallation.
 
 ```
 Examples
 # Download the rocmuninstall.sh script
- wget -O rocmuninstall.sh --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocmuninstall.sh
+ wget -O rocmuninstall.sh --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocmuninstall.sh
 
  Example: To uninstall ROCm packages use (requires sudo):
     sudo sh ./rocmuninstall.sh 5.1.0  [Note: uninstalls version 5.1.0 packages]
