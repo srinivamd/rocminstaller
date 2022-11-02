@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.54: RHEL8, RHEL9 fix
 # V1.53: 5.3.x release
 # V1.52: 5.2.x release
 # V1.51: Fix rocm gpgkey path
@@ -94,6 +95,9 @@ import datetime
 # Set ROCm Release Package Distribution repo baseURL below
 # External ROCM release baseurl for rpm/yum: http://repo.radeon.com/rocm/yum
 rocmcentos8_base = "http://repo.radeon.com/rocm/centos8/"
+rocmcentos9_base = "http://repo.radeon.com/rocm/rhel9/"
+rocmrhel8_base = "http://repo.radeon.com/rocm/rhel8/"
+rocmrhel9_base = "http://repo.radeon.com/rocm/rhel9/"
 rocmyum_base = "http://repo.radeon.com/rocm/yum/"
 rocmapt_base = "http://repo.radeon.com/rocm/apt/"
 rocmzyp_base = "http://repo.radeon.com/rocm/zyp/"
@@ -111,6 +115,7 @@ WGET_CMD = "/usr/bin/wget"
 ZYPPER_CMD = "/usr/bin/zypper"
 ECHO_CMD = "/bin/echo"
 TEE_CMD = "/usr/bin/tee"
+SUBSCRIBE_CMD = "/usr/bin/subscription-manager"
 
 # Package type suffixes
 PKGTYPE_RPM = "rpm"
@@ -119,12 +124,18 @@ PKGTYPE_DEB = "deb"
 # Supported OS types
 CENTOS_TYPE = "centos" # Version 7
 CENTOS8_TYPE = "centos8"
+CENTOS9_TYPE = "centos9"
 UBUNTU_TYPE = "ubuntu"
 DEBIAN_TYPE = "debian"
 SLES_TYPE = "sles"
 RHEL_TYPE = "rhel" # Version 7
+RHEL8_TYPE = "rhel8"
+RHEL9_TYPE = "rhel9"
 
 CENTOS_VERSION8_TYPESTRING = 'VERSION="8'
+CENTOS_VERSION9_TYPESTRING = 'VERSION="9'
+RHEL_VERSION8_TYPESTRING = 'VERSION_ID="8'
+RHEL_VERSION9_TYPESTRING = 'VERSION_ID="9'
 
 # OS release info
 ETC_OS_RELEASE = "/etc/os-release"
@@ -658,7 +669,7 @@ def setup_sles_zypp_repo(args, fetchurl):
     else:
         # Set up rocm repo for chosen rev to install
         # use rev specific rocm repo
-        zypprepo = "[rocm" + args.revstring[0] + "]\nenabled=1\nautorefresh=0\nbaseurl=" + fetchurl + "\ntype=rpm-md\ngpgcheck=0"
+        zypprepo = "[rocm" + args.revstring[0] + "]\nenabled=1\nautorefresh=0\nbaseurl=" + fetchurl + "\ntype=rpm-md\ngpgcheck=1\ngpgkey=https://repo.radeon.com/rocm/rocm.gpg.key"
         echocmd = ECHO_CMD + " -e '" + zypprepo + "' "
         repofilename = "/etc/zypp/repos.d/rocm" + args.revstring[0] + ".repo "
         teecmd = TEE_CMD + " " + repofilename + " "
@@ -687,6 +698,102 @@ def setup_sles_zypp_repo(args, fetchurl):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
 
+def setup_rhel9_repo(args, fetchurl):
+    global pkglist
+    global rocklist
+
+    if args.repourl:
+        pass
+        # use rev specific rocm repo
+    else:
+        # install ROCm dependencies - enable powertools - starting with ROCm 4.1.1!!
+        yumupdate = SUBSCRIBE_CMD + " repos --enable codeready-builder-for-rhel-9-x86_64-rpms "
+        try:
+            ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+        # Set up rocm repo for chosen rev to install
+        # use rev specific rocm repo
+        yumrepo = "[ROCm" + args.revstring[0] +"]\nname=ROCm\nbaseurl=" + fetchurl + "\nenabled=1\ngpgcheck=1\ngpgkey=https://repo.radeon.com/rocm/rocm.gpg.key"
+        echocmd = ECHO_CMD + " -e '" + yumrepo + "' "
+        repofilename = "/etc/yum.repos.d/rocm" + args.revstring[0] + ".repo"
+        teecmd = TEE_CMD + " " + repofilename + " "
+        try:
+            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+        # install ROCm dependencies - starting with ROCm 4.1.1!!
+        yumupdate = YUM_CMD + " install --assumeyes perl perl-File-Which perl-File-BaseDir perl-File-Copy-Recursive perl-URI-Encode "
+        try:
+            ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+        # clean repo
+        yumupdate = YUM_CMD + " clean all "
+        try:
+            ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+def setup_rhel8_repo(args, fetchurl):
+    global pkglist
+    global rocklist
+
+    if args.repourl:
+        pass
+        # use rev specific rocm repo
+    else:
+        # install ROCm dependencies - enable powertools - starting with ROCm 4.1.1!!
+        yumupdate = SUBSCRIBE_CMD + " repos --enable codeready-builder-for-rhel-8-x86_64-rpms "
+        try:
+            ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+        # Set up rocm repo for chosen rev to install
+        # use rev specific rocm repo
+        yumrepo = "[ROCm" + args.revstring[0] +"]\nname=ROCm\nbaseurl=" + fetchurl + "\nenabled=1\ngpgcheck=1\ngpgkey=https://repo.radeon.com/rocm/rocm.gpg.key"
+        echocmd = ECHO_CMD + " -e '" + yumrepo + "' "
+        repofilename = "/etc/yum.repos.d/rocm" + args.revstring[0] + ".repo"
+        teecmd = TEE_CMD + " " + repofilename + " "
+        try:
+            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+        # install ROCm dependencies - starting with ROCm 4.1.1!!
+        yumupdate = YUM_CMD + " install --assumeyes perl perl-File-Which perl-File-BaseDir perl-File-Copy-Recursive perl-URI-Encode "
+        try:
+            ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+        # clean repo
+        yumupdate = YUM_CMD + " clean all "
+        try:
+            ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
 def setup_centos_repo(args, fetchurl):
     global pkglist
     global rocklist
@@ -697,7 +804,7 @@ def setup_centos_repo(args, fetchurl):
     else:
         # Set up rocm repo for chosen rev to install
         # use rev specific rocm repo
-        yumrepo = "[ROCm" + args.revstring[0] +"]\nname=ROCm\nbaseurl=" + fetchurl + "\nenabled=1\ngpgcheck=0"
+        yumrepo = "[ROCm" + args.revstring[0] +"]\nname=ROCm\nbaseurl=" + fetchurl + "\nenabled=1\ngpgcheck=1\ngpgkey=https://repo.radeon.com/rocm/rocm.gpg.key"
         echocmd = ECHO_CMD + " -e '" + yumrepo + "' "
         repofilename = "/etc/yum.repos.d/rocm" + args.revstring[0] + ".repo"
         teecmd = TEE_CMD + " " + repofilename + " "
@@ -1068,7 +1175,7 @@ if __name__ == "__main__":
                 ostype = SLES_TYPE
                 break
             if RHEL_TYPE.lower() in line.lower():
-                ostype = CENTOS_TYPE
+                ostype = RHEL_TYPE
                 break
 
     # Detect CentOS8/RHEL8 to set the correct ROCm repo
@@ -1078,6 +1185,20 @@ if __name__ == "__main__":
                 if CENTOS_VERSION8_TYPESTRING.lower() in line.lower():
                     ostype = CENTOS8_TYPE
                     break
+                if CENTOS_VERSION9_TYPESTRING.lower() in line.lower():
+                    ostype = CENTOS9_TYPE
+                    break
+
+    if ostype is RHEL_TYPE:
+        with open(ETC_OS_RELEASE, 'r') as f:
+            for line in f:
+                if RHEL_VERSION8_TYPESTRING.lower() in line.lower():
+                    ostype = RHEL8_TYPE
+                    break
+                if RHEL_VERSION9_TYPESTRING.lower() in line.lower():
+                    ostype = RHEL9_TYPE
+                    break
+
 
     if ostype is None:
         print("Exiting: Unknown installed OS type")
@@ -1093,6 +1214,10 @@ if __name__ == "__main__":
     pkgtype = None
     pkgtype = {
         CENTOS8_TYPE : PKGTYPE_RPM,
+        CENTOS9_TYPE : PKGTYPE_RPM,
+        RHEL8_TYPE : PKGTYPE_RPM,
+        RHEL9_TYPE : PKGTYPE_RPM,
+        RHEL_TYPE : PKGTYPE_RPM,
         CENTOS_TYPE : PKGTYPE_RPM,
         UBUNTU_TYPE : PKGTYPE_DEB,
         SLES_TYPE : PKGTYPE_RPM
@@ -1109,7 +1234,11 @@ if __name__ == "__main__":
         else:
             rocmbaseurl = {
                 CENTOS8_TYPE : rocmcentos8_base,
+                CENTOS9_TYPE : rocmcentos9_base,
+                RHEL8_TYPE : rocmrhel8_base,
+                RHEL9_TYPE : rocmrhel9_base,
                 CENTOS_TYPE : rocmyum_base,
+                RHEL_TYPE : rocmyum_base,
                 UBUNTU_TYPE : rocmapt_base,
                 SLES_TYPE : rocmzyp_base
             }[ostype]
@@ -1165,7 +1294,11 @@ if __name__ == "__main__":
     #
     cmd = {
        CENTOS8_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
+       CENTOS9_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
+       RHEL8_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
+       RHEL9_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
        CENTOS_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
+       RHEL_TYPE : YUM_CMD + " localinstall --skip-broken --assumeyes ",
        UBUNTU_TYPE : APTGET_CMD + " --no-download --ignore-missing -y install ",
        SLES_TYPE : ZYPPER_CMD + " --no-gpg-checks install --allow-unsigned-rpm --no-recommends "
     }[ostype]
@@ -1222,10 +1355,16 @@ if __name__ == "__main__":
         else:
             fetchurl = rocmbaseurl + "/"
 
-    if ostype is CENTOS_TYPE:
+    if ostype is CENTOS_TYPE or ostype is RHEL_TYPE:
         setup_centos_repo(args, fetchurl)
     elif ostype is CENTOS8_TYPE:
         setup_centos8_repo(args, fetchurl)
+    elif ostype is CENTOS9_TYPE:
+        setup_centos9_repo(args, fetchurl)
+    elif ostype is RHEL8_TYPE:
+        setup_rhel8_repo(args, fetchurl)
+    elif ostype is RHEL9_TYPE:
+        setup_rhel9_repo(args, fetchurl)
     else:
         setup_sles_zypp_repo(args, fetchurl)
     # skip if --nokernel option is True
@@ -1264,10 +1403,10 @@ if __name__ == "__main__":
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
 #
-    if ostype is CENTOS_TYPE or ostype is CENTOS8_TYPE:
-        remove_centos_repo(args, fetchurl)
-    else:
+    if ostype is SLES_TYPE:
         remove_sles_zypp_repo(args, fetchurl)
+    else:
+        remove_centos_repo(args, fetchurl)
     workaround_dummy_versionfile_rpm(args, fetchurl)
 
     sys.exit(0)
