@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.55 No 5.3+ rocm support for centos fix
 # V1.54: RHEL8, RHEL9 fix
 # V1.53: 5.3.x release
 # V1.52: 5.2.x release
@@ -1232,16 +1233,19 @@ if __name__ == "__main__":
         if args.baseurl:
             rocmbaseurl = args.baseurl[0]
         else:
-            rocmbaseurl = {
-                CENTOS8_TYPE : rocmcentos8_base,
-                CENTOS9_TYPE : rocmcentos9_base,
-                RHEL8_TYPE : rocmrhel8_base,
-                RHEL9_TYPE : rocmrhel9_base,
-                CENTOS_TYPE : rocmyum_base,
-                RHEL_TYPE : rocmyum_base,
-                UBUNTU_TYPE : rocmapt_base,
-                SLES_TYPE : rocmzyp_base
-            }[ostype]
+            if ((ostype is CENTOS8_TYPE) and (args.revstring[0] > "5.2.3")):
+                rocmbaseurl = rocmrhel8_base
+            else:         
+                rocmbaseurl = {
+                    CENTOS8_TYPE : rocmcentos8_base,
+                    CENTOS9_TYPE : rocmcentos9_base,
+                    RHEL8_TYPE : rocmrhel8_base,
+                    RHEL9_TYPE : rocmrhel9_base,
+                    CENTOS_TYPE : rocmyum_base,
+                    RHEL_TYPE : rocmyum_base,
+                    UBUNTU_TYPE : rocmapt_base,
+                    SLES_TYPE : rocmzyp_base
+                }[ostype]
 
     if "3.1." in args.revstring[0]:
         if pkgtype is PKGTYPE_DEB:
