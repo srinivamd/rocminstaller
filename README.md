@@ -37,7 +37,8 @@ Example: To uninstall ROCm 5.0 packages use (requires sudo):
   RHEL9:
     sudo subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
     sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-
+  RockyLinux9:
+    sudo dnf --enablerepo=crb install perl-File-BaseDir
   sudo yum install dkms
   sudo yum install kernel-devel-`uname -r`
   sudo yum install python3
