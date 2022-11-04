@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.58: RockyL --enablerepo=crb
 # V1.57: Add Rocky Linux support
 # V1.55 No 5.3+ rocm support for centos fix
 # V1.54: RHEL8, RHEL9 fix
@@ -108,6 +109,7 @@ rocmzyp_base = "http://repo.radeon.com/rocm/zyp/"
 RM_F_CMD = "/bin/rm -f "
 RPM_CMD = "/usr/bin/rpm"
 YUM_CMD = "/usr/bin/yum"
+DNF_CMD = "/usr/bin/dnf"
 DPKG_CMD = "/usr/bin/dpkg"
 DPKGDEB_CMD = "/usr/bin/dpkg-deb"
 APTGET_CMD = "/usr/bin/apt-get"
@@ -853,6 +855,14 @@ def setup_centos9_repo(args, fetchurl):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
 
+        # install ROCm dependencies - enable crb perl
+        dnfupdate = DNF_CMD + " --enablerepo=crb install perl-File-BaseDir "
+        try:
+            ps1 = subprocess.Popen(dnfupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
         setup_centos_repo(args, fetchurl)
 
 def setup_centos8_repo(args, fetchurl):
@@ -867,6 +877,14 @@ def setup_centos8_repo(args, fetchurl):
         yumupdate = YUM_CMD + " config-manager --set-enabled powertools"
         try:
             ps1 = subprocess.Popen(yumupdate.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
+        # install ROCm dependencies - enable crb perl
+        dnfupdate = DNF_CMD + " --enablerepo=crb install perl-File-BaseDir "
+        try:
+            ps1 = subprocess.Popen(dnfupdate.split(), bufsize=0).communicate()[0]
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
@@ -1118,7 +1136,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.57]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.58]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1230,7 +1248,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.57 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.58 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
