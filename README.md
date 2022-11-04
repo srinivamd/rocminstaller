@@ -34,6 +34,10 @@ Example: To uninstall ROCm 5.0 packages use (requires sudo):
   sudo yum install gcc
   sudo yum install gcc-c++
   sudo yum install -y epel-release
+  RHEL9:
+    sudo subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
+    sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+
   sudo yum install dkms
   sudo yum install kernel-devel-`uname -r`
   sudo yum install python3
