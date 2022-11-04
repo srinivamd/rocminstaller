@@ -1166,7 +1166,7 @@ if __name__ == "__main__":
     with open(ETC_OS_RELEASE, 'r') as f:
         for line in f:
             if ROCKY_LINUX_TYPE.lower() in line.lower():
-                ostype = ROCK_LINUX_TYPE
+                ostype = ROCKY_LINUX_TYPE
                 break
             if CENTOS_TYPE.lower() in line.lower():
                 ostype = CENTOS_TYPE
