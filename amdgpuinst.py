@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.25: Rocky Linux
 # V1.24: 5.3 GA, RHEL9 add, drop bionic, centos8
 # V1.23: 5.3 RC
 # V1.22: add rhel9 for 5.2.3 GA
@@ -180,8 +181,8 @@ kernurl = { "4.5" :
         "centos" : "https://repo.radeon.com/amdgpu/22.20.3/rhel/7.9/main/x86_64/"
         },
         "5.3.0" :
-        { "sles" : "https://repo.radeon.com/amdgpu/5.3/sle/15.3/main/x86_64/",
-        "sles154" : "https://repo.radeon.com/amdgpu/5.3/sle/15.4/main/x86_64/",
+        { "sles" : "https://repo.radeon.com/amdgpu/5.3/sle/15.4/main/x86_64/",
+        "sles153" : "https://repo.radeon.com/amdgpu/5.3/sle/15.3/main/x86_64/",
         "centos8" : "https://repo.radeon.com/amdgpu/5.3/rhel/8.7/main/x86_64/",
         "rhel8" : "https://repo.radeon.com/amdgpu/5.3/rhel/8.7/main/x86_64/",
         "centos85" : "https://repo.radeon.com/amdgpu/5.3/rhel/8.5/main/x86_64/",
@@ -222,6 +223,7 @@ SLES_TYPE = "sles"
 RHEL_TYPE = "rhel" # Version 7
 RHEL8_TYPE = "rhel8"
 RHEL9_TYPE = "rhel9"
+ROCKY_LINUX_TYPE = "Rocky Linux"
 
 CENTOS_VERSION8_TYPESTRING = 'VERSION="8'
 CENTOS_VERSION9_TYPESTRING = 'VERSION="9'
@@ -646,7 +648,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.24]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.25]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -681,6 +683,9 @@ if __name__ == "__main__":
     ostype = None
     with open(ETC_OS_RELEASE, 'r') as f:
         for line in f:
+            if ROCKY_LINUX_TYPE.lower() in line.lower():
+                ostype = CENTOS_TYPE
+                break
             if CENTOS_TYPE.lower() in line.lower():
                 ostype = CENTOS_TYPE
                 break
@@ -729,7 +734,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.24 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.25 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
