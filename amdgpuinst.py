@@ -5,6 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.28: Ubuntu fix amdgpu-dkms pkgs
 # V1.27: 5.3.2 GA
 # V1.26: 5.4 RC
 # V1.25: Rocky Linux
@@ -659,11 +660,6 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
             rocklist = [ x for x in rocklist if "amdgpu-dkms-firmware" not in x ]
             # Download and Install amdgpu-dkms-firmware first (assumes only one)
             download_and_install_deb(args, rocmbaseurl, pkgn[0])
-        pkgn = [ x for x in rocklist if "amdgpu-dkms" in x ]
-        if pkgn:
-            rocklist = [ x for x in rocklist if "amdgpu-dkms" not in x ]
-            # Download and Install rock-dkms
-            download_and_install_deb(args, rocmbaseurl, pkgn[0])
         if rocklist:
             for pkgn in rocklist:
                 download_and_install_deb(args, rocmbaseurl, pkgn)
@@ -676,7 +672,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.27]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.28]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -762,7 +758,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.27 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.28 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype

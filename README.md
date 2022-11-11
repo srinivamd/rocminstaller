@@ -137,7 +137,7 @@ optional arguments:
                      space and installation time
 
 ```
-# [Unofficial] V1.27 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
+# [Unofficial] V1.28 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
 ## NOTE: This can be used to amdgpu-dkms* packages for ROCm release starting with 4.5
 ## Currently, only support 4.5 and newer releases
 #
