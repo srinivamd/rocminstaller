@@ -4,9 +4,10 @@
 #
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 # Modified by: Iris (Ci) Tian (ci.tian@amd.com)
-#     Sudharsan Thiruvengadam (Steve) (sudharsan.thiruvengadam@amd.com)
+# Modified by: Sudharsan Thiruvengadam (Steve) (sudharsan.thiruvengadam@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.60: Fix justrdc
 # V1.59: Fix 5.4 Ubuntu breakage
 # V1.58: RockyL --enablerepo=crb
 # V1.57: Add Rocky Linux support
@@ -377,7 +378,9 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype):
 def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
     global rocklist
-    if int(revstring[0]) > 4 or "4.5" in revstring:
+    if args.revstring[0] >= "5.4":
+        urlpath = rocmurl + "/dists/" + ubuntutype + "/main/binary-amd64/Packages"
+    elif int(revstring[0]) > 4 or "4.5" in revstring:
         urlpath = rocmurl + "/dists/ubuntu/main/binary-amd64/Packages"
     else:
         urlpath = rocmurl + "/dists/xenial/main/binary-amd64/Packages"
@@ -1144,7 +1147,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.59]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.60]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1265,7 +1268,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.59 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.60 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
