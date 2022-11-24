@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2021 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright (c) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
 #
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
@@ -13,6 +13,7 @@
 #
 # NOTE: To uninstall rock-dkms, rock-dkms-firmware ROCm kernel modules
 #       manually uninstall them and reboot the system
+# V1.6: fix SLES uninstall amdgpu
 # V1.5: Add amdgpu-core
 # V1.4: ROCm 4.5 support: Add amdgpu-dkms
 # V1.3: Fix miopenkernel uninstall
@@ -20,7 +21,7 @@
 # V1.1: Fix CentOS uninstall
 # V1.0: Initial version
 #
-echo "=== ROCm Uninstall Utility V1.5 ==="
+echo "=== ROCm Uninstall Utility V1.6 ==="
 /bin/date
 
 if [ $# -ne 1 ]
@@ -90,6 +91,10 @@ while true; do
                 /usr/bin/yum remove $pkglist $miopenkernelpkglist;
 	    else
                 /usr/bin/zypper remove $pkglist $miopenkernelpkglist;
+                if [ ${REV} = "all" ]
+                then
+                    /usr/bin/zypper remove amdgpu-core amdgpu-dkms-firmware amdgpu-dkms;
+                fi
 	    fi
 	    break;;
         [Nn]* ) echo "Aborting."; break;;
