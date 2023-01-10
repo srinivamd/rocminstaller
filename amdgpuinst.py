@@ -5,7 +5,7 @@
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
-# V1.33: 5.4.1 RC
+# V1.33: 5.4.2 RC
 # V1.32: 5.4.1 GA
 # V1.31: 5.4.1 RC
 # V1.30: 5.4 GA
