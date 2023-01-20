@@ -15,6 +15,16 @@ Example: Install ROCm DKMS/kernel packages amdgpu-dkms and amdgpu-dkms-firmware
 Example: Install ROCm [add --nomiopenkernels to exclude pre-built miopenkernels]
   sudo python3 ./rocminstall.py --rev 5.1
 ```
+#### UNINSTALL AMDGPU DRIVER
+1. To uninstall AMDGPU driver, uninstall `amdgpu-core`, `amdgpu-dkms` and `amdgpu-dkms-firmware` packages and reboot:
+```
+On Ubuntu:
+   sudo apt remove amdgpu-core amdgpu-dkms amdgpu-dkms-firmware
+   sudo reboot
+On RHEL, SLES:
+   sudo yum remove amdgpu-core amdgpu-dkms amdgpu-dkms-firmware
+   sudo reboot
+```
 #### UNINSTALL ROCM
 1. To uninstall ROCm, download the rocmuninstall.sh script, run with version or "all":
 ```
