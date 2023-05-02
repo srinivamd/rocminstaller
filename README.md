@@ -6,14 +6,14 @@
   wget -O amdgpuinst.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
 
 Example: Install ROCm DKMS/kernel packages amdgpu-dkms and amdgpu-dkms-firmware
-  sudo python3 ./amdgpuinst.py --rev 5.1.1
+  sudo python3 ./amdgpuinst.py --rev 5.5.0
   sudo reboot
 ```
 2. Download rocminstall.py script to install ROCm User Level Packages:
 ```
   wget -O rocminstall.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 Example: Install ROCm [add --nomiopenkernels to exclude pre-built miopenkernels]
-  sudo python3 ./rocminstall.py --rev 5.1
+  sudo python3 ./rocminstall.py --rev 5.5
 ```
 #### UNINSTALL AMDGPU DRIVER
 1. To uninstall AMDGPU driver, uninstall `amdgpu-core`, `amdgpu-dkms` and `amdgpu-dkms-firmware` packages and reboot:
@@ -101,13 +101,13 @@ Example: Install ROCm, including kernel components (assumes dkms, kernel header,
   wget -O rocminstall.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
 
 Example: Install ROCm, excluding pre-built miopenkernels (faster install)
-  sudo python3 ./rocminstall.py --rev 5.1 --nomiopenkernels
+  sudo python3 ./rocminstall.py --rev 5.5 --nomiopenkernels
 
 Example: Install ROCm including pre-built miopenkernels
-  sudo python3 ./rocminstall.py --rev 5.1
+  sudo python3 ./rocminstall.py --rev 5.5
 
 Example: Install ROCm packages in container (no kernel components)
-  sudo python3 ./rocminstall.py --rev 5.1.1 --nokernel
+  sudo python3 ./rocminstall.py --rev 5.4.3 --nokernel
 
 ```
 #### Usage
@@ -149,7 +149,7 @@ optional arguments:
                      space and installation time
 
 ```
-# [Unofficial] V1.34 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
+# [Unofficial] V1.38 ROCm AMDGPU DKMS Install Utility (amdgpuinst.py)
 ## NOTE: This can be used to amdgpu-dkms* packages for ROCm release starting with 4.5
 ## Currently, only support 4.5 and newer releases
 #
@@ -158,14 +158,14 @@ optional arguments:
 Download the Python3 script:
   wget -O amdgpuinst.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
 
-Example: Install ROCm 5.3 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
-  sudo python3 ./amdgpuinst.py --rev 5.3.0
+Example: Install ROCm 5.5 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
+  sudo python3 ./amdgpuinst.py --rev 5.5.0
 
-Example: List ROCm 5.3 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
-  sudo python3 ./amdgpuinst.py --rev 5.3.0 --list
+Example: List ROCm 5.5 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
+  sudo python3 ./amdgpuinst.py --rev 5.5.0 --list
 
-Example: List ROCm 5.2.3 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
-  sudo python3 ./amdgpuinst.py --rev 5.2.3 --list
+Example: List ROCm 5.4.3 kernel packages amdgpu-dkms and amdgpu-dkms-firmware
+  sudo python3 ./amdgpuinst.py --rev 5.4.3 --list
 
 ```
 
