@@ -7,6 +7,7 @@
 # Modified by: Sudharsan Thiruvengadam (Steve) (sudharsan.thiruvengadam@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.64: Fix revstring variable reference
 # V1.63: 5.6.x support
 # V1.62: 5.5.x support
 # V1.61: 5.4.x support
@@ -309,7 +310,7 @@ def get_pkglist311(rocmurl, revstring, pkgtype):
 def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype):
     global pkglist
     global rocklist
-    if args.revstring[0] >= "5.4":
+    if revstring >= "5.4":
         urlpath = rocmurl + "/dists/" + ubuntutype + "/main/binary-amd64/Packages"
     elif int(revstring[0]) >= 5 or "4.5" in revstring:
         urlpath = rocmurl + "/dists/ubuntu/main/binary-amd64/Packages"
