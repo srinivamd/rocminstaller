@@ -307,9 +307,15 @@ def get_pkglist311(rocmurl, revstring, pkgtype):
 # select packages with names pkgX.Y.Z
 #
 # debian/ubuntu
-def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype):
+def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype, ubuntudist=None):
     global pkglist
     global rocklist
+    if ubuntudist is None:
+        print("ubuntudists is None")
+    else:
+        print("ubuntudist value: ", ubuntudist)
+        ubuntutype = ubuntudist
+        
     if revstring >= "5.4":
         urlpath = rocmurl + "/dists/" + ubuntutype + "/main/binary-amd64/Packages"
     elif int(revstring[0]) >= 5 or "4.5" in revstring:
@@ -1215,6 +1221,10 @@ if __name__ == "__main__":
         help=('do not install pre-built miopenkernels packages        '
               ' - saves space and installation time')
               )
+    parser.add_argument('--ubuntudist', dest='ubuntudist', default=None, 
+            help=('specify Ubuntu distribution type, Default is None,' 
+                  ' Example: --ubuntudist jammy')
+                  )
 
     args = parser.parse_args();
 
@@ -1341,7 +1351,7 @@ if __name__ == "__main__":
         get_pkglist(args.repourl[0] + "/", args.revstring[0], pkgtype)
     elif args.baseurl:
         if pkgtype is PKGTYPE_DEB:
-            get_deb_pkglist(rocmbaseurl, args.revstring[0], pkgtype, ubuntutype)
+            get_deb_pkglist(rocmbaseurl, args.revstring[0], pkgtype, ubuntutype, args.ubuntudist)
         else:
             get_pkglist(rocmbaseurl, args.revstring[0], pkgtype)
     else:
@@ -1349,7 +1359,7 @@ if __name__ == "__main__":
             if args.justrdc is True:
                 get_deb_justrdc_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0], pkgtype)
             else:
-                get_deb_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0], pkgtype, ubuntutype)
+                get_deb_pkglist(rocmbaseurl + "/" + args.revstring[0], args.revstring[0], pkgtype, ubuntutype, args.ubuntudist)
         else:
             subdir = ""
             if args.revstring[0] > "5.0.2":
