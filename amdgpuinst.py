@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.43: 5.7.1 GA
 # V1.42: 5.7 GA
 # V1.41: 5.6.1 GA
 # V1.40: 5.6
@@ -355,6 +356,19 @@ kernurl = { "4.5" :
         "rhel91" : "https://repo.radeon.com/amdgpu/5.7/rhel/9.1/main/x86_64/",
         "ubuntu" : "https://repo.radeon.com/amdgpu/5.7/ubuntu",
         "centos" : "https://repo.radeon.com/amdgpu/5.7/rhel/7.9/main/x86_64/"
+        },
+        "5.7.1" :
+        { "sles" : "https://repo.radeon.com/amdgpu/5.7.1/sle/15.5/main/x86_64/",
+        "sles154" : "https://repo.radeon.com/amdgpu/5.7.1/sle/15.4/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/5.7.1/rhel/8.8/main/x86_64/",
+        "rhel8" : "https://repo.radeon.com/amdgpu/5.7.1/rhel/8.8/main/x86_64/",
+        "rhel87" : "https://repo.radeon.com/amdgpu/5.7.1/rhel/8.7/main/x86_64/",
+        "centos87" : "https://repo.radeon.com/amdgpu/5.7.1/rhel/8.7/main/x86_64/",
+        "centos9" : "https://repo.radeon.com/amdgpu/5.7.1/rhel/9.2/main/x86_64/",
+        "rhel9" : "https://repo.radeon.com/amdgpu/5.7.1/rhel/9.2/main/x86_64/",
+        "rhel91" : "https://repo.radeon.com/amdgpu/5.7.1/rhel/9.1/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/5.7.1/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/5.7.1/rhel/7.9/main/x86_64/"
         }
     }
 
