@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.66: 5.7.1 GA
 # V1.65: Added ubuntudist cmdline argument for docker use
 # V1.64: Fix revstring variable reference
 # V1.63: 5.6.x support
@@ -332,6 +333,8 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype, ubuntudist=None):
         or "5.5.1" in revstring or "5.5.2" in revstring or "5.5.3" in revstring
         or "5.6.1" in revstring or "5.6.2" in revstring or "5.6.3" in revstring):
         patrevstr = revstring[0:5] # adjust search pattern to X.Y
+    elif len(revstring) == 5:
+        patrevstr = revstring[0:5] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
         patrevstr = revstring[0:3] # adjust search pattern to X.Y
     else:
@@ -361,6 +364,7 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype, ubuntudist=None):
                 # 
                 if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', os.path.basename(pkgname))
                     or re.search(rf'^miopenkernel.*gfx.+db{patrevstr}', os.path.basename(pkgname))
+                    or re.search(rf'^miopen-hip-.*gfx.+db{patrevstr}', os.path.basename(pkgname))
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', os.path.basename(pkgname))):
                         pkgset.add(pkgname)
                         continue
@@ -407,6 +411,8 @@ def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
         or "5.5.1" in revstring or "5.5.2" in revstring or "5.5.3" in revstring
         or "5.6.1" in revstring or "5.6.2" in revstring or "5.6.3" in revstring):
         patrevstr = revstring[0:5] # adjust search pattern to X.Y
+    elif len(revstring) == 5:
+        patrevstr = revstring[0:5] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
         patrevstr = revstring[0:3] # adjust search pattern to X.Y
     else:
@@ -426,6 +432,7 @@ def get_deb_justrdc_pkglist(rocmurl, revstring, pkgtype):
                 # 
                 if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', os.path.basename(pkgname))
                     or re.search(rf'^miopenkernel.*gfx.+db{patrevstr}', os.path.basename(pkgname))
+                    or re.search(rf'^miopen-hip-.*gfx.+db{patrevstr}', os.path.basename(pkgname))
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', os.path.basename(pkgname))):
                         pkgset.add(pkgname)
                         continue
@@ -454,6 +461,8 @@ def get_justrdc_pkglist(rocmurl, revstring, pkgtype):
         or "5.5.1" in revstring or "5.5.2" in revstring or "5.5.3" in revstring
         or "5.6.1" in revstring or "5.6.2" in revstring or "5.6.3" in revstring):
         patrevstr = revstring[0:5] # adjust search pattern to X.Y.Z
+    elif len(revstring) == 5:
+        patrevstr = revstring[0:5] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
         patrevstr = revstring[0:3] # adjust pat to X.Y
     else:
@@ -473,6 +482,7 @@ def get_justrdc_pkglist(rocmurl, revstring, pkgtype):
                 # 
                 if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', pkgname)
                     or re.search(rf'^miopenkernel.*gfx.+db{patrevstr}', pkgname)
+                    or re.search(rf'^miopen-hip-.*gfx.+db{patrevstr}', pkgname)
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', pkgname)):
                         pkgset.add(pkgname)
                 # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
@@ -499,6 +509,8 @@ def get_pkglist(rocmurl, revstring, pkgtype):
         or "5.4.1" in revstring or "5.4.2" in revstring or "5.4.3" in revstring
         or "5.5.1" in revstring or "5.5.2" in revstring or "5.5.3" in revstring
         or "5.6.1" in revstring or "5.6.2" in revstring or "5.6.3" in revstring):
+        patrevstr = revstring[0:5] # adjust search pattern to X.Y.Z
+    elif len(revstring) == 5:
         patrevstr = revstring[0:5] # adjust search pattern to X.Y.Z
     elif len(revstring) == 3:
         patrevstr = revstring[0:3] # adjust pat to X.Y
@@ -529,7 +541,7 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                 # Use X.Y part of X.Y.Z revstring
                 # 
                 if (re.search(rf'^[a-zA-Z\-]+[a-zA-Z]{patrevstr}', pkgname)
-                    or re.search(rf'^miopenkernel.*gfx.+db{patrevstr}', pkgname)
+                    or re.search(rf'^miopen-hip-.*gfx.+db{patrevstr}', pkgname)
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', pkgname)):
                         pkgset.add(pkgname)
                 # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
@@ -573,6 +585,8 @@ def workaround_dummy_versionfile_deb(args, rocmbaseurl):
         or args.revstring[0] == "5.5.1" or args.revstring[0] == "5.5.2" or args.revstring[0] == "5.5.3"
         or args.revstring[0] == "5.6.1" or args.revstring[0] == "5.6.2" or args.revstring[0] == "5.6.3"):
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
+    elif len(args.revstring[0]) == 5:
+        touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
     else:
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
     try:
@@ -598,6 +612,8 @@ def workaround_dummy_versionfile_rpm(args, rocmbaseurl):
         or args.revstring[0] == "5.4.1" or args.revstring[0] == "5.4.2" or args.revstring[0] == "5.4.3"
         or args.revstring[0] == "5.5.1" or args.revstring[0] == "5.5.2" or args.revstring[0] == "5.5.3"
         or args.revstring[0] == "5.6.1" or args.revstring[0] == "5.6.2" or args.revstring[0] == "5.6.3"):
+        touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
+    elif len(args.revstring[0]) == 5:
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + "/.info/version"
     else:
         touchcmd = "touch /opt/rocm-" + args.revstring[0] + ".0/.info/version"
@@ -1174,7 +1190,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.63]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.66]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1299,7 +1315,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.63 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.66 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
