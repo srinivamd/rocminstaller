@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.67: Fix ubuntutype detection,only focal, jammy
 # V1.66: 5.7.1 GA
 # V1.65: Added ubuntudist cmdline argument for docker use
 # V1.64: Fix revstring variable reference
@@ -1190,7 +1191,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.66]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.67]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1276,10 +1277,6 @@ if __name__ == "__main__":
                 ostype = UBUNTU_TYPE
                 ubuntutype = FOCAL_TYPE
                 break
-            if UBUNTU_TYPE.lower() in line.lower():
-                ostype = UBUNTU_TYPE
-                ubuntutype = FOCAL_TYPE
-                break
             if SLES_TYPE.lower() in line.lower():
                 ostype = SLES_TYPE
                 break
@@ -1315,7 +1312,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.66 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.67 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
