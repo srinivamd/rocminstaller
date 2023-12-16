@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.45: 6.0 GA
 # V1.44: 6.0 RC
 # V1.43: 5.7.1 GA
 # V1.42: 5.7 GA
@@ -372,17 +373,17 @@ kernurl = { "4.5" :
         "centos" : "https://repo.radeon.com/amdgpu/5.7.1/rhel/7.9/main/x86_64/"
         },
         "6.0.0" :
-        { "sles" : "https://repo.radeon.com/amdgpu/.6.0/sle/15.5/main/x86_64/",
-        "sles154" : "https://repo.radeon.com/amdgpu/.6.0/sle/15.4/main/x86_64/",
-        "centos8" : "https://repo.radeon.com/amdgpu/.6.0/rhel/8.9/main/x86_64/",
-        "rhel8" : "https://repo.radeon.com/amdgpu/.6.0/rhel/8.9/main/x86_64/",
-        "rhel88" : "https://repo.radeon.com/amdgpu/.6.0/rhel/8.8/main/x86_64/",
-        "centos88" : "https://repo.radeon.com/amdgpu/.6.0/rhel/8.8/main/x86_64/",
-        "centos9" : "https://repo.radeon.com/amdgpu/.6.0/rhel/9.3/main/x86_64/",
-        "rhel9" : "https://repo.radeon.com/amdgpu/.6.0/rhel/9.3/main/x86_64/",
-        "rhel92" : "https://repo.radeon.com/amdgpu/.6.0/rhel/9.2/main/x86_64/",
-        "ubuntu" : "https://repo.radeon.com/amdgpu/.6.0/ubuntu",
-        "centos" : "https://repo.radeon.com/amdgpu/.6.0/rhel/7.9/main/x86_64/"
+        { "sles" : "https://repo.radeon.com/amdgpu/6.0/sle/15.5/main/x86_64/",
+        "sles154" : "https://repo.radeon.com/amdgpu/6.0/sle/15.4/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/6.0/rhel/8.9/main/x86_64/",
+        "rhel8" : "https://repo.radeon.com/amdgpu/6.0/rhel/8.9/main/x86_64/",
+        "rhel88" : "https://repo.radeon.com/amdgpu/6.0/rhel/8.8/main/x86_64/",
+        "centos88" : "https://repo.radeon.com/amdgpu/6.0/rhel/8.8/main/x86_64/",
+        "centos9" : "https://repo.radeon.com/amdgpu/6.0/rhel/9.3/main/x86_64/",
+        "rhel9" : "https://repo.radeon.com/amdgpu/6.0/rhel/9.3/main/x86_64/",
+        "rhel92" : "https://repo.radeon.com/amdgpu/6.0/rhel/9.2/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/6.0/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/6.0/rhel/7.9/main/x86_64/"
         }
     }
 
@@ -834,7 +835,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.44]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.45]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -920,7 +921,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.44 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.45 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
