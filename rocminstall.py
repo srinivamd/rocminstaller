@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright (c) 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 #
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 # Modified by: Iris (Ci) Tian (ci.tian@amd.com)
@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.68: Fix repourl pkg list, include mivisionx
 # V1.67: Fix ubuntutype detection,only focal, jammy
 # V1.66: 5.7.1 GA
 # V1.65: Added ubuntudist cmdline argument for docker use
@@ -526,11 +527,10 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                 # MIOpen-HIP conflicts with MIOpen-OpenCL from same repo
                 # default is MIOpen-HIP
                 if ("MIOpen-OpenCL".lower() in pkgname.lower()
-                    or "MIVisionX".lower() in pkgname.lower()
+                    or "MIVisionX-nvcc".lower() in pkgname.lower()
                     or "hip-nvcc".lower() in pkgname.lower()
                     or "nvidia".lower() in pkgname.lower()
                     or "rdc".lower() in pkgname.lower()
-                    or "rocfft-clients".lower() in pkgname.lower()
                     or "rocm-gdb-tests".lower() in pkgname.lower()
                     or "rccl-rdma-sharp".lower() in pkgname.lower()
                     or "hip_nvcc".lower() in pkgname.lower()):
@@ -1191,7 +1191,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.67]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.68]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1312,7 +1312,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.67 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.68 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
