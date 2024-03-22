@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 #
-# Copyright (c) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
+# Copyright (c) 2024 Advanced Micro Devices, Inc. All Rights Reserved.
 #
 # Author: Srinivasan Subramanian (srinivasan.subramanian@amd.com)
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.47: Update for 6.0.2, 6.1 RC has rhel 7 dir name change
+#        add --ubuntudist, --nokernel options for new rocdecode deps
 # V1.46: fix ubuntype to focal, jammy
 # V1.45: 6.0 GA
 # V1.44: 6.0 RC
@@ -385,6 +387,32 @@ kernurl = { "4.5" :
         "rhel92" : "https://repo.radeon.com/amdgpu/6.0/rhel/9.2/main/x86_64/",
         "ubuntu" : "https://repo.radeon.com/amdgpu/6.0/ubuntu",
         "centos" : "https://repo.radeon.com/amdgpu/6.0/rhel/7.9/main/x86_64/"
+        },
+        "6.0.2" :
+        { "sles" : "https://repo.radeon.com/amdgpu/6.0.2/sle/15.5/main/x86_64/",
+        "sles154" : "https://repo.radeon.com/amdgpu/6.0.2/sle/15.4/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/6.0.2/rhel/8.9/main/x86_64/",
+        "rhel8" : "https://repo.radeon.com/amdgpu/6.0.2/rhel/8.9/main/x86_64/",
+        "rhel88" : "https://repo.radeon.com/amdgpu/6.0.2/rhel/8.8/main/x86_64/",
+        "centos88" : "https://repo.radeon.com/amdgpu/6.0.2/rhel/8.8/main/x86_64/",
+        "centos9" : "https://repo.radeon.com/amdgpu/6.0.2/rhel/9.3/main/x86_64/",
+        "rhel9" : "https://repo.radeon.com/amdgpu/6.0.2/rhel/9.3/main/x86_64/",
+        "rhel92" : "https://repo.radeon.com/amdgpu/6.0.2/rhel/9.2/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/6.0.2/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/6.0.2/rhel/7.9/main/x86_64/"
+        },
+        "6.1.0" : # RC
+        { "sles" : "https://repo.radeon.com/amdgpu/.6.1/sle/15.5/main/x86_64/",
+        "sles154" : "https://repo.radeon.com/amdgpu/.6.1/sle/15.4/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/.6.1/rhel/8.9/main/x86_64/",
+        "rhel8" : "https://repo.radeon.com/amdgpu/.6.1/rhel/8.9/main/x86_64/",
+        "rhel88" : "https://repo.radeon.com/amdgpu/.6.1/rhel/8.8/main/x86_64/",
+        "centos88" : "https://repo.radeon.com/amdgpu/.6.1/rhel/8.8/main/x86_64/",
+        "centos9" : "https://repo.radeon.com/amdgpu/.6.1/rhel/9.3/main/x86_64/",
+        "rhel9" : "https://repo.radeon.com/amdgpu/.6.1/rhel/9.3/main/x86_64/",
+        "rhel92" : "https://repo.radeon.com/amdgpu/.6.1/rhel/9.2/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/.6.1/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/.6.1/rhel/7/main/x86_64/"
         }
     }
 
@@ -496,8 +524,11 @@ rocklist = []
 # select amdgpu-dkms and amdgpu-dkms-firmware packages
 #
 # debian/ubuntu
-def get_deb_pkglist(rocmurl, pkgtype, ubuntutype):
+def get_deb_pkglist(rocmurl, pkgtype, ubuntutype, ubuntudist=None):
     global rocklist
+    if ubuntudist is not None:
+        ubuntutype = ubuntudist
+
     urlpath = rocmurl + "/dists/" + ubuntutype + "/main/binary-amd64/Packages"
     try:
         urld = request.urlopen(urlpath)
@@ -508,6 +539,7 @@ def get_deb_pkglist(rocmurl, pkgtype, ubuntutype):
                 if ("amdgpu-dkms".lower() in pkgname.lower()
                     or "amdgpu-core".lower() in pkgname.lower()
                     or "libdrm2-amdgpu".lower() in pkgname.lower()
+                    or "amdgpu-multimedia".lower() in pkgname.lower()
                     or "libdrm-amdgpu".lower() in pkgname.lower()):
                         rockset.add(pkgname)
                         continue
@@ -536,6 +568,7 @@ def get_pkglist(rocmurl, pkgtype):
                 if ("amdgpu-dkms".lower() in pkgname.lower()
                     or "amdgpu-core".lower() in pkgname.lower()
                     or "libdrm2-amdgpu".lower() in pkgname.lower()
+                    or "amdgpu-multimedia".lower() in pkgname.lower()
                     or "libdrm-amdgpu".lower() in pkgname.lower()):
                         rockset.add(pkgname)
                         continue
@@ -836,7 +869,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.46]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.47]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -859,11 +892,19 @@ if __name__ == "__main__":
               ' as in http://repo.radeon.com/amdgpu/{apt, yum, zyp, centos8}/<REV> '
               ' Example: --repourl http://compute-artifactory/build/xyz')
               )
+    parser.add_argument('--nokernel', dest='nokernel', action='store_true',
+        help=('do not install amdgpu kernel packages, for example, '
+              ' used to install ROCm in docker, install amdgpu libdrm mesa libraries')
+              )
     parser.add_argument('--baseurl', nargs=1, dest='baseurl', default=None,
         help=('specify early access ROCm repo URL to use from where to download packages'
               ' as in http://repo.radeon.com/amdgpu/{apt, yum, zyp, centos8}/.. '
-              ' Example: --baseurl http://repo.radeon.com/amdgpu/private/bionic/')
+              ' Example: --baseurl http://repo.radeon.com/amdgpu/6.0.2/ubuntu/')
               )
+    parser.add_argument('--ubuntudist', dest='ubuntudist', default=None,
+            help=('specify Ubuntu distribution type, Default is None,'
+                  ' Example: --ubuntudist jammy')
+                  )
 
     args = parser.parse_args();
 
@@ -919,7 +960,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.46 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.47 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -952,12 +993,12 @@ if __name__ == "__main__":
         get_pkglist(args.repourl[0] + "/", pkgtype)
     if args.baseurl:
         if pkgtype is PKGTYPE_DEB:
-            get_deb_pkglist(rocmbaseurl, pkgtype, ubuntutype)
+            get_deb_pkglist(rocmbaseurl, pkgtype, ubuntutype, args.ubuntudist)
         else:
             get_pkglist(rocmbaseurl, pkgtype)
     else:
         if pkgtype is PKGTYPE_DEB:
-            get_deb_pkglist(rocmbaseurl + "/", pkgtype, ubuntutype)
+            get_deb_pkglist(rocmbaseurl + "/", pkgtype, ubuntutype, args.ubuntudist)
         else:
             get_pkglist(rocmbaseurl + "/", pkgtype)
 
@@ -980,6 +1021,9 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(1)
 
+    if args.nokernel is True:
+        rocklist = [ x for x in rocklist if "amdgpu-dkms" not in x ]
+        rocklist = [ x for x in rocklist if "amdgpu-core" not in x ]
     #
     # If --list specified, print the package list and exit
     #

@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.69: Update 6.1 RC, exclude rocdecode pkg by default, deps on amdgpu
 # V1.68: Fix repourl pkg list, include mivisionx
 # V1.67: Fix ubuntutype detection,only focal, jammy
 # V1.66: 5.7.1 GA
@@ -353,7 +354,8 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype, ubuntudist=None):
                     or "hip-nvcc".lower() in pkgname.lower()
                     or "nvidia".lower() in pkgname.lower()
                     or "rdc".lower() in pkgname.lower()
-                    or "rocfft-clients".lower() in pkgname.lower()
+                    or "-rpath".lower() in pkgname.lower()
+                    or "rocm-opencl-icd-loader".lower() in pkgname.lower()
                     or "rccl-rdma-sharp".lower() in pkgname.lower()
                     or "rocm-gdb-tests".lower() in pkgname.lower()
                     or "hip_nvcc".lower() in pkgname.lower()):
@@ -531,6 +533,8 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                     or "hip-nvcc".lower() in pkgname.lower()
                     or "nvidia".lower() in pkgname.lower()
                     or "rdc".lower() in pkgname.lower()
+                    or "-rpath".lower() in pkgname.lower()
+                    or "rocm-opencl-icd-loader".lower() in pkgname.lower()
                     or "rocm-gdb-tests".lower() in pkgname.lower()
                     or "rccl-rdma-sharp".lower() in pkgname.lower()
                     or "hip_nvcc".lower() in pkgname.lower()):
@@ -1172,12 +1176,14 @@ def download_install_rocm_deb(args, rocmbaseurl):
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
+        print(" Unexpected error encountered! Did you forget sudo?")
 
     try:
         ps1 = subprocess.Popen(aptinstcmd.split(), bufsize=0).communicate()[0]
     except subprocess.CalledProcessError as err:
         for line in str.splitlines(err.output.decode('utf-8')):
             print(line)
+        print(" Unexpected error encountered! Did you forget sudo?")
 
     try:
         ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
@@ -1191,7 +1197,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.68]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.69]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1241,6 +1247,10 @@ if __name__ == "__main__":
             help=('specify Ubuntu distribution type, Default is None,' 
                   ' Example: --ubuntudist jammy')
                   )
+    parser.add_argument('--withrocdecode', dest='withrocdecode', action='store_true',
+        help=('install rocdecode package, depends on mesa-amdgpu-multimedia from amdgpu repo '
+              ' - attempts to install rocdecodeX.Y.Z package corresponding to rev')
+              )
 
     args = parser.parse_args();
 
@@ -1312,7 +1322,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.68 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.69 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1422,6 +1432,11 @@ if __name__ == "__main__":
     # if no miopenkernels option, remove miopenkernels packages
     if args.nomiopenkernels is True:
         pkglist = [ x for x in pkglist if "miopenkernel" not in x ]
+
+    # if withrocdecode is not set, remove rocdecode package
+    if args.withrocdecode is None:
+        pkglist = [ x for x in pkglist if "rocdecode" not in x ]
+
 
     #
     # If --list specified, print the package list and exit
