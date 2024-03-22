@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.72: withrocdecode check bug fix
 # V1.71: Bug fix baseurl default check
 # V1.70: 6.1 deprecates rocm-ocl-icd, use rocm-opencl-blah
 #      : add baseurl default to override for internal docker builds
@@ -1198,7 +1199,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.70]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.72]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1323,7 +1324,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.70 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.72 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1435,7 +1436,7 @@ if __name__ == "__main__":
         pkglist = [ x for x in pkglist if "miopenkernel" not in x ]
 
     # if withrocdecode is not set, remove rocdecode package
-    if args.withrocdecode is None:
+    if args.withrocdecode is False:
         pkglist = [ x for x in pkglist if "rocdecode" not in x ]
 
     # if ROCm 6.1 or newer, remove rocm-ocl-icd
