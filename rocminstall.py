@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.71: Bug fix baseurl default check
 # V1.70: 6.1 deprecates rocm-ocl-icd, use rocm-opencl-blah
 #      : add baseurl default to override for internal docker builds
 # V1.69: Update 6.1 RC, exclude rocdecode pkg by default, deps on amdgpu
@@ -1345,7 +1346,7 @@ if __name__ == "__main__":
     if args.repourl:
         rocmbaseurl = args.repourl[0]
     else:
-        if not args.baseurl and args.baseurl != "default":
+        if not args.baseurl or args.baseurl != "default":
             rocmbaseurl = args.baseurl[0]
         else:
             if ((ostype is CENTOS8_TYPE) and (args.revstring[0] > "5.2.3")):
@@ -1371,7 +1372,7 @@ if __name__ == "__main__":
                 pkgtype)
     elif args.repourl:
         get_pkglist(args.repourl[0] + "/", args.revstring[0], pkgtype)
-    elif not args.baseurl and args.baseurl != "default":
+    elif not args.baseurl or args.baseurl != "default":
         if pkgtype is PKGTYPE_DEB:
             get_deb_pkglist(rocmbaseurl, args.revstring[0], pkgtype, ubuntutype, args.ubuntudist)
         else:
