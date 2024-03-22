@@ -8,6 +8,8 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.70: 6.1 deprecates rocm-ocl-icd, use rocm-opencl-blah
+#      : add baseurl default to override for internal docker builds
 # V1.69: Update 6.1 RC, exclude rocdecode pkg by default, deps on amdgpu
 # V1.68: Fix repourl pkg list, include mivisionx
 # V1.67: Fix ubuntutype detection,only focal, jammy
@@ -355,7 +357,6 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype, ubuntudist=None):
                     or "nvidia".lower() in pkgname.lower()
                     or "rdc".lower() in pkgname.lower()
                     or "-rpath".lower() in pkgname.lower()
-                    or "rocm-opencl-icd-loader".lower() in pkgname.lower()
                     or "rccl-rdma-sharp".lower() in pkgname.lower()
                     or "rocm-gdb-tests".lower() in pkgname.lower()
                     or "hip_nvcc".lower() in pkgname.lower()):
@@ -534,7 +535,6 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                     or "nvidia".lower() in pkgname.lower()
                     or "rdc".lower() in pkgname.lower()
                     or "-rpath".lower() in pkgname.lower()
-                    or "rocm-opencl-icd-loader".lower() in pkgname.lower()
                     or "rocm-gdb-tests".lower() in pkgname.lower()
                     or "rccl-rdma-sharp".lower() in pkgname.lower()
                     or "hip_nvcc".lower() in pkgname.lower()):
@@ -636,7 +636,7 @@ def download_and_install_nodeps_rpm(args, rocmbaseurl, pkgname):
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        if args.baseurl is None:
+        if args.baseurl is None or args.baseurl == "default":
             fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
         else:
             fetchurl = rocmbaseurl + "/"
@@ -665,7 +665,7 @@ def download_and_extract_nodeps_deb(args, rocmbaseurl, pkgname):
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        if args.baseurl is None:
+        if args.baseurl is None or args.baseurl == "default":
             fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
         else:
             fetchurl = rocmbaseurl + "/"
@@ -695,7 +695,7 @@ def download_and_install_deb(args, rocmbaseurl, pkgname):
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        if args.baseurl is None:
+        if args.baseurl is None or args.baseurl == "default":
             fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
         else:
             fetchurl = rocmbaseurl + "/"
@@ -1113,7 +1113,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
             download_and_extract_nodeps_deb(args, rocmbaseurl, pkgn[0])
         pkglist = [ x for x in pkglist if "rocm-dkms" not in x ]
 
-        if args.baseurl is None:
+        if args.baseurl is None or args.baseurl == "default":
             fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
         else:
             fetchurl = rocmbaseurl + "/"
@@ -1151,7 +1151,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        if args.baseurl is None:
+        if args.baseurl is None or args.baseurl == "default":
             fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/"
         else:
             fetchurl = rocmbaseurl + "/"
@@ -1197,7 +1197,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.69]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.70]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1322,7 +1322,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.69 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.70 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1345,7 +1345,7 @@ if __name__ == "__main__":
     if args.repourl:
         rocmbaseurl = args.repourl[0]
     else:
-        if args.baseurl:
+        if not args.baseurl and args.baseurl != "default":
             rocmbaseurl = args.baseurl[0]
         else:
             if ((ostype is CENTOS8_TYPE) and (args.revstring[0] > "5.2.3")):
@@ -1371,7 +1371,7 @@ if __name__ == "__main__":
                 pkgtype)
     elif args.repourl:
         get_pkglist(args.repourl[0] + "/", args.revstring[0], pkgtype)
-    elif args.baseurl:
+    elif not args.baseurl and args.baseurl != "default":
         if pkgtype is PKGTYPE_DEB:
             get_deb_pkglist(rocmbaseurl, args.revstring[0], pkgtype, ubuntutype, args.ubuntudist)
         else:
@@ -1437,6 +1437,10 @@ if __name__ == "__main__":
     if args.withrocdecode is None:
         pkglist = [ x for x in pkglist if "rocdecode" not in x ]
 
+    # if ROCm 6.1 or newer, remove rocm-ocl-icd
+    if args.revstring[0] >= "6.1":
+        pkglist = [ x for x in pkglist if "rocm-ocl-icd" not in x ]
+
 
     #
     # If --list specified, print the package list and exit
@@ -1471,7 +1475,7 @@ if __name__ == "__main__":
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        if args.baseurl is None:
+        if args.baseurl is None or args.baseurl == "default":
             if args.revstring[0] > "5.0.2":
                 fetchurl = rocmbaseurl + "/" + args.revstring[0] + "/main/"
             else:
