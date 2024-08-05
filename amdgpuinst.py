@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.48: 6.2 GA
 # V1.47: Update for 6.0.2, 6.1 RC has rhel 7 dir name change
 #        add --ubuntudist, --nokernel options for new rocdecode deps
 # V1.46: fix ubuntype to focal, jammy
@@ -401,18 +402,35 @@ kernurl = { "4.5" :
         "ubuntu" : "https://repo.radeon.com/amdgpu/6.0.2/ubuntu",
         "centos" : "https://repo.radeon.com/amdgpu/6.0.2/rhel/7.9/main/x86_64/"
         },
-        "6.1.0" : # RC
-        { "sles" : "https://repo.radeon.com/amdgpu/.6.1/sle/15.5/main/x86_64/",
-        "sles154" : "https://repo.radeon.com/amdgpu/.6.1/sle/15.4/main/x86_64/",
-        "centos8" : "https://repo.radeon.com/amdgpu/.6.1/rhel/8.9/main/x86_64/",
-        "rhel8" : "https://repo.radeon.com/amdgpu/.6.1/rhel/8.9/main/x86_64/",
-        "rhel88" : "https://repo.radeon.com/amdgpu/.6.1/rhel/8.8/main/x86_64/",
-        "centos88" : "https://repo.radeon.com/amdgpu/.6.1/rhel/8.8/main/x86_64/",
-        "centos9" : "https://repo.radeon.com/amdgpu/.6.1/rhel/9.3/main/x86_64/",
-        "rhel9" : "https://repo.radeon.com/amdgpu/.6.1/rhel/9.3/main/x86_64/",
-        "rhel92" : "https://repo.radeon.com/amdgpu/.6.1/rhel/9.2/main/x86_64/",
-        "ubuntu" : "https://repo.radeon.com/amdgpu/.6.1/ubuntu",
-        "centos" : "https://repo.radeon.com/amdgpu/.6.1/rhel/7/main/x86_64/"
+        "6.1.0" : 
+        { "sles" : "https://repo.radeon.com/amdgpu/6.1/sle/15.5/main/x86_64/",
+        "sles154" : "https://repo.radeon.com/amdgpu/6.1/sle/15.4/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/6.1/rhel/8.9/main/x86_64/",
+        "rhel8" : "https://repo.radeon.com/amdgpu/6.1/rhel/8.9/main/x86_64/",
+        "rhel88" : "https://repo.radeon.com/amdgpu/6.1/rhel/8.8/main/x86_64/",
+        "centos88" : "https://repo.radeon.com/amdgpu/6.1/rhel/8.8/main/x86_64/",
+        "centos9" : "https://repo.radeon.com/amdgpu/6.1/rhel/9.3/main/x86_64/",
+        "rhel9" : "https://repo.radeon.com/amdgpu/6.1/rhel/9.3/main/x86_64/",
+        "rhel92" : "https://repo.radeon.com/amdgpu/6.1/rhel/9.2/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/6.1/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/6.1/rhel/7/main/x86_64/"
+        }
+        "6.2.0" :
+        { "sles" : "https://repo.radeon.com/amdgpu/6.2/sle/15.6/main/x86_64/",
+        "sles154" : "https://repo.radeon.com/amdgpu/6.2/sle/15.4/main/x86_64/",
+        "sles155" : "https://repo.radeon.com/amdgpu/6.2/sle/15.5/main/x86_64/",
+        "centos8" : "https://repo.radeon.com/amdgpu/6.2/rhel/8.10/main/x86_64/",
+        "rhel8" : "https://repo.radeon.com/amdgpu/6.2/rhel/8.10/main/x86_64/",
+        "rhel88" : "https://repo.radeon.com/amdgpu/6.2/rhel/8.8/main/x86_64/",
+        "rhel89" : "https://repo.radeon.com/amdgpu/6.2/rhel/8.9/main/x86_64/",
+        "centos88" : "https://repo.radeon.com/amdgpu/6.2/rhel/8.8/main/x86_64/",
+        "centos89" : "https://repo.radeon.com/amdgpu/6.2/rhel/8.9/main/x86_64/",
+        "centos9" : "https://repo.radeon.com/amdgpu/6.2/rhel/9.4/main/x86_64/",
+        "rhel9" : "https://repo.radeon.com/amdgpu/6.2/rhel/9.4/main/x86_64/",
+        "rhel92" : "https://repo.radeon.com/amdgpu/6.2/rhel/9.2/main/x86_64/",
+        "rhel93" : "https://repo.radeon.com/amdgpu/6.2/rhel/9.3/main/x86_64/",
+        "ubuntu" : "https://repo.radeon.com/amdgpu/6.2/ubuntu",
+        "centos" : "https://repo.radeon.com/amdgpu/6.2/rhel/7/main/x86_64/"
         }
     }
 
@@ -869,7 +887,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.47]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.48]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -960,7 +978,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.47 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.48 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
