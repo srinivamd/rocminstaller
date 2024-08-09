@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.75: bug fix
 # V1.74: add noble, fix debian repo set up
 # V1.73: bug fix
 # V1.72: withrocdecode check bug fix
@@ -1026,7 +1027,7 @@ def setup_debian_repo(args, fetchurl, ubuntutype):
                 print(line)
 
         # use rev specific rocm repo
-        if int(args.revstring[0]) >= "5.4":
+        if args.revstring[0] >= "5.4":
             debrepo = "deb [arch=amd64] " + fetchurl + " " + ubuntutype + " main "
         elif int(args.revstring[0][0]) >= 5 or "4.5" in args.revstring[0]:
             debrepo = "deb [arch=amd64] " + fetchurl + " ubuntu main "
@@ -1206,7 +1207,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype, ubuntudist=None):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.74]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.75]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1335,7 +1336,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.74 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.75 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
