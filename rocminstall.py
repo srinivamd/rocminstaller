@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.74: add noble, fix debian repo set up
 # V1.73: bug fix
 # V1.72: withrocdecode check bug fix
 # V1.71: Bug fix baseurl default check
@@ -163,6 +164,7 @@ RHEL_VERSION9_TYPESTRING = 'VERSION_ID="9'
 
 FOCAL_TYPE = "focal"
 JAMMY_TYPE = "jammy"
+NOBLE_TYPE = "noble"
 
 # OS release info
 ETC_OS_RELEASE = "/etc/os-release"
@@ -1003,7 +1005,7 @@ def remove_sles_zypp_repo(args, fetchurl):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
 
-def setup_debian_repo(args, fetchurl):
+def setup_debian_repo(args, fetchurl, ubuntutype):
     global pkglist
     global rocklist
 
@@ -1024,7 +1026,9 @@ def setup_debian_repo(args, fetchurl):
                 print(line)
 
         # use rev specific rocm repo
-        if int(args.revstring[0][0]) >= 5 or "4.5" in args.revstring[0]:
+        if int(args.revstring[0]) >= "5.4":
+            debrepo = "deb [arch=amd64] " + fetchurl + " " + ubuntutype + " main "
+        elif int(args.revstring[0][0]) >= 5 or "4.5" in args.revstring[0]:
             debrepo = "deb [arch=amd64] " + fetchurl + " ubuntu main "
         else:
             debrepo = "deb [arch=amd64] " + fetchurl + " xenial main "
@@ -1100,9 +1104,11 @@ def remove_debian_repo(args, fetchurl):
 # 4. Remove rock-dkms-firmware, rock-dkms
 # 5. Install the remaining downloaded deb: apt install -y *.deb
 # 6. Remove remaining deb packages
-def download_install_rocm_deb(args, rocmbaseurl):
+def download_install_rocm_deb(args, rocmbaseurl, ubuntutype, ubuntudist=None):
     global pkglist
     global rocklist
+    if ubuntudist is not None:
+        ubuntutype = ubuntudist
 
     if args.repourl:
         pass
@@ -1121,7 +1127,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
         else:
             fetchurl = rocmbaseurl + "/"
         # Set up rocm repo for chosen rev to install
-        setup_debian_repo(args, fetchurl)
+        setup_debian_repo(args, fetchurl, ubuntutype)
 
     # Download and install from custom repo URL
     rmcmd = RM_F_CMD
@@ -1200,7 +1206,7 @@ def download_install_rocm_deb(args, rocmbaseurl):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.73]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.74]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1282,6 +1288,10 @@ if __name__ == "__main__":
             if DEBIAN_TYPE.lower() in line.lower():
                 ostype = UBUNTU_TYPE
                 break
+            if NOBLE_TYPE.lower() in line.lower():
+                ostype = UBUNTU_TYPE
+                ubuntutype = NOBLE_TYPE
+                break
             if JAMMY_TYPE.lower() in line.lower():
                 ostype = UBUNTU_TYPE
                 ubuntutype = JAMMY_TYPE
@@ -1325,7 +1335,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.73 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.74 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1467,7 +1477,7 @@ if __name__ == "__main__":
     #
     # for Ubuntu/Debian
     if ostype is UBUNTU_TYPE:
-        download_install_rocm_deb(args, rocmbaseurl)
+        download_install_rocm_deb(args, rocmbaseurl, ubuntutype, args.ubuntudist)
         workaround_dummy_versionfile_deb(args, rocmbaseurl)
         remove_debian_repo(args, rocmbaseurl)
         sys.exit(0)
