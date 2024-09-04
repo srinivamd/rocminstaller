@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.50: add noble
 # V1.49: fix bug
 # V1.48: 6.2 GA
 # V1.47: Update for 6.0.2, 6.1 RC has rhel 7 dir name change
@@ -473,6 +474,7 @@ RHEL_VERSION9_TYPESTRING = 'VERSION="9'
 BIONIC_TYPE = "bionic"
 FOCAL_TYPE = "focal"
 JAMMY_TYPE = "jammy"
+NOBLE_TYPE = "noble"
 
 
 # OS release info
@@ -888,7 +890,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.49]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.50]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -937,6 +939,10 @@ if __name__ == "__main__":
             if CENTOS_TYPE.lower() in line.lower():
                 ostype = CENTOS_TYPE
                 break
+            if NOBLE_TYPE.lower() in line.lower():
+                ostype = UBUNTU_TYPE
+                ubuntutype = NOBLE_TYPE
+                break
             if JAMMY_TYPE.lower() in line.lower():
                 ostype = UBUNTU_TYPE
                 ubuntutype = JAMMY_TYPE
@@ -979,7 +985,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.49 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.50 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
