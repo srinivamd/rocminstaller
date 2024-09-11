@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.51: add default for baseurl
 # V1.50: add noble
 # V1.49: fix bug
 # V1.48: 6.2 GA
@@ -486,6 +487,10 @@ DOWNLOAD_DESTDIR = "./"
 # Is rock-dkms already installed? True if already installed
 #
 def check_rock_dkms(pkgtype):
+    # if no install, just listing packages, skip check
+    if args.listonly is True:
+        return False
+
     check_cmd = {
         PKGTYPE_RPM : RPM_CMD + " -q rock-dkms ",
         PKGTYPE_DEB : DPKG_CMD + " -l rock-dkms ",
@@ -612,7 +617,7 @@ def download_and_install_deb(args, rocmbaseurl, pkgname):
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        if args.baseurl is None:
+        if args.baseurl is None or args.baseurl[0] == "default":
             fetchurl = rocmbaseurl + "/"
         else:
             fetchurl = rocmbaseurl + "/"
@@ -859,7 +864,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
         pass
         # use rev specific rocm repo
     else:
-        if args.baseurl is None:
+        if args.baseurl is None or args.baseurl[0] == "default":
             fetchurl = rocmbaseurl + "/"
         else:
             fetchurl = rocmbaseurl + "/"
@@ -890,7 +895,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.50]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.51]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -985,7 +990,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.50 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.51 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1005,7 +1010,7 @@ if __name__ == "__main__":
     #
     if args.repourl:
         rocmbaseurl = args.repourl[0]
-    elif args.baseurl:
+    elif args.baseurl and args.baseurl[0] != "default":
         rocmbaseurl = args.baseurl[0]
     else:
         if args.revstring[0] in kernurl:
@@ -1016,7 +1021,7 @@ if __name__ == "__main__":
 
     if args.repourl:
         get_pkglist(args.repourl[0] + "/", pkgtype)
-    if args.baseurl:
+    if args.baseurl and args.baseurl[0] != "default":
         if pkgtype is PKGTYPE_DEB:
             get_deb_pkglist(rocmbaseurl, pkgtype, ubuntutype, args.ubuntudist)
         else:
@@ -1076,7 +1081,7 @@ if __name__ == "__main__":
     if args.repourl:
         fetchurl = args.repourl[0] + "/"
     else:
-        if args.baseurl is None:
+        if args.baseurl is None or args.baseurl[0] == "default":
             fetchurl = rocmbaseurl + "/"
         else:
             fetchurl = rocmbaseurl + "/"
