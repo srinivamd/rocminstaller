@@ -13,6 +13,7 @@
 #
 # NOTE: To uninstall rock-dkms, rock-dkms-firmware ROCm kernel modules
 #       manually uninstall them and reboot the system
+# V1.8: add new packages (6.2.2)
 # V1.7: add new packages
 # V1.6: fix SLES uninstall amdgpu
 # V1.5: Add amdgpu-core
@@ -22,7 +23,7 @@
 # V1.1: Fix CentOS uninstall
 # V1.0: Initial version
 #
-echo "=== ROCm Uninstall Utility V1.7 ==="
+echo "=== ROCm Uninstall Utility V1.8 ==="
 /bin/date
 
 if [ $# -ne 1 ]
@@ -58,18 +59,18 @@ then
     echo "Remove ALL ROCm packages"
     if [ "$pkgtype" = "deb" ]
     then
-        pkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|composa|amd-smi|aomp|amdgpu-core|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rocwmma|rpp|rdc|openmp-' | /usr/bin/awk '!/Status/ {print $2}' | /usr/bin/sort`
+        pkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|composa|amd-smi|aomp|amdgpu-core|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocal-|rocalu|rocprim|rocrand|rccl|rocspar|rocwmma|rpp|rdc|openmp-|omniperf|omnitrace' | /usr/bin/awk '!/Status/ {print $2}' | /usr/bin/sort`
     else
-        pkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|composa|amd-smi|aomp|amdgpu-core|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rocwmma|rpp|rdc|openmp-' | /usr/bin/sort`
+        pkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|composa|amd-smi|aomp|amdgpu-core|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocal-|rocalu|rocprim|rocrand|rccl|rocspar|rocwmma|rpp|rdc|openmp-|omniperf|omnitrace' | /usr/bin/sort`
     fi
 else
     echo "Remove ROCm packages for release $REV"
     if [ "$pkgtype" = "deb" ]
     then
-        pkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|composa|amd-smi|aomp|amdgpu-core|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rocwmma|rpp|rdc|openmp-' | /usr/bin/awk '!/Status/ {print $2}' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV} | /usr/bin/sort`
+        pkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|^ii  hip|hcc|hsa|rocm|atmi|^ii  comgr|composa|amd-smi|aomp|amdgpu-core|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocal-|rocalu|rocprim|rocrand|rccl|rocspar|rocwmma|rpp|rdc|openmp-|omniperf|omnitrace' | /usr/bin/awk '!/Status/ {print $2}' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV} | /usr/bin/sort`
         miopenkernelpkglist=`/usr/bin/dpkg -l | /bin/grep -i -E 'miopenkernel' | /bin/grep -E 'miopenkernels-gfx.+'${REV}'|miopenkernels-gfx.+db'${REV} | /usr/bin/awk '!/Status/ {print $2}' | /usr/bin/sort`
     else
-        pkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|composa|amd-smi|aomp|amdgpu-core|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocalu|rocprim|rocrand|rccl|rocspar|rocwmma|rpp|rdc|openmp-' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV} | /usr/bin/sort`
+        pkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'ocl-icd|kfdtest|llvm-amd|miopen|half|hip|hcc|hsa|rocm|atmi|comgr|composa|amd-smi|aomp|amdgpu-core|amdgpu-dkms|rock|mivision|migraph|rocprofiler|roctracer|rocbl|hipify|rocsol|rocthr|rocff|rocal-|rocalu|rocprim|rocrand|rccl|rocspar|rocwmma|rpp|rdc|openmp-|omniperf|omnitrace' | /bin/grep -E '^[a-zA-Z\-]+[a-zA-Z]'${REV}'|^[a-zA-Z\-]+lib64'${REV} | /usr/bin/sort`
         miopenkernelpkglist=`/usr/bin/rpm -qa | /bin/grep -i -E 'miopenkernel' | /bin/grep -E '^miopenkernels-gfx.+'${REV}'|^miopenkernels-gfx.+db'${REV} | /usr/bin/sort`
     fi
 fi
