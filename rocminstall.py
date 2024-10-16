@@ -1175,8 +1175,10 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype, ubuntudist=None):
     rocmdev = [ x for x in pkglist if "rocm-dev" in x ]
     pkglist = [ x for x in pkglist if "rocm-dev" not in x ]
     pkglist = rocmdkms + rocmdev + pkglist
+    print(pkglist)
     for n in pkglist:
         # download destdir
+        print(fetchurl + n)
         urlretrieve(fetchurl + n, args.destdir[0] + "/" + os.path.basename(n))
         execcmd = execcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
         rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
