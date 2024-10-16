@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.53: add folder to pathname
 # V1.52: fix repourl option for CI builds
 # V1.51: add default for baseurl
 # V1.50: add noble
@@ -600,7 +601,7 @@ def get_pkglist(rocmurl, pkgtype):
                         or "amdgpu-multimedia".lower() in pkgname.lower()
                         or "mesa-amdgpu-va".lower() in pkgname.lower()
                         or "libdrm-amdgpu".lower() in pkgname.lower()):
-                            rockset.add(pkgname)
+                            rockset.add(folders + "/" + pkgname)
                             continue
         # return set as a list
         if check_rock_dkms(pkgtype) is True:
@@ -899,7 +900,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.52]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.53]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -994,7 +995,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.52 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.53 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
