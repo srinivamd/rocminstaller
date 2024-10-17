@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.77: remove prints
 # V1.76: remove miopen-hip-gfx miopenkernel
 # V1.75: bug fix
 # V1.74: add noble, fix debian repo set up
@@ -1175,10 +1176,8 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype, ubuntudist=None):
     rocmdev = [ x for x in pkglist if "rocm-dev" in x ]
     pkglist = [ x for x in pkglist if "rocm-dev" not in x ]
     pkglist = rocmdkms + rocmdev + pkglist
-    print(pkglist)
     for n in pkglist:
         # download destdir
-        print(fetchurl + n)
         urlretrieve(fetchurl + n, args.destdir[0] + "/" + os.path.basename(n))
         execcmd = execcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
         rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
@@ -1210,7 +1209,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype, ubuntudist=None):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.76]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.77]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1339,7 +1338,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.76 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.77 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype

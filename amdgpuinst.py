@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.54: fix package installation on ubuntu
 # V1.53: add folder to pathname
 # V1.52: fix repourl option for CI builds
 # V1.51: add default for baseurl
@@ -568,7 +569,6 @@ def get_deb_pkglist(rocmurl, pkgtype, ubuntutype, ubuntudist=None):
                     or "amdgpu-core".lower() in pkgname.lower()
                     or "libdrm2-amdgpu".lower() in pkgname.lower()
                     or "amdgpu-multimedia".lower() in pkgname.lower()
-                    or "mesa-amdgpu-va".lower() in pkgname.lower()
                     or "libdrm-amdgpu".lower() in pkgname.lower()):
                         rockset.add(pkgname)
                         continue
@@ -589,7 +589,7 @@ def get_pkglist(rocmurl, pkgtype):
     global rocklist
     urlpath = rocmurl
     try:
-        for folders in ["a", "l", "m"]:
+        for folders in ["a", "l"]:
             urld = request.urlopen(urlpath + "/" + folders)
             for line in str.splitlines(urld.read().decode('utf-8'), True):
                 mat = re.search(rf'".*\.{pkgtype}"', line)
@@ -599,7 +599,6 @@ def get_pkglist(rocmurl, pkgtype):
                         or "amdgpu-core".lower() in pkgname.lower()
                         or "libdrm2-amdgpu".lower() in pkgname.lower()
                         or "amdgpu-multimedia".lower() in pkgname.lower()
-                        or "mesa-amdgpu-va".lower() in pkgname.lower()
                         or "libdrm-amdgpu".lower() in pkgname.lower()):
                             rockset.add(folders + "/" + pkgname)
                             continue
@@ -612,9 +611,55 @@ def get_pkglist(rocmurl, pkgtype):
             rocklist = None
         else:
             rocklist = list(rockset)
+            # remove i386 packages
+            rocklist = [ x for x in rocklist if "i386" not in x ]
     except Exception as e:
         rocklist = None
         print(urlpath + " : " + str(e))
+
+# Download and install deb package rocklist utility functions
+def download_and_install_list_deb(args, rocmbaseurl):
+    global rocklist
+    if args.repourl:
+        fetchurl = args.repourl[0] + "/"
+    else:
+        if args.baseurl is None or args.baseurl[0] == "default":
+            fetchurl = rocmbaseurl + "/"
+        else:
+            fetchurl = rocmbaseurl + "/"
+    rmcmd = RM_F_CMD
+    aptinstcmd = APT_CMD + " install -y "
+    aptgetcmd = APTGET_CMD + " -y -f install "
+    execcmd = aptinstcmd
+    for n in rocklist:
+        # download destdir
+        print(fetchurl + n)
+        urlretrieve(fetchurl + n, args.destdir[0] + "/" + os.path.basename(n))
+        execcmd = execcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
+        rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(n) + " "
+        print('.', end='', flush=True)
+
+    # download destdir
+    #urlretrieve(fetchurl + pkgname, args.destdir[0] + "/" + os.path.basename(pkgname))
+    #execcmd = aptinstcmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
+    #rmcmd = rmcmd + args.destdir[0] + "/" + os.path.basename(pkgname) + " "
+    print(execcmd)
+    try:
+        ps1 = subprocess.Popen(execcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+    try:
+        ps1 = subprocess.Popen(aptgetcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+    try:
+        ps2 = subprocess.Popen(rmcmd.split(), bufsize=0).communicate()[0]
+    except subprocess.CalledProcessError as err:
+        for line in str.splitlines(err.output.decode('utf-8')):
+            print(line)
+        print(" Unexpected error encountered! Did you forget sudo?")
 
 # Download and install packages utility functions
 def download_and_install_deb(args, rocmbaseurl, pkgname):
@@ -889,8 +934,9 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
             # Download and Install amdgpu-dkms-firmware first (assumes only one)
             download_and_install_deb(args, rocmbaseurl, pkgn[0])
         if rocklist:
-            for pkgn in rocklist:
-                download_and_install_deb(args, rocmbaseurl, pkgn)
+            download_and_install_list_deb(args, rocmbaseurl)
+            #for pkgn in rocklist:
+            #    download_and_install_deb(args, rocmbaseurl, pkgn)
 
     return
 
@@ -900,7 +946,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.53]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.54]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -995,7 +1041,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.53 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.54 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1058,7 +1104,7 @@ if __name__ == "__main__":
 
     if args.nokernel is True:
         rocklist = [ x for x in rocklist if "amdgpu-dkms" not in x ]
-        rocklist = [ x for x in rocklist if "amdgpu-core" not in x ]
+
     #
     # If --list specified, print the package list and exit
     #
