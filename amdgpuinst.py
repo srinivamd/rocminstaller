@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.55: fix for 6.2.4
 # V1.54: fix package installation on ubuntu
 # V1.53: add folder to pathname
 # V1.52: fix repourl option for CI builds
@@ -567,8 +568,13 @@ def get_deb_pkglist(rocmurl, pkgtype, ubuntutype, ubuntudist=None):
                 pkgname = line[mat.start()+len("Filename: "):mat.end()]
                 if ("amdgpu-dkms".lower() in pkgname.lower()
                     or "amdgpu-core".lower() in pkgname.lower()
+                    or "gst-omx-amdgpu".lower() in pkgname.lower()
                     or "libdrm2-amdgpu".lower() in pkgname.lower()
+                    or "libllvm".lower() in pkgname.lower()
+                    or "libwayland-amdgpu".lower() in pkgname.lower()
                     or "amdgpu-multimedia".lower() in pkgname.lower()
+                    or "mesa-amdgpu".lower() in pkgname.lower()
+                    or "mesa-va".lower() in pkgname.lower()
                     or "libdrm-amdgpu".lower() in pkgname.lower()):
                         rockset.add(pkgname)
                         continue
@@ -589,7 +595,7 @@ def get_pkglist(rocmurl, pkgtype):
     global rocklist
     urlpath = rocmurl
     try:
-        for folders in ["a", "l"]:
+        for folders in ["a", "g", "l", "m"]:
             urld = request.urlopen(urlpath + "/" + folders)
             for line in str.splitlines(urld.read().decode('utf-8'), True):
                 mat = re.search(rf'".*\.{pkgtype}"', line)
@@ -597,8 +603,13 @@ def get_pkglist(rocmurl, pkgtype):
                     pkgname = line[mat.start()+1:mat.end()-1]
                     if ("amdgpu-dkms".lower() in pkgname.lower()
                         or "amdgpu-core".lower() in pkgname.lower()
+                        or "gst-omx-amdgpu".lower() in pkgname.lower()
                         or "libdrm2-amdgpu".lower() in pkgname.lower()
+                        or "libllvm".lower() in pkgname.lower()
+                        or "libwayland-amdgpu".lower() in pkgname.lower()
                         or "amdgpu-multimedia".lower() in pkgname.lower()
+                        or "mesa-amdgpu".lower() in pkgname.lower()
+                        or "mesa-va".lower() in pkgname.lower()
                         or "libdrm-amdgpu".lower() in pkgname.lower()):
                             rockset.add(folders + "/" + pkgname)
                             continue
@@ -946,7 +957,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.54]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.55]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1041,7 +1052,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.54 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.55 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype

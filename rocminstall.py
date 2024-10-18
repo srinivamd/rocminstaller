@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.78: update ubuntu for rocm amdgpu repo cross dependencies
 # V1.77: remove prints
 # V1.76: remove miopen-hip-gfx miopenkernel
 # V1.75: bug fix
@@ -363,7 +364,6 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype, ubuntudist=None):
                     or "MIVisionX-nvcc".lower() in pkgname.lower()
                     or "hip-nvcc".lower() in pkgname.lower()
                     or "nvidia".lower() in pkgname.lower()
-                    or "rdc".lower() in pkgname.lower()
                     or "-rpath".lower() in pkgname.lower()
                     or "rccl-rdma-sharp".lower() in pkgname.lower()
                     or "rocm-gdb-tests".lower() in pkgname.lower()
@@ -541,7 +541,6 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                     or "MIVisionX-nvcc".lower() in pkgname.lower()
                     or "hip-nvcc".lower() in pkgname.lower()
                     or "nvidia".lower() in pkgname.lower()
-                    or "rdc".lower() in pkgname.lower()
                     or "-rpath".lower() in pkgname.lower()
                     or "rocm-gdb-tests".lower() in pkgname.lower()
                     or "rccl-rdma-sharp".lower() in pkgname.lower()
@@ -754,6 +753,21 @@ def setup_sles_zypp_repo(args, fetchurl):
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
+        # amdgpu: use rev specific rocm repo
+        zypprepo = "[amdgpu" + args.revstring[0] + "]\nenabled=1\nautorefresh=0\nbaseurl=" + fetchurl + "\ntype=rpm-md\ngpgcheck=0"
+        echocmd = ECHO_CMD + " -e '" + zypprepo + "' "
+        repofilename = "/etc/zypp/repos.d/amdgpu" + args.revstring[0] + ".repo "
+        teecmd = TEE_CMD + " " + repofilename + " "
+        try:
+            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
         # zypper install ROCm dependencies - starting with ROCm 4.1.1!
         zypprefresh = ZYPPER_CMD + " addrepo https://download.opensuse.org/repositories/devel:languages:perl/SLE_15/devel:languages:perl.repo"
         try:
@@ -890,6 +904,21 @@ def setup_centos_repo(args, fetchurl):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
 
+        # amdgpu: use rev specific rocm repo
+        yumrepo = "[AMDGPU" + args.revstring[0] +"]\nname=AMDGPU\nbaseurl=" + fetchurl + "\nenabled=1\ngpgcheck=0"
+        echocmd = ECHO_CMD + " -e '" + yumrepo + "' "
+        repofilename = "/etc/yum.repos.d/amdgpu" + args.revstring[0] + ".repo"
+        teecmd = TEE_CMD + " " + repofilename + " "
+        try:
+            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
         # install ROCm dependencies - starting with ROCm 4.1.1!!
         yumupdate = YUM_CMD + " install --assumeyes perl-File-Which perl-File-BaseDir perl-File-Copy-Recursive perl-URI-Encode "
         try:
@@ -975,6 +1004,16 @@ def remove_centos_repo(args, fetchurl):
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
+        # remove amdgpu repo for chosen rev to install
+        # use rev specific rocm repo
+        repofilename = "/etc/yum.repos.d/amdgpu" + args.revstring[0] + ".repo"
+        rmrepocmd = RM_F_CMD + " " + repofilename
+        try:
+            ps1 = subprocess.Popen(rmrepocmd.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
         # clean repo
         yumupdate = YUM_CMD + " clean all "
         try:
@@ -994,6 +1033,15 @@ def remove_sles_zypp_repo(args, fetchurl):
         # remove rocm repo for chosen rev to install
         # use rev specific rocm repo
         repofilename = "/etc/zypp/repos.d/rocm" + args.revstring[0] + ".repo "
+        rmrepocmd = RM_F_CMD + " " + repofilename
+        try:
+            ps1 = subprocess.Popen(rmrepocmd.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+        # remove amdgpu repo for chosen rev to install
+        # use rev specific rocm repo
+        repofilename = "/etc/zypp/repos.d/amdgpu" + args.revstring[0] + ".repo "
         rmrepocmd = RM_F_CMD + " " + repofilename
         try:
             ps1 = subprocess.Popen(rmrepocmd.split(), bufsize=0).communicate()[0]
@@ -1047,6 +1095,22 @@ def setup_debian_repo(args, fetchurl, ubuntutype):
         except subprocess.CalledProcessError as err:
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
+
+        # amdgpu-repo: use rev specific rocm repo
+        debrepo = "deb [arch=amd64] " + fetchurl + " " + ubuntutype + " main "
+        echocmd = ECHO_CMD + " '" + debrepo + "' "
+        repofilename = "/etc/apt/sources.list.d/amdgpu" + args.revstring[0] + ".list "
+        teecmd = TEE_CMD + " " + repofilename
+        try:
+            ps1 = subprocess.Popen(shlex.split(echocmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ps2 = subprocess.Popen(teecmd.split(), stdin=ps1.stdout, stdout=subprocess.PIPE)
+            ps1.stdout.close()
+            out = ps2.communicate()[0]
+            print(out.decode('utf-8'))
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+
         # apt update repo
         aptupdate = APT_CMD + " clean"
         try:
@@ -1071,8 +1135,6 @@ def setup_debian_repo(args, fetchurl, ubuntutype):
             for line in str.splitlines(err.output.decode('utf-8')):
                 print(line)
 
-
-
 def remove_debian_repo(args, fetchurl):
     global pkglist
     global rocklist
@@ -1084,6 +1146,14 @@ def remove_debian_repo(args, fetchurl):
         # remove rocm repo for chosen rev to install
         # use rev specific rocm repo
         repofilename = "/etc/apt/sources.list.d/rocm" + args.revstring[0] + ".list "
+        rmrepocmd = RM_F_CMD + " " + repofilename
+        try:
+            ps1 = subprocess.Popen(rmrepocmd.split(), bufsize=0).communicate()[0]
+        except subprocess.CalledProcessError as err:
+            for line in str.splitlines(err.output.decode('utf-8')):
+                print(line)
+        # remove amdgpu-repo
+        repofilename = "/etc/apt/sources.list.d/amdgpu" + args.revstring[0] + ".list "
         rmrepocmd = RM_F_CMD + " " + repofilename
         try:
             ps1 = subprocess.Popen(rmrepocmd.split(), bufsize=0).communicate()[0]
@@ -1209,7 +1279,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype, ubuntudist=None):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.77]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.78]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1338,7 +1408,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.77 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.78 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
