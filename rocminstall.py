@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.79: exclude dbgsym and -asan packages
 # V1.78: update ubuntu for rocm amdgpu repo cross dependencies
 # V1.77: remove prints
 # V1.76: remove miopen-hip-gfx miopenkernel
@@ -1279,7 +1280,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype, ubuntudist=None):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.78]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.79]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1408,7 +1409,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.78 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.79 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1519,6 +1520,8 @@ if __name__ == "__main__":
     if args.nomiopenkernels is True:
         pkglist = [ x for x in pkglist if "miopenkernel" not in x ]
         pkglist = [ x for x in pkglist if "miopen-hip-gfx" not in x ]
+        pkglist = [ x for x in pkglist if "dbgsym" not in x ]
+        pkglist = [ x for x in pkglist if "-asan" not in x ]
 
     # if withrocdecode is not set, remove rocdecode package
     if args.withrocdecode is False:
