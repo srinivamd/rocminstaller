@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.56: 6.3 add video acceleration va libraries
 # V1.55: fix for 6.2.4
 # V1.54: fix package installation on ubuntu
 # V1.53: add folder to pathname
@@ -571,6 +572,7 @@ def get_deb_pkglist(rocmurl, pkgtype, ubuntutype, ubuntudist=None):
                     or "gst-omx-amdgpu".lower() in pkgname.lower()
                     or "libdrm2-amdgpu".lower() in pkgname.lower()
                     or "libllvm".lower() in pkgname.lower()
+                    or "libva".lower() in pkgname.lower()
                     or "libwayland-amdgpu".lower() in pkgname.lower()
                     or "amdgpu-multimedia".lower() in pkgname.lower()
                     or "mesa-amdgpu".lower() in pkgname.lower()
@@ -606,6 +608,7 @@ def get_pkglist(rocmurl, pkgtype):
                         or "gst-omx-amdgpu".lower() in pkgname.lower()
                         or "libdrm2-amdgpu".lower() in pkgname.lower()
                         or "libllvm".lower() in pkgname.lower()
+                        or "libva".lower() in pkgname.lower()
                         or "libwayland-amdgpu".lower() in pkgname.lower()
                         or "amdgpu-multimedia".lower() in pkgname.lower()
                         or "mesa-amdgpu".lower() in pkgname.lower()
@@ -957,7 +960,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.55]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.56]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1052,7 +1055,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.55 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.56 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
