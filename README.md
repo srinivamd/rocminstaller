@@ -1,19 +1,44 @@
-# [Unofficial] ROCM Installer TL;DR (see Pre-Install Steps for your OS Distro)
-***Steps to install/uninstall ROCm (multiple releases side-by-side or single version)***
-#### Pre-install step: Upgrade OS to get latest kernel headers, etc.
-1. Download amdgpuinst.py script, install ROCm AMDGPU DKMS packages and reboot:
+# [Unofficial] ROCM Installer TL;DR
+### ROCm 6.3 UPDATE
+Use `--baseurl` option to specify OS-specific path to package repos. For ROCm 6.3, certain packages in `rocm` repo have dependencies on user-level library packages in `amdgpu` repo installed using `amdgpuinst.py` script first.
+***Steps to install/uninstall ROCm (multiple releases side-by-side or single version)*** UPDATED 12/5/2024
+## Steps to install user-level ROCm packages (for example in Dockerfile)
+1. Download amdgpuinst.py script, install user-level dependent ROCm libraries libdrm, etc. for release (ex: in Dockerfile)
 ```
   wget -O amdgpuinst.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
 
-Example: Install ROCm DKMS/kernel packages amdgpu-dkms and amdgpu-dkms-firmware
-  sudo python3 ./amdgpuinst.py --rev 5.5.0
-  sudo reboot
 ```
-2. Download rocminstall.py script to install ROCm User Level Packages:
+2. Install user-level ROCm library packages from amdgpu repo
+```
+  sudo python3 ./amdgpuinst.py --nokernel --rev ${ROCM_VERSION} --baseurl ${AMDGPU_REPO_URL_FOR_OS] [--ubuntudist <jammy|noble>]
+
+Ex: To install ROCm 6.3.0 user-level libraries from AMDGPU repo for Ubuntu 24 (noble)
+  sudo python3 ./amdgpuinst.py --nokernel --rev 6.3.0 --baseurl https://repo.radeon.com/amdgpu/6.3/ubuntu/ --ubuntudist noble>
+```
+3. Download rocminstall.py script to install ROCm User Level Packages from the `rocm` repo
 ```
   wget -O rocminstall.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/rocminstall.py
-Example: Install ROCm [add --nomiopenkernels to exclude pre-built miopenkernels]
-  sudo python3 ./rocminstall.py --rev 5.5
+```
+4. Install ROCm release packages from the `rocm` repo
+```
+sudo python3 ./rocminstall.py --nokernel --withrocdecode --rev ${ROCM_VERSION} --baseurl ${ROCM_REPO_URL_FOR_OS} --nomiopenkernels [ --ubuntudist=<jammy|noble> ]
+
+Example: To install ROCm 6.3.0 packages for Ubuntu 24 [add --nomiopenkernels to exclude pre-built miopenkernels]
+  sudo python3 ./rocminstall.py --nokernel --withrocdecode --rev 6.3.0 --baseurl https://repo.radeon.com/rocm/apt/6.3/ --nomiopenkernels --ubuntudist=noble 
+```
+### Install ROCM AMDGPU Kernel Driver Packages
+#### Note: First Upgrade OS to get latest kernel headers, etc.
+1. Download the amdgpuinst.py script
+```
+  wget -O amdgpuinst.py --no-cache --no-check-certificate https://raw.githubusercontent.com/srinivamd/rocminstaller/master/amdgpuinst.py
+
+```
+2. Install AMDGPU DKMS packages from amdgpu repo
+```
+  sudo python3 ./amdgpuinst.py --rev ${ROCM_VERSION} --baseurl ${AMDGPU_REPO_URL_FOR_OS}
+
+Ex: To install ROCm 6.3.0 user-level libraries from AMDGPU repo for Ubuntu 24 (noble)
+  sudo python3 ./amdgpuinst.py --rev 6.3.0 --baseurl https://repo.radeon.com/amdgpu/6.3/ubuntu/ --ubuntudist noble>
 ```
 #### UNINSTALL AMDGPU DRIVER
 1. To uninstall AMDGPU driver, uninstall `amdgpu-core`, `amdgpu-dkms` and `amdgpu-dkms-firmware` packages and reboot:
@@ -33,6 +58,7 @@ On RHEL, SLES:
 Example: To uninstall ROCm 5.5 packages use (requires sudo):
     sudo sh ./rocmuninstall.sh 5.5.0  [use "all" to uninstall user AND kernel packages]
 ```
+## README.backup
 # [Unofficial] V1.62 rocminstall.py Utility to install ROCm releases. Supports Ubuntu/Debian, CentOS/RHEL 7/8, SLES15 installation
 #### NOTE: Install dkms, kernel headers, gcc packages on OS BEFORE installing ROCm Kernel
 
