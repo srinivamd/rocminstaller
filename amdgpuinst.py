@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.58: undo some changes
 # V1.57: Fix baseurl logic
 # V1.56: 6.3 add video acceleration va libraries
 # V1.55: fix for 6.2.4
@@ -965,7 +966,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.57]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.58]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1060,7 +1061,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.57 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.58 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1081,7 +1082,10 @@ if __name__ == "__main__":
     if args.repourl:
         rocmbaseurl = args.repourl[0]
     elif args.baseurl and args.baseurl[0] != "default":
-        rocmbaseurl = args.baseurl[0]
+        if pkgtype is PKGTYPE_DEB:
+            get_deb_pkglist(rocmbaseurl, pkgtype, ubuntutype, args.ubuntudist)
+        else:
+            rocmbaseurl = args.baseurl[0]
     else:
         if args.revstring[0] in kernurl:
             rocmbaseurl = kernurl[args.revstring[0]][ostype]
