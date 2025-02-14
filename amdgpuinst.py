@@ -6,6 +6,7 @@
 # Modified by: Sanjay Tripathi (sanjay.tripathi@amd.com)
 #
 # Download and install the AMDGPU DKMS for the specified ROCm version
+# V1.60: fix rc
 # V1.59: add libglapi
 # V1.58: undo some changes
 # V1.57: Fix baseurl logic
@@ -969,7 +970,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.59]amdgpuinst.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.60]amdgpuinst.py: utility to '
         ' download and install AMDGPU DKMS ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1064,7 +1065,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.59 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.60 amdgpuinst.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1085,10 +1086,7 @@ if __name__ == "__main__":
     if args.repourl:
         rocmbaseurl = args.repourl[0]
     elif args.baseurl and args.baseurl[0] != "default":
-        if pkgtype is PKGTYPE_DEB:
-            get_deb_pkglist(rocmbaseurl, pkgtype, ubuntutype, args.ubuntudist)
-        else:
-            rocmbaseurl = args.baseurl[0]
+        rocmbaseurl = args.baseurl[0]
     else:
         if args.revstring[0] in kernurl:
             rocmbaseurl = kernurl[args.revstring[0]][ostype]
@@ -1099,7 +1097,10 @@ if __name__ == "__main__":
     if args.repourl:
         get_pkglist(args.repourl[0] + "/", pkgtype)
     elif args.baseurl and args.baseurl[0] != "default":
-        get_pkglist(rocmbaseurl, pkgtype)
+        if pkgtype is PKGTYPE_DEB:
+            get_deb_pkglist(rocmbaseurl + "/", pkgtype, ubuntutype, args.ubuntudist)
+        else:
+            get_pkglist(rocmbaseurl + "/", pkgtype)
     else:
         if pkgtype is PKGTYPE_DEB:
             get_deb_pkglist(rocmbaseurl + "/", pkgtype, ubuntutype, args.ubuntudist)
