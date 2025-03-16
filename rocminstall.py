@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.82: add --generic
 # V1.81: remove circular link
 # V1.79: exclude dbgsym and -asan packages
 # V1.78: update ubuntu for rocm amdgpu repo cross dependencies
@@ -234,7 +235,9 @@ def check_rock_dkms(pkgtype):
 
 # Get the list of ROCm rpm packages from the ROCm release URL
 pkglist = []
+genpkglist = []
 pkgset = set()
+genpkgset = set()
 rockset = set()
 rocklist = []
 # debian/ubuntu
@@ -269,13 +272,16 @@ def get_deb_pkglist311(rocmurl, revstring, pkgtype):
             print((" To install rock-dkms package, please remove installed rock-dkms"
                    " first. Reboot may be required. "))
             pkglist = [ x for x in pkgset if "rock-dkms" not in x ]
+            genpkglist = [ x for x in genpkgset if "rock-dkms" not in x ]
 #            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ] # BUG WORKAROUND V1.9
             rocklist = []
         else:
             pkglist = list(pkgset)
+            genpkglist = list(genpkgset)
             rocklist = list(rockset)
     except Exception as e:
         pkglist = None
+        genpkglist = None
         rocklist = None
         print(urlpath + " : " + str(e))
 
@@ -328,6 +334,7 @@ def get_pkglist311(rocmurl, revstring, pkgtype):
 # debian/ubuntu
 def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype, ubuntudist=None):
     global pkglist
+    global genpkglist
     global rocklist
     if ubuntudist is not None:
         ubuntutype = ubuntudist
@@ -383,6 +390,9 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype, ubuntudist=None):
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', os.path.basename(pkgname))):
                         pkgset.add(pkgname)
                         continue
+                else:
+                    genpkgset.add(pkgname)
+                    continue
                 # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
                 # and rocm-dkms is optional package
         # return set as a list
@@ -512,6 +522,7 @@ def get_justrdc_pkglist(rocmurl, revstring, pkgtype):
 
 def get_pkglist(rocmurl, revstring, pkgtype):
     global pkglist
+    global genpkglist
     global rocklist
     urlpath = rocmurl
     if ("3.9.1" in revstring or "4.0.1" in revstring or "4.1.1" in revstring
@@ -558,6 +569,8 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                     or re.search(rf'^miopen-hip-.*gfx.+db{patrevstr}', pkgname)
                     or re.search(rf'^[a-zA-Z\-]+lib64{patrevstr}', pkgname)):
                         pkgset.add(pkgname)
+                else:
+                    genpkgset.add(pkgname)
                 # Starting 3.9 release, only one rocm-dkms to go with rock-dkms
                 # and rocm-dkms is optional package
         # return set as a list
@@ -567,10 +580,12 @@ def get_pkglist(rocmurl, revstring, pkgtype):
             print((" To install rock-dkms package, please remove installed rock-dkms"
                    " first. Reboot may be required. "))
             pkglist = [ x for x in pkgset if "rock-dkms" not in x ]
+            genpkglist = [ x for x in genpkgset if "rock-dkms" not in x ]
 #            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ] # BUG WORKAROUND V1.9
             rocklist = []
         else:
             pkglist = list(pkgset)
+            genpkglist = list(genpkgset)
             rocklist = list(rockset)
             pkgn = [ x for x in pkglist if "rocm-dkms" in x ]
             if pkgn: # remove rocm-dkms from rocklist
@@ -1289,7 +1304,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype, ubuntudist=None):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.81]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.82]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
@@ -1306,6 +1321,9 @@ if __name__ == "__main__":
         help=('specify directory where to download RPM'
               ' before installation. Default: current directory '
               ' --destdir /tmp to use /tmp directory')
+              )
+    parser.add_argument('--generic', dest='generic', action='store_true',
+        help=('install generic packages not version specific ')
               )
     parser.add_argument('--list', dest='listonly', action='store_true',
         help=('just list the packages that will be installed'
@@ -1418,7 +1436,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Log version and date of run
-    print("Running V1.81 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
+    print("Running V1.82 rocminstall.py utility for OS: " + ostype + " on: " + str(datetime.datetime.now()))
 
     #
     # Set pkgtype to use based on ostype
@@ -1551,9 +1569,14 @@ if __name__ == "__main__":
 #            pkglist = [ x for x in pkglist if "rocm-dkms" not in x ] # BUG WORKAROUND V1.9
         else:
             print('\n'.join(sorted(rocklist)) + '\n')
-        print('\n'.join(sorted(pkglist)))
+        if args.generic is True:
+            print('\n'.join(sorted(genpkglist)))
+        else:
+            print('\n'.join(sorted(pkglist)))
         sys.exit(0)
 
+    if args.generic is True:
+        pkglist = genpkglist
     #
     # Download and install the selected packages
     # Ubuntu/Debian dpkg/apt does not have an easy method to use dpkg, apt
