@@ -8,6 +8,7 @@
 # Modified by: Sid Srinivasan (sid.srinivasan@amd.com)
 #
 # Download and install a specific ROCm version
+# V1.84: exclude rocm-bandwidth-test broken in 7.0 builds
 # V1.83: exclude -asan pkgs
 # V1.82: add --generic
 # V1.81: remove circular link
@@ -378,6 +379,7 @@ def get_deb_pkglist(rocmurl, revstring, pkgtype, ubuntutype, ubuntudist=None):
                     or "-asan".lower() in pkgname.lower()
                     or "rccl-rdma-sharp".lower() in pkgname.lower()
                     or "rocm-gdb-tests".lower() in pkgname.lower()
+                    or "rocm-bandwidth-test".lower() in pkgname.lower()
                     or "hip_nvcc".lower() in pkgname.lower()):
                         continue
                 if "rock-dkms".lower() in pkgname.lower():
@@ -559,6 +561,7 @@ def get_pkglist(rocmurl, revstring, pkgtype):
                     or "-rpath".lower() in pkgname.lower()
                     or "-asan".lower() in pkgname.lower()
                     or "rocm-gdb-tests".lower() in pkgname.lower()
+                    or "rocm-bandwidth-test".lower() in pkgname.lower()
                     or "rccl-rdma-sharp".lower() in pkgname.lower()
                     or "hip_nvcc".lower() in pkgname.lower()):
                         continue
@@ -1307,7 +1310,7 @@ def download_install_rocm_deb(args, rocmbaseurl, ubuntutype, ubuntudist=None):
 # --destdir DESTDIR directory to download rpm for installation
 #
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=('[V1.83]rocminstall.py: utility to '
+    parser = argparse.ArgumentParser(description=('[V1.84]rocminstall.py: utility to '
         ' download and install ROCm packages for specified rev'
         ' (dkms, kernel headers must be installed, requires sudo privilege) '),
         prefix_chars='-')
